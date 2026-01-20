@@ -225,6 +225,161 @@ Maintained by [Spice Labs](https://github.com/spice-labs-inc).
 
 ---
 
+## 🐐 Goat Rodeo Integration
+
+[Goat Rodeo](https://github.com/spice-labs-inc/goatrodeo) is Spice Labs' tool for building Artifact Dependency Graphs (ADGs). Baharat can be used as a processing strategy in Goat Rodeo to handle Linux/BSD package formats.
+
+### Adding Baharat to Goat Rodeo
+
+Add Baharat as a dependency in your `build.sbt`:
+
+```scala
+libraryDependencies += "io.spicelabs" % "baharat" % "0.0.1-SNAPSHOT"
+```
+
+### Creating a Baharat Strategy
+
+Goat Rodeo uses a strategy pattern where each processor implements the `ToProcess` trait. Here's how to create a strategy using Baharat that handles all six package formats:
+
+```scala
+package io.spicelabs.goatrodeo.omnibor.strategies
+
+import io.spicelabs.goatrodeo.omnibor.{ToProcess, ProcessingState, ByUUID, ByName}
+import io.spicelabs.baharat.{PackageReader, Package, PackageFormat}
+import io.spicelabs.baharat.rpm.RpmPackage
+import io.spicelabs.baharat.deb.DebPackage
+import io.spicelabs.baharat.pacman.PacmanPackage
+import io.spicelabs.baharat.apk.ApkPackage
+import io.spicelabs.baharat.freebsd.FreeBsdPackage
+import io.spicelabs.baharat.openbsd.OpenBsdPackage
+
+import java.io.File
+import java.nio.file.Path
+import scala.jdk.CollectionConverters._
+import scala.util.{Try, Success, Failure}
+
+object BaharatStrategy {
+
+  /** MIME types for all supported package formats */
+  val supportedMimeTypes: Set[String] = Set(
+    "application/x-rpm",
+    "application/x-debian-package",
+    "application/x-xz",           // Pacman .pkg.tar.xz
+    "application/zstd",           // Pacman .pkg.tar.zst
+    "application/gzip",           // APK, OpenBSD .tgz
+    "application/x-tar"           // FreeBSD .pkg (tar+zstd)
+  )
+
+  /**
+   * Compute files to process using Baharat.
+   * This can replace the existing Debian strategy and adds support for
+   * RPM, Pacman, APK, FreeBSD, and OpenBSD packages.
+   */
+  def computeBaharatFiles(
+      mimeType: String,
+      file: File,
+      state: ProcessingState
+  ): (Vector[ToProcess], ByUUID, ByName, String) = {
+
+    // Check if this is a supported package format
+    val path = file.toPath
+    val formatOpt = Try(PackageReader.detect(path)).toOption.flatten
+
+    formatOpt match {
+      case Some(format) =>
+        Try(PackageReader.read(path)) match {
+          case Success(pkg) =>
+            val purl = pkg.packageUrl().canonicalize()
+
+            // Create ToProcess entries for payload files
+            val payloadEntries = Try {
+              pkg.payload().iterator().asScala.flatMap { entry =>
+                entry match {
+                  case file: io.spicelabs.baharat.PackageEntry.FileEntry =>
+                    Some(createFileToProcess(file, state))
+                  case _ => None
+                }
+              }.toVector
+            }.getOrElse(Vector.empty)
+
+            (payloadEntries, state.byUUID, state.byName, purl)
+
+          case Failure(e) =>
+            // Log error and return empty
+            (Vector.empty, state.byUUID, state.byName, "")
+        }
+
+      case None =>
+        // Not a recognized package format
+        (Vector.empty, state.byUUID, state.byName, "")
+    }
+  }
+
+  private def createFileToProcess(
+      entry: io.spicelabs.baharat.PackageEntry.FileEntry,
+      state: ProcessingState
+  ): ToProcess = {
+    // Implementation depends on your ToProcess structure
+    // This is a placeholder showing the pattern
+    ???
+  }
+}
+```
+
+### Registering the Strategy
+
+In `ToProcess.scala`, add the Baharat strategy to the `computeToProcess` vector:
+
+```scala
+val computeToProcess: Vector[
+  (String, File, ProcessingState) => (Vector[ToProcess], ByUUID, ByName, String)
+] = Vector(
+  MavenToProcess.computeMavenFiles,
+  DockerToProcess.computeDockerFiles,
+  BaharatStrategy.computeBaharatFiles,  // Replaces Debian.computeDebianFiles
+  DotnetFile.computeDotnetFiles,
+  GenericFile.computeGenericFiles
+)
+```
+
+### Replacing the Debian Strategy
+
+Baharat's unified API provides several advantages over the existing Debian strategy:
+
+1. **Six formats with one API**: Handle RPM, DEB, Pacman, APK, FreeBSD, and OpenBSD packages
+2. **Consistent PURL generation**: All formats use the same `packageUrl()` method
+3. **Stream-based payload access**: Memory-efficient processing of large packages
+4. **Type-safe metadata access**: Pattern matching for format-specific metadata
+
+Example showing format-specific handling:
+
+```scala
+val pkg = PackageReader.read(path)
+val formatInfo = pkg match {
+  case rpm: RpmPackage => s"RPM: ${rpm.nevra()}"
+  case deb: DebPackage => s"DEB: ${deb.name()}_${deb.version()}"
+  case pac: PacmanPackage => s"Pacman: ${pac.name()}-${pac.version()}"
+  case apk: ApkPackage => s"APK: ${apk.name()}-${apk.version()}"
+  case fbsd: FreeBsdPackage => s"FreeBSD: ${fbsd.name()}-${fbsd.version()}"
+  case obsd: OpenBsdPackage => s"OpenBSD: ${obsd.name()}-${obsd.version()}"
+}
+```
+
+### PURL Examples
+
+Baharat generates standard Package URLs for all formats:
+
+| Format | Example PURL |
+|--------|-------------|
+| RPM | `pkg:rpm/fedora/curl@7.50.3-1.fc25?arch=x86_64` |
+| DEB | `pkg:deb/debian/curl@7.50.3-1?arch=amd64` |
+| Pacman | `pkg:alpm/arch/curl@7.50.3-1?arch=x86_64` |
+| APK | `pkg:apk/alpine/curl@7.50.3-r0?arch=x86_64` |
+| FreeBSD | `pkg:freebsd/curl@7.50.3?arch=amd64` |
+| OpenBSD | `pkg:openbsd/curl@7.50.3?arch=amd64` |
+
+---
+
 ## 📚 References
 
 - [RPM File Format](https://rpm-software-management.github.io/rpm/manual/format.html)
