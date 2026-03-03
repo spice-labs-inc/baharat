@@ -8,11 +8,25 @@ jobs:
   publish_jars:
     name: Publish JAR Artifacts
     runs-on: ubuntu-24.04
-
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
     outputs:
       version: ${{ steps.version.outputs.version }}
+      thread-ts: ${{ steps.release-notification.outputs.thread-ts }}
+      channel-id: ${{ steps.release-notification.outputs.channel-id }}
 
     steps:
+      - name: Notify release
+        id: release-notification
+        uses: spice-labs-inc/action-release-notification@v3.3
+        with:
+          type: release
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          username-mapping: ${{ vars.GH_SLACK_USERNAME_MAPPING }}
+          github-token: ${{ github.token }}
+
       - name: Checkout Code
         uses: actions/checkout@v4
 
@@ -92,5 +106,33 @@ jobs:
             target/baharat-${{ steps.version.outputs.version }}.jar
             target/baharat-${{ steps.version.outputs.version }}-sources.jar
             target/baharat-${{ steps.version.outputs.version }}-javadoc.jar
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  notify:
+    needs: [publish_jars]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployment status
+        id: deployment-status
+        shell: bash
+        run: |
+          JAR_STATUS="${{ needs.publish_jars.result }}"
+
+          if [ "$JAR_STATUS" == "success" ]; then
+            echo "overall_status=success" >> $GITHUB_OUTPUT
+            echo "message=✅ All components deployed successfully!" >> $GITHUB_OUTPUT
+          else
+            echo "overall_status=failure" >> $GITHUB_OUTPUT
+            echo "message=❌ JAR publishing failed." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Notify deployment result
+        uses: spice-labs-inc/action-release-notification@v3.3
+        with:
+          type: ${{ steps.deployment-status.outputs.overall_status == 'success' && 'deployment-success' || 'deployment-failure' }}
+          slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+          username-mapping: ${{ vars.GH_SLACK_USERNAME_MAPPING }}
+          github-token: ${{ github.token }}
+          environment: production
+          thread-ts: ${{ needs.publish_jars.outputs.thread-ts }}
+          channel-id: ${{ needs.publish_jars.outputs.channel-id }}
