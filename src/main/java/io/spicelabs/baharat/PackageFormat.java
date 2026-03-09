@@ -15,13 +15,13 @@
  */
 package io.spicelabs.baharat;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Enumerates the supported package formats.
@@ -137,12 +137,24 @@ public enum PackageFormat {
      */
     public static @NotNull Optional<PackageFormat> detect(@NotNull Path path) throws IOException {
         String fileName = path.getFileName().toString().toLowerCase();
+        try (InputStream in = Files.newInputStream(path)) {
+            return detect(in, fileName);
+        }
+    }
+
+    public static @NotNull Optional<PackageFormat> detect(@NotNull InputStream in, @NotNull String fileName) throws IOException {
 
         // Read magic bytes
         byte[] header = new byte[8];
         int bytesRead;
-        try (InputStream in = Files.newInputStream(path)) {
+
+        try {
+            if (in.markSupported())
+                in.mark(header.length);
             bytesRead = in.read(header);
+        } finally {
+            if (in.markSupported())
+                in.reset();
         }
 
         if (bytesRead < 4) {
@@ -167,7 +179,7 @@ public enum PackageFormat {
             }
             if (fileName.endsWith(".tgz")) {
                 // Could be OpenBSD pkg - need to check internal structure
-                return detectFromTarGz(path);
+                return detectFromTarGz(fileName);
             }
             if (fileName.contains(".pkg.tar")) {
                 return Optional.of(PACMAN);
@@ -178,7 +190,7 @@ public enum PackageFormat {
         if (header[0] == (byte) 0xFD && header[1] == '7' && header[2] == 'z' &&
                 header[3] == 'X' && header[4] == 'Z' && header[5] == 0x00) {
             if (fileName.endsWith(".pkg") || fileName.endsWith(".txz")) {
-                return detectFromTarXz(path);
+                return detectFromTarXz(fileName);
             }
             if (fileName.contains(".pkg.tar")) {
                 return Optional.of(PACMAN);
@@ -251,10 +263,9 @@ public enum PackageFormat {
         return Optional.empty();
     }
 
-    private static @NotNull Optional<PackageFormat> detectFromTarGz(@NotNull Path path) throws IOException {
+    private static @NotNull Optional<PackageFormat> detectFromTarGz(@NotNull String fileName) throws IOException {
         // For now, use extension heuristics
         // Full detection would decompress and check for +CONTENTS (OpenBSD) vs .PKGINFO (APK)
-        String fileName = path.getFileName().toString().toLowerCase();
         if (fileName.endsWith(".tgz")) {
             return Optional.of(OPENBSD_PKG);
         }
@@ -264,10 +275,9 @@ public enum PackageFormat {
         return Optional.empty();
     }
 
-    private static @NotNull Optional<PackageFormat> detectFromTarXz(@NotNull Path path) throws IOException {
+    private static @NotNull Optional<PackageFormat> detectFromTarXz(@NotNull String fileName) throws IOException {
         // For now, use extension heuristics
         // Full detection would decompress and check for +MANIFEST (FreeBSD) vs .PKGINFO (Pacman)
-        String fileName = path.getFileName().toString().toLowerCase();
         if (fileName.endsWith(".pkg") || fileName.endsWith(".txz")) {
             return Optional.of(FREEBSD_PKG);
         }
