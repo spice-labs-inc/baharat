@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -107,6 +108,26 @@ public final class PackageReader {
     }
 
     /**
+     * Reads a package from an InputStream, auto-detecting the format.
+     * 
+     * @param stm the InputStream containing the package file
+     * @param fileName the name of the container
+     * @return the parsed package
+     * @throws PackageException if the package cannot be read or the format is unknown
+     * @throws IOException in an I/O error occurs
+     */
+
+    public static @NotNull Package read(@NotNull InputStream stm, @NotNull String fileName) throws PackageException, IOException {
+        Optional<PackageFormat> format = PackageFormat.detect(stm, fileName);
+        if (format.isEmpty()) {
+            throw new PackageException.UnsupportedPackageException(
+                    "Unknown package format: " + fileName);
+        }
+
+        return read(stm, format.get(), fileName);
+    }
+
+    /**
      * Reads a package from a file path with an explicit format.
      *
      * @param path the path to the package file
@@ -130,6 +151,29 @@ public final class PackageReader {
     }
 
     /**
+     * Reads a package from a file path with an explicit format.
+     *
+     * @param stm the InputStream containing the package file
+     * @param format the package format
+     * @param fileName the name of the package file
+     * @return the parsed package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull Package read(@NotNull InputStream stm, @NotNull PackageFormat format, @NotNull String fileName)
+            throws PackageException, IOException
+    {
+        return switch (format) {
+            case RPM -> readRpm(stm);
+            case DEB -> readDeb(stm, fileName);
+            case PACMAN -> readPacman(stm, fileName);
+            case APK -> readApk(stm, fileName);
+            case FREEBSD_PKG -> readFreeBsd(stm, fileName);
+            case OPENBSD_PKG -> readOpenBsd(stm, fileName);
+        };
+    }
+
+    /**
      * Reads an RPM package from a file path.
      *
      * @param path the path to the RPM file
@@ -140,6 +184,22 @@ public final class PackageReader {
     public static @NotNull io.spicelabs.baharat.rpm.RpmPackage readRpm(@NotNull Path path) throws PackageException, IOException {
         try {
             return io.spicelabs.baharat.rpm.RpmReader.read(path);
+        } catch (io.spicelabs.baharat.rpm.exception.FormatException e) {
+            throw new PackageException("Failed to read RPM: " + e.getMessage(), PackageFormat.RPM, e);
+        }
+    }
+
+    /**
+     * Reads an RPM package from an InputStream.
+     *
+     * @param stm the InputStream containing the RPM file
+     * @return the parsed RPM package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull io.spicelabs.baharat.rpm.RpmPackage readRpm(@NotNull InputStream stm) throws PackageException, IOException {
+        try {
+            return io.spicelabs.baharat.rpm.RpmReader.read(stm);
         } catch (io.spicelabs.baharat.rpm.exception.FormatException e) {
             throw new PackageException("Failed to read RPM: " + e.getMessage(), PackageFormat.RPM, e);
         }
@@ -158,6 +218,19 @@ public final class PackageReader {
     }
 
     /**
+     * Reads a DEB package from an InputStream.
+     *
+     * @param stm the InputStream containing the DEB file
+     * @param fileName the name of the container
+     * @return the parsed DEB package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull DebPackage readDeb(@NotNull InputStream stm, String fileName) throws PackageException, IOException {
+        return DebReader.read(stm, fileName);
+    }
+
+    /**
      * Reads a Pacman package from a file path.
      *
      * @param path the path to the Pacman package file
@@ -167,6 +240,19 @@ public final class PackageReader {
      */
     public static @NotNull PacmanPackage readPacman(@NotNull Path path) throws PackageException, IOException {
         return PacmanReader.read(path);
+    }
+
+    /**
+     * Reads a Pacman package from a file path.
+     *
+     * @param stm the InputStream containing the Pacman package file
+     * @param fileName the name of the container
+     * @return the parsed Pacman package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull PacmanPackage readPacman(@NotNull InputStream stm, @NotNull String fileName) throws PackageException, IOException {
+        return PacmanReader.read(stm, fileName);
     }
 
     /**
@@ -182,6 +268,19 @@ public final class PackageReader {
     }
 
     /**
+     * Reads an APK package from an InputStream.
+     *
+     * @param stm the InputStream containing the APK file
+     * @param fileName the name of the container
+     * @return the parsed APK package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull ApkPackage readApk(@NotNull InputStream stm, @NotNull String fileName) throws PackageException, IOException {
+        return ApkReader.read(stm, fileName);
+    }
+
+    /**
      * Reads a FreeBSD package from a file path.
      *
      * @param path the path to the FreeBSD package file
@@ -194,6 +293,19 @@ public final class PackageReader {
     }
 
     /**
+     * Reads a FreeBSD package from an InputStream.
+     *
+     * @param stm the InputStream containing the FreeBSD package file
+     * @param fileName the name of the container
+     * @return the parsed FreeBSD package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull FreeBsdPackage readFreeBsd(@NotNull InputStream stm, @NotNull String name) throws PackageException, IOException {
+        return FreeBsdReader.read(stm, name);
+    }
+
+    /**
      * Reads an OpenBSD package from a file path.
      *
      * @param path the path to the OpenBSD package file
@@ -203,6 +315,19 @@ public final class PackageReader {
      */
     public static @NotNull OpenBsdPackage readOpenBsd(@NotNull Path path) throws PackageException, IOException {
         return OpenBsdReader.read(path);
+    }
+
+    /**
+     * Reads an OpenBSD package from an InputStream.
+     *
+     * @param stm the InputStream containing the OpenBSD package file
+     * @param fileName the name of the container
+     * @return the parsed OpenBSD package
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull OpenBsdPackage readOpenBsd(@NotNull InputStream stm, @NotNull String name) throws PackageException, IOException {
+        return OpenBsdReader.read(stm, name);
     }
 
     /**
@@ -304,5 +429,18 @@ public final class PackageReader {
      */
     public static @NotNull PackageMetadata readMetadata(@NotNull Path path) throws PackageException, IOException {
         return read(path).metadata();
+    }
+
+    /**
+     * Reads just the package metadata without processing the payload.
+     * This is more efficient when you only need header information
+     * @param stm the InputStream containing the package file
+     * @param fileName the name of the container
+     * @return the package metadata
+     * @throws PackageException if the package cannot be read
+     * @throws IOException if an I/O error occurs
+     */
+    public static @NotNull PackageMetadata readMetadata(@NotNull InputStream stm, @NotNull String fileName) throws PackageException, IOException {
+        return read(stm, fileName).metadata();
     }
 }
