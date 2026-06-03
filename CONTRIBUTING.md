@@ -1,299 +1,88 @@
-# Contributing to Baharat
+# Contributing to This Project
 
-Thank you for your interest in contributing to Baharat! This document provides guidelines and instructions for contributing.
+Thank you for your interest in this project. We welcome all kinds of contributions: code, documentation, bug reports, feature requests, and more. This guide will help you get started. We ask that you engage in good faith, honesty, and integrity, and respect that the maintainers make the final decisions on this project.
 
-## Code of Conduct
+---
 
-This project adheres to a Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to dev@spicelabs.io.
+## Reporting Bugs
 
-## How to Contribute
+Please include:
+- A clear, descriptive title
+- Steps to reproduce the issue
+- What you expected to happen versus what actually happened
+- Any relevant logs, screenshots, or files
+- Your environment (OS, software version, and how it was installed)
 
-### Reporting Bugs
+Open a [new issue](../../issues/new) to report the problem.
 
-Before creating a bug report, please check existing issues to avoid duplicates. When creating a bug report, include:
+---
 
-- **Clear title** describing the issue
-- **Steps to reproduce** the behavior
-- **Expected behavior** vs actual behavior
-- **Environment details** (Java version, OS, RPM file details if relevant)
-- **Sample RPM file** if the issue is file-specific (ensure it doesn't contain sensitive data)
+## Suggesting Features
 
-### Suggesting Features
+Please include:
+- A summary of the problem you are trying to solve
+- Why it is important or useful
+- A rough idea of how it could be implemented
 
-Feature suggestions are welcome! Please include:
+Open a [new issue](../../issues/new) to make the suggestion.
 
-- **Use case** - Why is this feature needed?
-- **Proposed solution** - How should it work?
-- **Alternatives considered** - What other approaches did you consider?
+---
 
-### Pull Requests
+## Making Code Contributions
 
-1. **Fork the repository** and create your branch from `main`
-2. **Write tests** for any new functionality
-3. **Follow the code style** (see below)
-4. **Update documentation** if needed
-5. **Ensure tests pass** with `mvn test`
-6. **Submit the pull request** with a clear description
-
-## Development Setup
-
-### Prerequisites
-
-- Java 21 or higher
-- Maven 3.6+
-- Git
-
-### Building
+Follow the coding style used in the project:
+- The project has linters and formatters configured, so use them
+- Add or update tests if you change features or handle new cases
+- Run existing tests to ensure everything still works
+- Write clear commit messages that describe the changes:
 
 ```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/baharat.git
-cd baharat
-
-# Build and run tests
-mvn clean install
-
-# Run tests only
-mvn test
-
-# Generate coverage report
-mvn test jacoco:report
-# Report is in target/site/jacoco/index.html
+   git commit -m "Handle timeouts in API client with retry backoff"
+   git push origin fix/handle-timeouts
 ```
+- Longer commit messages are welcome when describing the approach, alternatives considered, or other useful details
+- Please keep commits as focused as possible. It is better to have two smaller commits for unrelated changes than one combined commit with a vague title such as "updates" or "changes"
 
-### Running Specific Tests
+---
 
-```bash
-# Run a specific test class
-mvn test -Dtest=RpmReaderIntegrationTest
+## Tests and CI
 
-# Run tests matching a pattern
-mvn test -Dtest="*Payload*"
-```
+- Run the tests and linters against your changes
+- Reach out if you are unsure how to run the tests
 
-## Code Style
+---
 
-### General Guidelines
+## Opening a Pull Request
 
-- Use **4 spaces** for indentation (no tabs)
-- Maximum line length: **120 characters**
-- Use **meaningful names** for variables, methods, and classes
-- Write **self-documenting code**; add comments only when necessary
-- Follow **Java naming conventions**
+- Open your pull request against the `next` branch. We integrate changes into `next` before merging to `main` and creating tagged releases
+- Use the pull request template as a guide. Explain why you are making changes as clearly as you can
+- Link to any related issues
+- Be ready to discuss or make changes after review
+- Ensure CI passes on your PR and make any required changes
 
-### Null Safety
+---
 
-This project enforces a strict no-null policy:
+## Collaborating and Reviewing
 
-- Use `@NotNull` annotation on all parameters that must not be null
-- Use `Optional<T>` for return values that may be absent
-- Never return `null` from any method
-- Use `@Nullable` only for methods that interact with external APIs
+We use pull request reviews to discuss changes:
+- Code improvements or simplifications
+- Better naming or comments
+- Test coverage or performance notes
+- Alternate approaches
+- Formatting or documentation corrections
 
-```java
-// Good
-public @NotNull Optional<String> getName() {
-    return Optional.ofNullable(header.getString(TAG_NAME));
-}
+---
 
-// Bad
-public String getName() {
-    return header.getString(TAG_NAME); // Could return null!
-}
-```
+## Licensing
 
-### Immutability
+All contributions must be compatible with the project's [license](LICENSE.txt), and you must have the legal right to contribute them. By submitting code, you agree to license it under the same terms.
 
-- Prefer immutable objects (records, final fields)
-- Use `List.copyOf()` and `Map.copyOf()` for defensive copies
-- Don't expose mutable internal state
+---
 
-```java
-// Good
-public record FileInfo(@NotNull String path, long size) {}
+## Thank You!
 
-// Good - defensive copy
-public @NotNull List<FileInfo> files() {
-    return List.copyOf(files);
-}
-```
+Thank you for contributing. Whether you are fixing a typo, suggesting a feature, or rewriting a core component, your contribution helps and is greatly appreciated.
 
-### Error Handling
+For questions, feel free to open an issue, start a discussion, or join the community on Matrix at [#spice-labs:matrix.org](https://matrix.to/#/#spice-labs:matrix.org).
 
-- Use `PackageException` and its subclasses for package-related errors
-- Use format-specific exceptions when appropriate (e.g., `InvalidFormatException` for RPM)
-- Include helpful error messages with context
-- Don't catch generic `Exception` unless re-throwing
-
-```java
-// Good
-throw new PackageException("Invalid magic: expected 0x" +
-    Integer.toHexString(EXPECTED) + ", got 0x" + Integer.toHexString(actual),
-    PackageFormat.RPM);
-
-// Also good - format-specific exception
-throw new InvalidFormatException(
-    String.format("Invalid magic: expected 0x%08X, got 0x%08X", EXPECTED, actual));
-
-// Bad
-throw new RuntimeException("Invalid magic");
-```
-
-### Testing
-
-- Write unit tests for all new functionality
-- Use descriptive test method names
-- Test edge cases and error conditions
-- Aim for 80%+ code coverage
-
-```java
-@Test
-void readPackage_withValidRpm_returnsMetadata() {
-    // Arrange
-    Path rpmPath = testRpms.resolve("valid-package.rpm");
-
-    // Act
-    RpmPackage rpm = RpmReader.read(rpmPath);
-
-    // Assert
-    assertThat(rpm.name()).isEqualTo("test-package");
-    assertThat(rpm.version()).isEqualTo("1.0.0");
-}
-
-@Test
-void readPackage_withCorruptedFile_throwsInvalidRpmException() {
-    Path corruptedPath = testRpms.resolve("corrupted.rpm");
-
-    assertThatThrownBy(() -> RpmReader.read(corruptedPath))
-        .isInstanceOf(InvalidRpmException.class)
-        .hasMessageContaining("Invalid magic");
-}
-```
-
-### Documentation
-
-- Add Javadoc to all public classes and methods
-- Include `@param`, `@return`, and `@throws` tags
-- Provide usage examples for complex APIs
-
-```java
-/**
- * Reads an RPM package from the given file path.
- *
- * <p>Example usage:
- * <pre>{@code
- * RpmPackage rpm = RpmReader.read(Path.of("package.rpm"));
- * System.out.println(rpm.name());
- * }</pre>
- *
- * @param path the path to the RPM file
- * @return the parsed RPM package
- * @throws InvalidRpmException if the file is not a valid RPM
- * @throws IOException if an I/O error occurs
- */
-public static @NotNull RpmPackage read(@NotNull Path path)
-        throws InvalidRpmException, IOException {
-    // ...
-}
-```
-
-## Project Structure
-
-```
-src/
-├── main/java/io/spicelabs/baharat/
-│   ├── Package.java            # Common package interface
-│   ├── PackageReader.java      # Main entry point (auto-detection)
-│   ├── PackageFormat.java      # Format enumeration and detection
-│   ├── PackageMetadata.java    # Common metadata interface
-│   ├── PackageEntry.java       # Payload entry types
-│   ├── PackageException.java   # Exception hierarchy
-│   │
-│   ├── common/                 # Shared types
-│   │   ├── Dependency.java     # Dependency representation
-│   │   ├── FileInfo.java       # File metadata
-│   │   └── SecurityUtils.java  # Security utilities
-│   │
-│   ├── rpm/                    # RPM format support
-│   │   ├── RpmReader.java      # RPM-specific reader
-│   │   ├── RpmPackage.java     # RPM package
-│   │   ├── header/             # RPM header parsing
-│   │   ├── payload/            # CPIO payload streaming
-│   │   ├── signature/          # Signature verification
-│   │   └── ...
-│   │
-│   ├── deb/                    # Debian format support
-│   │   ├── DebReader.java
-│   │   ├── DebPackage.java
-│   │   └── ...
-│   │
-│   ├── pacman/                 # Arch Linux format support
-│   ├── apk/                    # Alpine Linux format support
-│   ├── freebsd/                # FreeBSD format support
-│   └── openbsd/                # OpenBSD format support
-│
-└── test/
-    ├── java/                   # Test classes (mirrors main structure)
-    └── resources/
-        ├── rpms/               # Test RPM files
-        ├── debs/               # Test DEB files
-        ├── pacman/             # Test Pacman packages
-        ├── apks/               # Test APK files
-        ├── freebsd/            # Test FreeBSD packages
-        └── openbsd/            # Test OpenBSD packages
-```
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for detailed architecture documentation.
-
-## Commit Messages
-
-Follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
-
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-Types:
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation only
-- `style`: Code style (formatting, no code change)
-- `refactor`: Code change that neither fixes a bug nor adds a feature
-- `test`: Adding or correcting tests
-- `chore`: Maintenance tasks
-
-Examples:
-```
-feat(payload): add support for zstd compression
-
-fix(signature): handle missing key ID gracefully
-
-docs: update README with extraction examples
-
-test(header): add tests for malformed headers
-```
-
-## Release Process
-
-Releases are managed by maintainers. The process is:
-
-1. Update version in `pom.xml`
-2. Update `CHANGELOG.md`
-3. Create a release branch
-4. Run full test suite
-5. Create GitHub release with tag
-6. Deploy to Maven Central
-
-## Getting Help
-
-- **Questions**: Open a GitHub Discussion
-- **Bugs**: Open a GitHub Issue
-- **Security**: Email security@spicelabs.io (do not open public issues)
-
-## License
-
-By contributing, you agree that your contributions will be licensed under the Apache License 2.0.
+---
