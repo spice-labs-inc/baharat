@@ -26,14 +26,14 @@ jobs:
         run: mvn --batch-mode --update-snapshots verify
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: target/site/jacoco/jacoco.xml
           fail_ci_if_error: false
 
       - name: Upload test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: |
