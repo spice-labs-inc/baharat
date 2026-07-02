@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat.rpm;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.rpm.lead.Lead;
 import io.spicelabs.baharat.rpm.metadata.Dependency;
 import io.spicelabs.baharat.rpm.metadata.FileInfo;
@@ -381,12 +381,12 @@ class ReaderIntegrationTest {
         Path path = TestFiles.getPath(V4_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL purl = rpm.metadata().purl();
+        Purl purl = rpm.metadata().purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("sed");
-        assertThat(purl.getVersion()).isEqualTo("4.9-1.fc40");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.name).isEqualTo("sed");
+        assertThat(purl.version).isEqualTo("4.9-1.fc40");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
@@ -395,28 +395,28 @@ class ReaderIntegrationTest {
         Path path = TestFiles.getPath(NOARCH_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL purl = rpm.metadata().purl();
+        Purl purl = rpm.metadata().purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("basesystem");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.name).isEqualTo("basesystem");
         // noarch should not include arch qualifier
-        assertThat(purl.getQualifiers()).isNullOrEmpty();
+        assertThat(purl.qualifiers).isNullOrEmpty();
     }
 
     @Test
     @EnabledIf("hasTestRpmFiles")
-    void purlReturnsValidPackageURL() throws Exception {
+    void purlReturnsValidPurl() throws Exception {
         // Test with a real RPM - check that the PURL is valid
         Path path = TestFiles.getPath(V4_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL purl = rpm.metadata().purl();
+        Purl purl = rpm.metadata().purl();
 
-        // Verify PackageURL object is valid and contains expected data
+        // Verify Purl object is valid and contains expected data
         assertThat(purl).isNotNull();
-        assertThat(purl.getType()).isNotEmpty();
-        assertThat(purl.getName()).isNotEmpty();
-        assertThat(purl.getVersion()).isNotEmpty();
+        assertThat(purl.type).isNotEmpty();
+        assertThat(purl.name).isNotEmpty();
+        assertThat(purl.version).isNotEmpty();
     }
 
     @Test
@@ -425,13 +425,13 @@ class ReaderIntegrationTest {
         Path path = TestFiles.getPath(V4_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL fromPackage = rpm.packageUrl();
-        PackageURL fromMetadata = rpm.metadata().purl();
+        Purl fromPackage = rpm.purl();
+        Purl fromMetadata = rpm.metadata().purl();
 
         // Type and name must match
-        assertThat(fromPackage.getType()).isEqualTo(fromMetadata.getType());
-        assertThat(fromPackage.getName()).isEqualTo(fromMetadata.getName());
-        assertThat(fromPackage.getVersion()).isEqualTo(fromMetadata.getVersion());
+        assertThat(fromPackage.type).isEqualTo(fromMetadata.type);
+        assertThat(fromPackage.name).isEqualTo(fromMetadata.name);
+        assertThat(fromPackage.version).isEqualTo(fromMetadata.version);
     }
 
     @Test
@@ -440,26 +440,14 @@ class ReaderIntegrationTest {
         Path path = TestFiles.getPath(V4_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL original = rpm.packageUrl();
-        String canonical = original.canonicalize();
-        PackageURL parsed = new PackageURL(canonical);
+        Purl original = rpm.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
 
-        assertThat(parsed.getType()).isEqualTo(original.getType());
-        assertThat(parsed.getName()).isEqualTo(original.getName());
-        assertThat(parsed.getVersion()).isEqualTo(original.getVersion());
-        assertThat(parsed.getQualifiers()).isEqualTo(original.getQualifiers());
-    }
-
-    @Test
-    @EnabledIf("hasTestRpmFiles")
-    void purlWithCustomNamespace() throws Exception {
-        Path path = TestFiles.getPath(V4_RPM);
-        RpmPackage rpm = RpmReader.read(path);
-
-        PackageURL purl = rpm.packageUrl(Optional.of("fedora"));
-        assertThat(purl.getNamespace()).isEqualTo("fedora");
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("sed");
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
     }
 
     @Test
@@ -472,13 +460,13 @@ class ReaderIntegrationTest {
             try {
                 RpmPackage rpm = RpmReader.read(path);
                 PackageMetadata rpmMeta = rpm.rpmMetadata();
-                PackageURL purl = rpm.metadata().purl();
+                Purl purl = rpm.metadata().purl();
 
                 Optional<String> vendor = rpmMeta.vendor();
                 if (vendor.isPresent() && !vendor.get().isEmpty()) {
                     // If vendor is present, namespace should be set
                     String expectedNamespace = vendor.get().toLowerCase().replaceAll("\\s+", "-");
-                    assertThat(purl.getNamespace())
+                    assertThat(purl.namespace)
                             .as("Vendor '%s' should produce namespace '%s' for package %s",
                                     vendor.get(), expectedNamespace, rpm.name())
                             .isEqualTo(expectedNamespace);
@@ -498,19 +486,19 @@ class ReaderIntegrationTest {
         for (Path path : rpms) {
             try {
                 RpmPackage rpm = RpmReader.read(path);
-                PackageURL purl = rpm.metadata().purl();
+                Purl purl = rpm.metadata().purl();
                 Optional<Integer> epoch = rpm.metadata().epoch();
 
                 if (epoch.isPresent() && epoch.get() > 0) {
                     // Non-zero epoch should be in qualifiers
-                    assertThat(purl.getQualifiers())
+                    assertThat(purl.qualifiers)
                             .as("Package %s with epoch %d should have epoch qualifier",
                                     rpm.name(), epoch.get())
                             .containsEntry("epoch", String.valueOf(epoch.get()));
                 } else {
                     // Zero or missing epoch should not be in qualifiers
-                    if (purl.getQualifiers() != null) {
-                        assertThat(purl.getQualifiers())
+                    if (purl.qualifiers != null) {
+                        assertThat(purl.qualifiers)
                                 .as("Package %s with no/zero epoch should not have epoch qualifier", rpm.name())
                                 .doesNotContainKey("epoch");
                     }
@@ -530,17 +518,17 @@ class ReaderIntegrationTest {
         for (Path path : rpms) {
             try {
                 RpmPackage rpm = RpmReader.read(path);
-                PackageURL purl = rpm.packageUrl();
+                Purl purl = rpm.purl();
                 String arch = rpm.arch();
 
                 if ("noarch".equalsIgnoreCase(arch)) {
                     // noarch should not include arch qualifier
-                    assertThat(purl.getQualifiers())
+                    assertThat(purl.qualifiers)
                             .as("Package %s with arch 'noarch' should not have arch qualifier", rpm.name())
                             .isNullOrEmpty();
                 } else if (!arch.isEmpty()) {
                     // Other architectures should have arch qualifier
-                    assertThat(purl.getQualifiers())
+                    assertThat(purl.qualifiers)
                             .as("Package %s with arch '%s' should have arch qualifier", rpm.name(), arch)
                             .containsEntry("arch", arch);
                 }
@@ -556,13 +544,13 @@ class ReaderIntegrationTest {
         Path path = TestFiles.getPath(V4_RPM);
         RpmPackage rpm = RpmReader.read(path);
 
-        PackageURL purl = rpm.metadata().purl();
+        Purl purl = rpm.metadata().purl();
 
         // Version should include release (version-release format)
         String version = rpm.version();
         String release = rpm.release();
 
-        assertThat(purl.getVersion()).isEqualTo(version + "-" + release);
+        assertThat(purl.version).isEqualTo(version + "-" + release);
     }
 
     @Test
@@ -578,15 +566,15 @@ class ReaderIntegrationTest {
                 RpmPackage rpm = RpmReader.read(path);
                 totalCount++;
 
-                PackageURL purl = rpm.metadata().purl();
+                Purl purl = rpm.metadata().purl();
                 assertThat(purl).isNotNull();
-                assertThat(purl.getType()).isEqualTo("rpm");
-                assertThat(purl.getName()).isNotEmpty();
+                assertThat(purl.type).isEqualTo("rpm");
+                assertThat(purl.name).isNotEmpty();
 
                 // Verify roundtrip
-                String canonical = purl.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
-                assertThat(parsed.getName()).isEqualTo(purl.getName());
+                String canonical = purl.toCanonical();
+                Purl parsed = Purl.parse(canonical);
+                assertThat(parsed.name).isEqualTo(purl.name);
 
                 successCount++;
             } catch (Exception e) {

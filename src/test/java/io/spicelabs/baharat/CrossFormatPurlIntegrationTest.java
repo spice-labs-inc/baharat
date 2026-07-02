@@ -15,7 +15,6 @@
  */
 package io.spicelabs.baharat;
 
-import com.github.packageurl.PackageURL;
 import io.spicelabs.baharat.apk.ApkPackage;
 import io.spicelabs.baharat.apk.ApkReader;
 import io.spicelabs.baharat.deb.DebPackage;
@@ -30,6 +29,7 @@ import io.spicelabs.baharat.rpm.RpmPackage;
 import io.spicelabs.baharat.rpm.RpmReader;
 import io.spicelabs.baharat.rpm.testdata.TestFiles;
 import io.spicelabs.baharat.testdata.PackageTestFiles;
+import io.spicelabs.coordinates.Purl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
 
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,11 +46,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Cross-format integration tests for Package URL generation.
  *
  * <p>These tests verify PURL generation consistency across all supported
- * package formats and ensure compliance with the PURL specification.
+ * package formats and ensure compliance with Coordinates and the PURL specification.
  */
 class CrossFormatPurlIntegrationTest {
 
-    // Expected PURL types for each format
     private static final Map<PackageFormat, String> EXPECTED_PURL_TYPES = Map.of(
             PackageFormat.RPM, "rpm",
             PackageFormat.DEB, "deb",
@@ -61,7 +59,6 @@ class CrossFormatPurlIntegrationTest {
             PackageFormat.OPENBSD_PKG, "openbsd"
     );
 
-    // Architecture values that should NOT result in an arch qualifier
     private static final Set<String> ARCH_INDEPENDENT_VALUES = Set.of(
             "noarch", "all", "any", "*"
     );
@@ -95,8 +92,6 @@ class CrossFormatPurlIntegrationTest {
                 hasApkFiles() || hasFreeBsdFiles() || hasOpenBsdFiles();
     }
 
-    // Type Mapping Tests
-
     @Test
     @EnabledIf("hasAnyTestFiles")
     void purlTypeMappingIsCorrectForAllFormats() throws Exception {
@@ -106,10 +101,10 @@ class CrossFormatPurlIntegrationTest {
             PackageFormat format = entry.getKey();
             Package pkg = entry.getValue();
 
-            PackageURL purl = pkg.packageUrl();
+            Purl purl = pkg.purl();
             String expectedType = EXPECTED_PURL_TYPES.get(format);
 
-            assertThat(purl.getType())
+            assertThat(purl.type)
                     .as("PURL type for format %s", format)
                     .isEqualTo(expectedType);
         }
@@ -124,25 +119,21 @@ class CrossFormatPurlIntegrationTest {
             PackageFormat format = entry.getKey();
             Package pkg = entry.getValue();
 
-            PackageURL purl = pkg.packageUrl();
+            Purl purl = pkg.purl();
 
-            // All PURLs must have type and name
-            assertThat(purl.getType())
+            assertThat(purl.type)
                     .as("PURL type for format %s", format)
                     .isNotEmpty();
-            assertThat(purl.getName())
+            assertThat(purl.name)
                     .as("PURL name for format %s", format)
                     .isNotEmpty();
 
-            // PURL should be parseable
-            String canonical = purl.canonicalize();
-            PackageURL parsed = new PackageURL(canonical);
-            assertThat(parsed.getType()).isEqualTo(purl.getType());
-            assertThat(parsed.getName()).isEqualTo(purl.getName());
+            String canonical = purl.toCanonical();
+            Purl parsed = Purl.parse(canonical);
+            assertThat(parsed.type).isEqualTo(purl.type);
+            assertThat(parsed.name).isEqualTo(purl.name);
         }
     }
-
-    // Architecture Handling Consistency Tests
 
     @Test
     @EnabledIf("hasAnyTestFiles")
@@ -154,17 +145,13 @@ class CrossFormatPurlIntegrationTest {
 
             for (Package pkg : entry.getValue()) {
                 String arch = pkg.arch();
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
 
                 if (ARCH_INDEPENDENT_VALUES.contains(arch.toLowerCase())) {
-                    assertThat(purl.getQualifiers())
+                    assertThat(purl.qualifiers)
                             .as("Format %s package %s with arch '%s' should not have arch qualifier",
                                     format, pkg.name(), arch)
-                            .satisfiesAnyOf(
-                                    q -> assertThat(q).isNull(),
-                                    q -> assertThat(q).isEmpty(),
-                                    q -> assertThat(q).doesNotContainKey("arch")
-                            );
+                            .doesNotContainKey("arch");
                 }
             }
         }
@@ -180,10 +167,10 @@ class CrossFormatPurlIntegrationTest {
 
             for (Package pkg : entry.getValue()) {
                 String arch = pkg.arch();
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
 
                 if (!arch.isEmpty() && !ARCH_INDEPENDENT_VALUES.contains(arch.toLowerCase())) {
-                    assertThat(purl.getQualifiers())
+                    assertThat(purl.qualifiers)
                             .as("Format %s package %s with arch '%s' should have arch qualifier",
                                     format, pkg.name(), arch)
                             .containsEntry("arch", arch);
@@ -192,74 +179,35 @@ class CrossFormatPurlIntegrationTest {
         }
     }
 
-    // Namespace Handling Tests
-
     @Test
     @EnabledIf("hasAnyTestFiles")
-    void customNamespaceOverridesDefaultForAllFormats() throws Exception {
+    void purlAndMetadataPurlAreConsistentAcrossFormats() throws Exception {
         Map<PackageFormat, Package> packages = loadOnePackagePerFormat();
 
         for (Map.Entry<PackageFormat, Package> entry : packages.entrySet()) {
             PackageFormat format = entry.getKey();
             Package pkg = entry.getValue();
 
-            String customNamespace = "custom-" + format.name().toLowerCase();
-            PackageURL purl = pkg.packageUrl(Optional.of(customNamespace));
+            Purl fromPackage = pkg.purl();
+            Purl fromMetadata = pkg.metadata().purl();
 
-            assertThat(purl.getNamespace())
-                    .as("Custom namespace for format %s", format)
-                    .isEqualTo(customNamespace);
-        }
-    }
-
-    @Test
-    @EnabledIf("hasAnyTestFiles")
-    void emptyNamespaceProducesNoNamespace() throws Exception {
-        Map<PackageFormat, Package> packages = loadOnePackagePerFormat();
-
-        for (Map.Entry<PackageFormat, Package> entry : packages.entrySet()) {
-            PackageFormat format = entry.getKey();
-            Package pkg = entry.getValue();
-
-            // packageUrl() with empty optional should use default behavior
-            PackageURL purlDefault = pkg.packageUrl();
-            PackageURL purlEmpty = pkg.packageUrl(Optional.empty());
-
-            // Both should behave the same (either have default namespace or no namespace)
-            assertThat(purlEmpty.getNamespace())
-                    .as("Empty namespace handling for format %s", format)
-                    .isEqualTo(purlDefault.getNamespace());
-        }
-    }
-
-    // Consistency Tests Between Package and PackageMetadata
-
-    @Test
-    @EnabledIf("hasAnyTestFiles")
-    void packageUrlAndMetadataPurlAreConsistentAcrossFormats() throws Exception {
-        Map<PackageFormat, Package> packages = loadOnePackagePerFormat();
-
-        for (Map.Entry<PackageFormat, Package> entry : packages.entrySet()) {
-            PackageFormat format = entry.getKey();
-            Package pkg = entry.getValue();
-
-            PackageURL fromPackage = pkg.packageUrl();
-            PackageURL fromMetadata = pkg.metadata().purl();
-
-            // Type and name must always match
-            assertThat(fromPackage.getType())
+            assertThat(fromPackage.type)
                     .as("PURL type consistency for format %s", format)
-                    .isEqualTo(fromMetadata.getType());
-            assertThat(fromPackage.getName())
+                    .isEqualTo(fromMetadata.type);
+            assertThat(fromPackage.namespace)
+                    .as("PURL namespace consistency for format %s", format)
+                    .isEqualTo(fromMetadata.namespace);
+            assertThat(fromPackage.name)
                     .as("PURL name consistency for format %s", format)
-                    .isEqualTo(fromMetadata.getName());
-            assertThat(fromPackage.getVersion())
+                    .isEqualTo(fromMetadata.name);
+            assertThat(fromPackage.version)
                     .as("PURL version consistency for format %s", format)
-                    .isEqualTo(fromMetadata.getVersion());
+                    .isEqualTo(fromMetadata.version);
+            assertThat(fromPackage.qualifiers)
+                    .as("PURL qualifiers consistency for format %s", format)
+                    .isEqualTo(fromMetadata.qualifiers);
         }
     }
-
-    // Roundtrip Parsing Tests
 
     @Test
     @EnabledIf("hasAnyTestFiles")
@@ -270,30 +218,28 @@ class CrossFormatPurlIntegrationTest {
             PackageFormat format = entry.getKey();
 
             for (Package pkg : entry.getValue()) {
-                PackageURL original = pkg.packageUrl();
-                String canonical = original.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
+                Purl original = pkg.purl();
+                String canonical = original.toCanonical();
+                Purl parsed = Purl.parse(canonical);
 
-                assertThat(parsed.getType())
+                assertThat(parsed.type)
                         .as("Roundtrip type for format %s package %s", format, pkg.name())
-                        .isEqualTo(original.getType());
-                assertThat(parsed.getName())
-                        .as("Roundtrip name for format %s package %s", format, pkg.name())
-                        .isEqualTo(original.getName());
-                assertThat(parsed.getVersion())
-                        .as("Roundtrip version for format %s package %s", format, pkg.name())
-                        .isEqualTo(original.getVersion());
-                assertThat(parsed.getNamespace())
+                        .isEqualTo(original.type);
+                assertThat(parsed.namespace)
                         .as("Roundtrip namespace for format %s package %s", format, pkg.name())
-                        .isEqualTo(original.getNamespace());
-                assertThat(parsed.getQualifiers())
+                        .isEqualTo(original.namespace);
+                assertThat(parsed.name)
+                        .as("Roundtrip name for format %s package %s", format, pkg.name())
+                        .isEqualTo(original.name);
+                assertThat(parsed.version)
+                        .as("Roundtrip version for format %s package %s", format, pkg.name())
+                        .isEqualTo(original.version);
+                assertThat(parsed.qualifiers)
                         .as("Roundtrip qualifiers for format %s package %s", format, pkg.name())
-                        .isEqualTo(original.getQualifiers());
+                        .isEqualTo(original.qualifiers);
             }
         }
     }
-
-    // Version Handling Tests
 
     @Test
     @EnabledIf("hasAnyTestFiles")
@@ -305,18 +251,16 @@ class CrossFormatPurlIntegrationTest {
             Package pkg = entry.getValue();
 
             String version = pkg.version();
-            PackageURL purl = pkg.packageUrl();
+            Purl purl = pkg.purl();
 
             if (!version.isEmpty()) {
-                assertThat(purl.getVersion())
+                assertThat(purl.version)
                         .as("PURL version for format %s", format)
                         .isNotNull()
                         .isNotEmpty();
             }
         }
     }
-
-    // Special Character Handling Tests
 
     @Test
     @EnabledIf("hasAnyTestFiles")
@@ -329,23 +273,19 @@ class CrossFormatPurlIntegrationTest {
             for (Package pkg : entry.getValue()) {
                 String name = pkg.name();
 
-                // Look for packages with special characters
                 if (name.contains("-") || name.contains("+") || name.contains("_") || name.contains(".")) {
-                    PackageURL purl = pkg.packageUrl();
+                    Purl purl = pkg.purl();
 
-                    // Should be able to generate and parse PURL
-                    String canonical = purl.canonicalize();
-                    PackageURL parsed = new PackageURL(canonical);
+                    String canonical = purl.toCanonical();
+                    Purl parsed = Purl.parse(canonical);
 
-                    assertThat(parsed.getName())
+                    assertThat(parsed.name)
                             .as("Package %s with special chars should roundtrip correctly", name)
-                            .isEqualTo(purl.getName());
+                            .isEqualTo(purl.name);
                 }
             }
         }
     }
-
-    // Format Detection and PURL Type Correlation Tests
 
     @Test
     @EnabledIf("hasAnyTestFiles")
@@ -358,16 +298,14 @@ class CrossFormatPurlIntegrationTest {
 
             assertThat(pkg.format()).isEqualTo(format);
 
-            PackageURL purl = pkg.packageUrl();
+            Purl purl = pkg.purl();
             String expectedType = EXPECTED_PURL_TYPES.get(format);
 
-            assertThat(purl.getType())
+            assertThat(purl.type)
                     .as("PURL type should match expected for format %s", format)
                     .isEqualTo(expectedType);
         }
     }
-
-    // Default Namespace Tests (format-specific defaults)
 
     @Test
     @EnabledIf("hasDebFiles")
@@ -377,11 +315,12 @@ class CrossFormatPurlIntegrationTest {
         for (Path path : debFiles) {
             try {
                 DebPackage pkg = DebReader.read(path);
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
 
-                assertThat(purl.getNamespace())
-                        .as("DEB package %s should have 'debian' namespace", pkg.name())
-                        .isEqualTo("debian");
+                String expectedNamespace = DebPackage.inferNamespace(path.toString()).orElse("debian");
+                assertThat(purl.namespace)
+                        .as("DEB package %s should have expected namespace", pkg.name())
+                        .isEqualTo(expectedNamespace);
             } catch (Exception e) {
                 // Some packages might have issues
             }
@@ -396,9 +335,9 @@ class CrossFormatPurlIntegrationTest {
         for (Path path : pacmanFiles) {
             try {
                 PacmanPackage pkg = PacmanReader.read(path);
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
 
-                assertThat(purl.getNamespace())
+                assertThat(purl.namespace)
                         .as("Pacman package %s should have 'arch' namespace", pkg.name())
                         .isEqualTo("arch");
             } catch (Exception e) {
@@ -415,13 +354,36 @@ class CrossFormatPurlIntegrationTest {
         for (Path path : apkFiles) {
             try {
                 ApkPackage pkg = ApkReader.read(path);
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
 
-                assertThat(purl.getNamespace())
+                assertThat(purl.namespace)
                         .as("APK package %s should have 'alpine' namespace", pkg.name())
                         .isEqualTo("alpine");
             } catch (Exception e) {
                 // Some packages might have issues
+            }
+        }
+    }
+
+    @Test
+    @EnabledIf("hasRpmFiles")
+    void rpmPackagesHaveNamespace() throws Exception {
+        List<Path> rpmFiles = TestFiles.getAllRpmFiles();
+
+        int checked = 0;
+        for (Path path : rpmFiles) {
+            try {
+                RpmPackage pkg = RpmReader.read(path);
+                Purl purl = pkg.metadata().purl();
+
+                assertThat(purl.namespace)
+                        .as("RPM package %s should have a namespace", pkg.name())
+                        .isNotNull()
+                        .isNotEmpty();
+                checked++;
+                if (checked >= 5) break;
+            } catch (Exception e) {
+                // Skip problematic files
             }
         }
     }
@@ -434,9 +396,9 @@ class CrossFormatPurlIntegrationTest {
         for (Path path : freeBsdFiles) {
             try {
                 FreeBsdPackage pkg = FreeBsdReader.read(path);
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
 
-                assertThat(purl.getNamespace())
+                assertThat(purl.namespace)
                         .as("FreeBSD package %s should have no namespace by default", pkg.name())
                         .isNull();
             } catch (Exception e) {
@@ -453,9 +415,9 @@ class CrossFormatPurlIntegrationTest {
         for (Path path : openBsdFiles) {
             try {
                 OpenBsdPackage pkg = OpenBsdReader.read(path);
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
 
-                assertThat(purl.getNamespace())
+                assertThat(purl.namespace)
                         .as("OpenBSD package %s should have no namespace by default", pkg.name())
                         .isNull();
             } catch (Exception e) {
@@ -463,8 +425,6 @@ class CrossFormatPurlIntegrationTest {
             }
         }
     }
-
-    // Helper Methods
 
     private Map<PackageFormat, Package> loadOnePackagePerFormat() throws Exception {
         Map<PackageFormat, Package> packages = new HashMap<>();

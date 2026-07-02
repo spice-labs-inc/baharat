@@ -21,6 +21,7 @@ import io.spicelabs.baharat.rpm.exception.FormatException;
 import io.spicelabs.baharat.rpm.metadata.FileInfo;
 import io.spicelabs.baharat.rpm.payload.PayloadEntry;
 import io.spicelabs.baharat.rpm.payload.PayloadReader;
+import io.spicelabs.coordinates.Coordinates;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,12 +29,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -139,8 +137,8 @@ public final class DigestVerifier {
                     String expectedDigest = expectedDigests.get(path);
 
                     if (expectedDigest != null && !expectedDigest.isEmpty()) {
-                        try {
-                            String actualDigest = computeDigest(file.content(), algorithm);
+                        try (InputStream content = file.content()) {
+                            String actualDigest = computeDigest(content, file.size(), algorithm);
 
                             if (expectedDigest.equalsIgnoreCase(actualDigest)) {
                                 verifiedCount++;
@@ -151,9 +149,6 @@ public final class DigestVerifier {
                                 log.warn("Digest mismatch for {}: expected {}, got {}",
                                         path, expectedDigest, actualDigest);
                             }
-                        } catch (NoSuchAlgorithmException e) {
-                            failures.add(new Failure(path, FailureReason.ALGORITHM_NOT_SUPPORTED,
-                                    "Algorithm not supported: " + algorithm));
                         } catch (IOException e) {
                             failures.add(new Failure(path, FailureReason.READ_ERROR,
                                     "Failed to read file: " + e.getMessage()));
@@ -217,7 +212,8 @@ public final class DigestVerifier {
             }
 
             try (InputStream in = java.nio.file.Files.newInputStream(filePath)) {
-                String actualDigest = computeDigest(in, algorithm);
+                long size = java.nio.file.Files.size(filePath);
+                String actualDigest = computeDigest(in, size, algorithm);
 
                 if (expectedDigest.equalsIgnoreCase(actualDigest)) {
                     verifiedCount++;
@@ -225,9 +221,9 @@ public final class DigestVerifier {
                     failures.add(new Failure(file.path(), FailureReason.DIGEST_MISMATCH,
                             String.format("expected %s, got %s", expectedDigest, actualDigest)));
                 }
-            } catch (NoSuchAlgorithmException e) {
-                failures.add(new Failure(file.path(), FailureReason.ALGORITHM_NOT_SUPPORTED,
-                        "Algorithm not supported: " + algorithm));
+            } catch (IOException e) {
+                failures.add(new Failure(file.path(), FailureReason.READ_ERROR,
+                        "Failed to read file: " + e.getMessage()));
             }
         }
 
@@ -236,24 +232,21 @@ public final class DigestVerifier {
 
     private static @NotNull String detectAlgorithm(@NotNull String hexDigest) {
         return switch (hexDigest.length()) {
-            case MD5_HEX_LENGTH -> "MD5";
-            case SHA256_HEX_LENGTH -> "SHA-256";
-            case SHA512_HEX_LENGTH -> "SHA-512";
-            default -> "SHA-256"; // Default assumption
+            case MD5_HEX_LENGTH -> "md5";
+            case SHA256_HEX_LENGTH -> "sha256";
+            case SHA512_HEX_LENGTH -> "sha512";
+            default -> "sha256"; // Default assumption
         };
     }
 
-    private static @NotNull String computeDigest(@NotNull InputStream input, @NotNull String algorithm)
-            throws IOException, NoSuchAlgorithmException {
-        MessageDigest digest = MessageDigest.getInstance(algorithm);
-        byte[] buffer = new byte[8192];
-        int read;
-
-        while ((read = input.read(buffer)) != -1) {
-            digest.update(buffer, 0, read);
+    private static @NotNull String computeDigest(@NotNull InputStream input, long length, @NotNull String identifier)
+            throws IOException {
+        Map<String, String> ids = Coordinates.intrinsic(input, length);
+        String value = ids.get(identifier);
+        if (value == null) {
+            throw new IllegalStateException("Identifier not produced by Coordinates: " + identifier);
         }
-
-        return HexFormat.of().formatHex(digest.digest());
+        return value;
     }
 
     /**

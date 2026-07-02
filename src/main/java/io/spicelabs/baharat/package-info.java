@@ -35,8 +35,8 @@
  * System.out.println("Version: " + pkg.version());
  *
  * // Generate Package URL
- * PackageURL purl = pkg.packageUrl();
- * System.out.println("PURL: " + purl.canonicalize());
+ * Purl purl = pkg.purl();
+ * System.out.println("PURL: " + purl.toCanonical());
  *
  * // Stream payload without extracting to disk
  * try (Stream<PackageEntry> entries = PackageReader.streamPayload(path)) {

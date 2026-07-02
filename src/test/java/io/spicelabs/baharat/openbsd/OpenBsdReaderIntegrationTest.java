@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat.openbsd;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.testdata.PackageTestFiles;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,14 +134,14 @@ class OpenBsdReaderIntegrationTest {
         Path path = openBsdFiles.get(0);
         OpenBsdPackage pkg = OpenBsdReader.read(path);
 
-        PackageURL purl = pkg.metadata().purl();
+        Purl purl = pkg.metadata().purl();
 
         assertThat(purl).isNotNull();
-        assertThat(purl.getType()).isEqualTo("openbsd");
-        assertThat(purl.getName()).isEqualTo(pkg.metadata().name());
-        assertThat(purl.getVersion()).isEqualTo(pkg.metadata().version());
+        assertThat(purl.type).isEqualTo("openbsd");
+        assertThat(purl.name).isEqualTo(pkg.metadata().name());
+        assertThat(purl.version).isEqualTo(pkg.metadata().version());
         // OpenBSD does not set a namespace by default
-        assertThat(purl.getNamespace()).isNull();
+        assertThat(purl.namespace).isNull();
     }
 
     @Test
@@ -154,13 +153,13 @@ class OpenBsdReaderIntegrationTest {
         Path path = openBsdFiles.get(0);
         OpenBsdPackage pkg = OpenBsdReader.read(path);
 
-        PackageURL fromPackage = pkg.packageUrl();
-        PackageURL fromMetadata = pkg.metadata().purl();
+        Purl fromPackage = pkg.purl();
+        Purl fromMetadata = pkg.metadata().purl();
 
         // Type and name must match
-        assertThat(fromPackage.getType()).isEqualTo(fromMetadata.getType());
-        assertThat(fromPackage.getName()).isEqualTo(fromMetadata.getName());
-        assertThat(fromPackage.getVersion()).isEqualTo(fromMetadata.getVersion());
+        assertThat(fromPackage.type).isEqualTo(fromMetadata.type);
+        assertThat(fromPackage.name).isEqualTo(fromMetadata.name);
+        assertThat(fromPackage.version).isEqualTo(fromMetadata.version);
     }
 
     @Test
@@ -172,27 +171,14 @@ class OpenBsdReaderIntegrationTest {
         Path path = openBsdFiles.get(0);
         OpenBsdPackage pkg = OpenBsdReader.read(path);
 
-        PackageURL original = pkg.packageUrl();
-        String canonical = original.canonicalize();
-        PackageURL parsed = new PackageURL(canonical);
+        Purl original = pkg.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
 
-        assertThat(parsed.getType()).isEqualTo(original.getType());
-        assertThat(parsed.getName()).isEqualTo(original.getName());
-        assertThat(parsed.getVersion()).isEqualTo(original.getVersion());
-        assertThat(parsed.getQualifiers()).isEqualTo(original.getQualifiers());
-    }
-
-    @Test
-    @EnabledIf("hasOpenBsdFiles")
-    void purlWithNamespace() throws Exception {
-        List<Path> openBsdFiles = PackageTestFiles.getFiles(PackageTestFiles.OPENBSD, ".tgz", 1);
-        assertThat(openBsdFiles).isNotEmpty();
-
-        Path path = openBsdFiles.get(0);
-        OpenBsdPackage pkg = OpenBsdReader.read(path);
-
-        PackageURL purl = pkg.packageUrl(Optional.of("openbsd"));
-        assertThat(purl.getNamespace()).isEqualTo("openbsd");
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
     }
 
     @Test
@@ -203,12 +189,12 @@ class OpenBsdReaderIntegrationTest {
         for (Path path : openBsdFiles) {
             try {
                 OpenBsdPackage pkg = OpenBsdReader.read(path);
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
                 String arch = pkg.metadata().arch();
 
                 // OpenBSD always includes arch if non-empty (no "noarch" equivalent)
                 if (!arch.isEmpty()) {
-                    assertThat(purl.getQualifiers()).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
+                    assertThat(purl.qualifiers).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
                             .containsEntry("arch", arch);
                 }
             } catch (Exception e) {
@@ -243,8 +229,8 @@ class OpenBsdReaderIntegrationTest {
                 }
 
                 // PURL should use parsed name, not full name
-                PackageURL purl = pkg.metadata().purl();
-                assertThat(purl.getName()).isEqualTo(name);
+                Purl purl = pkg.metadata().purl();
+                assertThat(purl.name).isEqualTo(name);
             } catch (Exception e) {
                 // Some packages might have issues, continue with others
             }
@@ -264,15 +250,15 @@ class OpenBsdReaderIntegrationTest {
                 OpenBsdPackage pkg = OpenBsdReader.read(path);
                 totalCount++;
 
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
                 assertThat(purl).isNotNull();
-                assertThat(purl.getType()).isEqualTo("openbsd");
-                assertThat(purl.getName()).isNotEmpty();
+                assertThat(purl.type).isEqualTo("openbsd");
+                assertThat(purl.name).isNotEmpty();
 
                 // Verify roundtrip
-                String canonical = purl.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
-                assertThat(parsed.getName()).isEqualTo(purl.getName());
+                String canonical = purl.toCanonical();
+                Purl parsed = Purl.parse(canonical);
+                assertThat(parsed.name).isEqualTo(purl.name);
 
                 successCount++;
             } catch (Exception e) {

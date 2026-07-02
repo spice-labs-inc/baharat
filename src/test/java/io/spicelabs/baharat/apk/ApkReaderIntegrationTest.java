@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat.apk;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.testdata.PackageTestFiles;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -137,13 +136,13 @@ class ApkReaderIntegrationTest {
         Path path = apkFiles.get(0);
         ApkPackage pkg = ApkReader.read(path);
 
-        PackageURL purl = pkg.metadata().purl();
+        Purl purl = pkg.metadata().purl();
 
         assertThat(purl).isNotNull();
-        assertThat(purl.getType()).isEqualTo("apk");
-        assertThat(purl.getName()).isEqualTo(pkg.metadata().name());
-        assertThat(purl.getVersion()).isEqualTo(pkg.metadata().version());
-        assertThat(purl.getNamespace()).isEqualTo("alpine");
+        assertThat(purl.type).isEqualTo("apk");
+        assertThat(purl.name).isEqualTo(pkg.metadata().name());
+        assertThat(purl.version).isEqualTo(pkg.metadata().version());
+        assertThat(purl.namespace).isEqualTo("alpine");
     }
 
     @Test
@@ -155,13 +154,13 @@ class ApkReaderIntegrationTest {
         Path path = apkFiles.get(0);
         ApkPackage pkg = ApkReader.read(path);
 
-        PackageURL fromPackage = pkg.packageUrl();
-        PackageURL fromMetadata = pkg.metadata().purl();
+        Purl fromPackage = pkg.purl();
+        Purl fromMetadata = pkg.metadata().purl();
 
         // Type and name must match
-        assertThat(fromPackage.getType()).isEqualTo(fromMetadata.getType());
-        assertThat(fromPackage.getName()).isEqualTo(fromMetadata.getName());
-        assertThat(fromPackage.getVersion()).isEqualTo(fromMetadata.getVersion());
+        assertThat(fromPackage.type).isEqualTo(fromMetadata.type);
+        assertThat(fromPackage.name).isEqualTo(fromMetadata.name);
+        assertThat(fromPackage.version).isEqualTo(fromMetadata.version);
     }
 
     @Test
@@ -173,27 +172,14 @@ class ApkReaderIntegrationTest {
         Path path = apkFiles.get(0);
         ApkPackage pkg = ApkReader.read(path);
 
-        PackageURL original = pkg.packageUrl();
-        String canonical = original.canonicalize();
-        PackageURL parsed = new PackageURL(canonical);
+        Purl original = pkg.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
 
-        assertThat(parsed.getType()).isEqualTo(original.getType());
-        assertThat(parsed.getName()).isEqualTo(original.getName());
-        assertThat(parsed.getVersion()).isEqualTo(original.getVersion());
-        assertThat(parsed.getQualifiers()).isEqualTo(original.getQualifiers());
-    }
-
-    @Test
-    @EnabledIf("hasApkFiles")
-    void purlWithCustomNamespaceOverridesDefault() throws Exception {
-        List<Path> apkFiles = PackageTestFiles.getFiles(PackageTestFiles.APKS, ".apk", 1);
-        assertThat(apkFiles).isNotEmpty();
-
-        Path path = apkFiles.get(0);
-        ApkPackage pkg = ApkReader.read(path);
-
-        PackageURL purl = pkg.packageUrl(Optional.of("alpine-edge"));
-        assertThat(purl.getNamespace()).isEqualTo("alpine-edge");
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
     }
 
     @Test
@@ -204,16 +190,16 @@ class ApkReaderIntegrationTest {
         for (Path path : apkFiles) {
             try {
                 ApkPackage pkg = ApkReader.read(path);
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
                 String arch = pkg.metadata().arch();
 
                 if ("noarch".equals(arch)) {
                     // "noarch" architecture should not include arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch 'noarch' should not have arch qualifier", pkg.name())
+                    assertThat(purl.qualifiers).as("Package %s with arch 'noarch' should not have arch qualifier", pkg.name())
                             .isNullOrEmpty();
                 } else if (!arch.isEmpty()) {
                     // Other architectures should have arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
+                    assertThat(purl.qualifiers).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
                             .containsEntry("arch", arch);
                 }
             } catch (Exception e) {
@@ -235,15 +221,15 @@ class ApkReaderIntegrationTest {
                 ApkPackage pkg = ApkReader.read(path);
                 totalCount++;
 
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
                 assertThat(purl).isNotNull();
-                assertThat(purl.getType()).isEqualTo("apk");
-                assertThat(purl.getName()).isNotEmpty();
+                assertThat(purl.type).isEqualTo("apk");
+                assertThat(purl.name).isNotEmpty();
 
                 // Verify roundtrip
-                String canonical = purl.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
-                assertThat(parsed.getName()).isEqualTo(purl.getName());
+                String canonical = purl.toCanonical();
+                Purl parsed = Purl.parse(canonical);
+                assertThat(parsed.name).isEqualTo(purl.name);
 
                 successCount++;
             } catch (Exception e) {

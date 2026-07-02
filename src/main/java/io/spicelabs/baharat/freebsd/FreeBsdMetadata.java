@@ -15,10 +15,9 @@
  */
 package io.spicelabs.baharat.freebsd;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
 import com.google.gson.JsonElement;
+import io.spicelabs.baharat.common.PurlHelper;
+import io.spicelabs.coordinates.Purl;
 import com.google.gson.JsonObject;
 import io.spicelabs.baharat.PackageMetadata;
 import io.spicelabs.baharat.common.Dependency;
@@ -125,28 +124,13 @@ public final class FreeBsdMetadata implements PackageMetadata {
     }
 
     @Override
-    public @NotNull PackageURL purl() {
-        try {
-            PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                    .withType("freebsd")
-                    .withName(name());
-
-            // Add version
-            String ver = version();
-            if (!ver.isEmpty()) {
-                builder.withVersion(ver);
-            }
-
-            // Add qualifiers
-            String archValue = arch();
-            if (!archValue.isEmpty() && !"*".equals(archValue)) {
-                builder.withQualifier("arch", archValue);
-            }
-
-            return builder.build();
-        } catch (MalformedPackageURLException e) {
-            throw new IllegalStateException("Failed to build Package URL for FreeBSD package: " + name(), e);
+    public @NotNull Purl purl() {
+        var qualifiers = PurlHelper.newQualifiers();
+        if (!PurlHelper.isArchitectureIndependent(arch())) {
+            qualifiers.put("arch", arch());
         }
+
+        return PurlHelper.build("freebsd", null, name(), version().isEmpty() ? null : version(), qualifiers);
     }
 
     // FreeBSD-specific fields
