@@ -15,13 +15,13 @@
  */
 package io.spicelabs.baharat.deb;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
 import io.spicelabs.baharat.PackageMetadata;
 import io.spicelabs.baharat.common.Dependency;
 import io.spicelabs.baharat.common.FileInfo;
+import io.spicelabs.baharat.common.PurlHelper;
+import io.spicelabs.coordinates.Purl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +43,7 @@ public final class DebMetadata implements PackageMetadata {
     private final @NotNull List<Dependency> provides;
     private final @NotNull List<FileInfo> files;
     private final String rawControlContent;
+    private final @Nullable String sourcePath;
 
     /**
      * Creates metadata from parsed control file fields.
@@ -50,7 +51,7 @@ public final class DebMetadata implements PackageMetadata {
      * @param fields the control file fields
      */
     public DebMetadata(@NotNull Map<String, String> fields) {
-        this(fields, new ArrayList<>(), null);
+        this(fields, new ArrayList<>(), null, null);
     }
 
     /**
@@ -60,7 +61,7 @@ public final class DebMetadata implements PackageMetadata {
      * @param files the package files
      */
     public DebMetadata(@NotNull Map<String, String> fields, @NotNull List<FileInfo> files) {
-        this(fields, files, null);
+        this(fields, files, null, null);
     }
 
     /**
@@ -71,11 +72,24 @@ public final class DebMetadata implements PackageMetadata {
      * @param rawControlContent the raw control file content
      */
     public DebMetadata(@NotNull Map<String, String> fields, @NotNull List<FileInfo> files, String rawControlContent) {
+        this(fields, files, rawControlContent, null);
+    }
+
+    /**
+     * Creates metadata from parsed control file fields with raw content and source path.
+     *
+     * @param fields the control file fields
+     * @param files the package files
+     * @param rawControlContent the raw control file content
+     * @param sourcePath the original path or name of the package
+     */
+    public DebMetadata(@NotNull Map<String, String> fields, @NotNull List<FileInfo> files, String rawControlContent, @Nullable String sourcePath) {
         this.fields = new LinkedHashMap<>(fields);
         this.dependencies = parseAllDependencies();
         this.provides = parseProvides();
         this.files = new ArrayList<>(files);
         this.rawControlContent = rawControlContent;
+        this.sourcePath = sourcePath;
     }
 
     @Override
@@ -155,29 +169,16 @@ public final class DebMetadata implements PackageMetadata {
     }
 
     @Override
-    public @NotNull PackageURL purl() {
-        try {
-            PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                    .withType("deb")
-                    .withNamespace("debian")  // Default namespace
-                    .withName(name());
+    public @NotNull Purl purl() {
+        String namespace = DebPackage.inferNamespace(sourcePath == null ? "" : sourcePath)
+                .orElse("debian");
 
-            // Add version
-            String ver = version();
-            if (!ver.isEmpty()) {
-                builder.withVersion(ver);
-            }
-
-            // Add qualifiers
-            String archValue = arch();
-            if (!archValue.isEmpty() && !"all".equalsIgnoreCase(archValue)) {
-                builder.withQualifier("arch", archValue);
-            }
-
-            return builder.build();
-        } catch (MalformedPackageURLException e) {
-            throw new IllegalStateException("Failed to build Package URL for DEB package: " + name(), e);
+        var qualifiers = PurlHelper.newQualifiers();
+        if (!PurlHelper.isArchitectureIndependent(arch())) {
+            qualifiers.put("arch", arch());
         }
+
+        return PurlHelper.build("deb", namespace, name(), version().isEmpty() ? null : version(), qualifiers);
     }
 
     // DEB-specific fields

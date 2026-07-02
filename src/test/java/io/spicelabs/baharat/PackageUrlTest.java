@@ -15,302 +15,222 @@
  */
 package io.spicelabs.baharat;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
+import io.spicelabs.baharat.common.PurlHelper;
+import io.spicelabs.coordinates.Purl;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link Package#packageUrl()} method.
+ * Tests for {@link Package#purl()} method.
  */
 class PackageUrlTest {
 
-    // RPM format tests
-
     @Test
-    void rpmPackageUrlBasic() {
+    void rpmPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.namespace).isEqualTo("unknown");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
-    void rpmPackageUrlWithRelease() {
+    void rpmPurlWithRelease() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "1.fc25", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-1.fc25");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.version).isEqualTo("7.50.3-1.fc25");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
-    void rpmPackageUrlWithEpoch() {
+    void rpmPurlWithEpoch() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "1.fc25", 1, "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-1.fc25");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
-        assertThat(purl.getQualifiers()).containsEntry("epoch", "1");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
+        assertThat(purl.qualifiers).containsEntry("epoch", "1");
     }
 
     @Test
-    void rpmPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "1.fc25", "x86_64");
-        PackageURL purl = pkg.packageUrl(Optional.of("fedora"));
-
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getNamespace()).isEqualTo("fedora");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    @Test
-    void rpmPackageUrlNoarch() {
+    void rpmPurlNoarch() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl-doc", "7.50.3", "noarch");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // noarch should not include arch qualifier
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("curl-doc");
-        assertThat(purl.getQualifiers()).isNullOrEmpty();
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.qualifiers).doesNotContainKey("arch");
     }
 
-    // DEB format tests
-
     @Test
-    void debPackageUrlBasic() {
+    void debPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.DEB, "curl", "7.50.3-1", "amd64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("deb");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-1");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+        assertThat(purl.type).isEqualTo("deb");
+        assertThat(purl.namespace).isEqualTo("debian");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3-1");
+        assertThat(purl.qualifiers).containsEntry("arch", "amd64");
     }
 
     @Test
-    void debPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.DEB, "curl", "7.50.3-1", "amd64");
-        PackageURL purl = pkg.packageUrl(Optional.of("debian"));
-
-        assertThat(purl.getType()).isEqualTo("deb");
-        assertThat(purl.getNamespace()).isEqualTo("debian");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    @Test
-    void debPackageUrlAll() {
+    void debPurlAll() {
         Package pkg = createTestPackage(PackageFormat.DEB, "curl-doc", "7.50.3-1", "all");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // "all" architecture should not include arch qualifier
-        assertThat(purl.getType()).isEqualTo("deb");
-        assertThat(purl.getName()).isEqualTo("curl-doc");
-        assertThat(purl.getQualifiers()).isNullOrEmpty();
+        assertThat(purl.type).isEqualTo("deb");
+        assertThat(purl.qualifiers).doesNotContainKey("arch");
     }
 
-    // Pacman/ALPM format tests
-
     @Test
-    void pacmanPackageUrlBasic() {
+    void pacmanPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.PACMAN, "curl", "7.50.3-1", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("alpm");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-1");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("alpm");
+        assertThat(purl.namespace).isEqualTo("arch");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3-1");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
-    void pacmanPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.PACMAN, "curl", "7.50.3-1", "x86_64");
-        PackageURL purl = pkg.packageUrl(Optional.of("arch"));
-
-        assertThat(purl.getType()).isEqualTo("alpm");
-        assertThat(purl.getNamespace()).isEqualTo("arch");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    @Test
-    void pacmanPackageUrlAny() {
+    void pacmanPurlAny() {
         Package pkg = createTestPackage(PackageFormat.PACMAN, "bash-completion", "2.11-1", "any");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // "any" architecture should not include arch qualifier
-        assertThat(purl.getType()).isEqualTo("alpm");
-        assertThat(purl.getName()).isEqualTo("bash-completion");
-        assertThat(purl.getQualifiers()).isNullOrEmpty();
+        assertThat(purl.type).isEqualTo("alpm");
+        assertThat(purl.qualifiers).doesNotContainKey("arch");
     }
 
-    // APK format tests
-
     @Test
-    void apkPackageUrlBasic() {
+    void apkPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.APK, "curl", "7.50.3-r0", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("apk");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-r0");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("apk");
+        assertThat(purl.namespace).isEqualTo("alpine");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3-r0");
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
-    void apkPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.APK, "curl", "7.50.3-r0", "x86_64");
-        PackageURL purl = pkg.packageUrl(Optional.of("alpine"));
-
-        assertThat(purl.getType()).isEqualTo("apk");
-        assertThat(purl.getNamespace()).isEqualTo("alpine");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    // FreeBSD format tests
-
-    @Test
-    void freebsdPackageUrlBasic() {
+    void freebsdPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.FREEBSD_PKG, "curl", "7.50.3", "amd64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("freebsd");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+        assertThat(purl.type).isEqualTo("freebsd");
+        assertThat(purl.namespace).isNull();
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3");
+        assertThat(purl.qualifiers).containsEntry("arch", "amd64");
     }
 
     @Test
-    void freebsdPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.FREEBSD_PKG, "curl", "7.50.3", "amd64");
-        PackageURL purl = pkg.packageUrl(Optional.of("freebsd"));
-
-        assertThat(purl.getType()).isEqualTo("freebsd");
-        assertThat(purl.getNamespace()).isEqualTo("freebsd");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    // OpenBSD format tests
-
-    @Test
-    void openbsdPackageUrlBasic() {
+    void openbsdPurlBasic() {
         Package pkg = createTestPackage(PackageFormat.OPENBSD_PKG, "curl", "7.50.3", "amd64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("openbsd");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3");
-        assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+        assertThat(purl.type).isEqualTo("openbsd");
+        assertThat(purl.namespace).isNull();
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3");
+        assertThat(purl.qualifiers).containsEntry("arch", "amd64");
     }
 
     @Test
-    void openbsdPackageUrlWithNamespace() {
-        Package pkg = createTestPackage(PackageFormat.OPENBSD_PKG, "curl", "7.50.3", "amd64");
-        PackageURL purl = pkg.packageUrl(Optional.of("openbsd"));
-
-        assertThat(purl.getType()).isEqualTo("openbsd");
-        assertThat(purl.getNamespace()).isEqualTo("openbsd");
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    // Special character handling tests
-
-    @Test
-    void packageUrlHandlesSpecialCharacters() {
+    void purlHandlesSpecialCharacters() {
         Package pkg = createTestPackage(PackageFormat.RPM, "pkg+name", "1.0", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // PackageURL stores raw values and encodes on canonicalization
-        assertThat(purl.getName()).isEqualTo("pkg+name");
-        assertThat(purl.getVersion()).isEqualTo("1.0");
+        assertThat(purl.name).isEqualTo("pkg+name");
+        assertThat(purl.version).isEqualTo("1.0");
     }
 
     @Test
-    void packageUrlPreservesSafeCharacters() {
+    void purlPreservesSafeCharacters() {
         Package pkg = createTestPackage(PackageFormat.RPM, "pkg-name_test.lib", "1.0-beta~1", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // Hyphens, underscores, dots, and tildes are preserved
-        assertThat(purl.getName()).isEqualTo("pkg-name_test.lib");
-        assertThat(purl.getVersion()).isEqualTo("1.0-beta~1");
+        assertThat(purl.name).isEqualTo("pkg-name_test.lib");
+        assertThat(purl.version).isEqualTo("1.0-beta~1");
     }
 
     @Test
-    void packageUrlHandlesSpaces() {
+    void purlHandlesSpaces() {
         Package pkg = createTestPackage(PackageFormat.DEB, "pkg name", "1.0", "amd64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getName()).isEqualTo("pkg name");
-        assertThat(purl.getVersion()).isEqualTo("1.0");
+        assertThat(purl.name).isEqualTo("pkg name");
+        assertThat(purl.version).isEqualTo("1.0");
     }
 
     @Test
-    void packageUrlHandlesAtSign() {
+    void purlHandlesAtSign() {
         Package pkg = createTestPackage(PackageFormat.RPM, "pkg@2", "1.0", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getName()).isEqualTo("pkg@2");
-        assertThat(purl.getVersion()).isEqualTo("1.0");
+        assertThat(purl.name).isEqualTo("pkg@2");
+        assertThat(purl.version).isEqualTo("1.0");
     }
 
-    // Edge cases
-
     @Test
-    void packageUrlWithEmptyVersion() {
+    void purlWithEmptyVersion() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "", "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isNull();
-        assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isNull();
+        assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
     }
 
     @Test
-    void packageUrlWithEmptyArch() {
+    void purlWithEmptyArch() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getName()).isEqualTo("curl");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3");
-        assertThat(purl.getQualifiers()).isNullOrEmpty();
+        assertThat(purl.type).isEqualTo("rpm");
+        assertThat(purl.name).isEqualTo("curl");
+        assertThat(purl.version).isEqualTo("7.50.3");
+        assertThat(purl.qualifiers).isEmpty();
     }
 
     @Test
-    void packageUrlWithEmptyNamespace() {
-        Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "x86_64");
-        PackageURL purl = pkg.packageUrl(Optional.empty());
-
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getNamespace()).isNull();
-        assertThat(purl.getName()).isEqualTo("curl");
-    }
-
-    @Test
-    void packageUrlZeroEpochNotIncluded() {
+    void purlZeroEpochNotIncluded() {
         Package pkg = createTestPackage(PackageFormat.RPM, "curl", "7.50.3", "1.fc25", 0, "x86_64");
-        PackageURL purl = pkg.packageUrl();
+        Purl purl = pkg.purl();
 
-        // Zero epoch should not be included
-        assertThat(purl.getType()).isEqualTo("rpm");
-        assertThat(purl.getVersion()).isEqualTo("7.50.3-1.fc25");
-        assertThat(purl.getQualifiers()).doesNotContainKey("epoch");
+        assertThat(purl.qualifiers).doesNotContainKey("epoch");
     }
 
-    // Helper methods to create test packages
+    @Test
+    void purlRoundtripsThroughCoordinates() {
+        Package pkg = createTestPackage(PackageFormat.DEB, "curl", "7.50.3-1", "amd64");
+        Purl original = pkg.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
+
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.namespace).isEqualTo(original.namespace);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
+    }
 
     private Package createTestPackage(PackageFormat format, String name, String version, String arch) {
         return createTestPackage(format, name, version, null, null, arch);
@@ -327,9 +247,6 @@ class PackageUrlTest {
         return new TestPackage(format, metadata);
     }
 
-    /**
-     * Test implementation of PackageMetadata.
-     */
     private static class TestMetadata implements PackageMetadata {
         private final String name;
         private final String version;
@@ -376,29 +293,12 @@ class PackageUrlTest {
         }
 
         @Override
-        public @NotNull PackageURL purl() {
-            // Test implementation - not used in these tests
-            try {
-                PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                        .withType("test")
-                        .withName(name());
-                if (!version().isEmpty()) {
-                    builder.withVersion(version());
-                }
-                return builder.build();
-            } catch (MalformedPackageURLException e) {
-                throw new IllegalStateException("Failed to build test PURL", e);
-            }
+        public @NotNull Purl purl() {
+            return PurlHelper.build("test", null, name(), version().isEmpty() ? null : version(), PurlHelper.newQualifiers());
         }
     }
 
-    /**
-     * Test implementation of Package.
-     */
-    private record TestPackage(
-            PackageFormat format,
-            PackageMetadata metadata
-    ) implements Package {
+    private record TestPackage(PackageFormat format, PackageMetadata metadata) implements Package {
 
         @Override
         public @NotNull PackageFormat format() {
@@ -413,6 +313,40 @@ class PackageUrlTest {
         @Override
         public @NotNull Stream<PackageEntry> payload() throws IOException, PackageException {
             return Stream.empty();
+        }
+
+        @Override
+        public @NotNull Purl purl() {
+            String type = switch (format) {
+                case RPM -> "rpm";
+                case DEB -> "deb";
+                case PACMAN -> "alpm";
+                case APK -> "apk";
+                case FREEBSD_PKG -> "freebsd";
+                case OPENBSD_PKG -> "openbsd";
+            };
+            String namespace = switch (format) {
+                case RPM -> "unknown";
+                case DEB -> "debian";
+                case PACMAN -> "arch";
+                case APK -> "alpine";
+                default -> null;
+            };
+            String version = version();
+            Optional<String> rel = metadata().release();
+            if (format == PackageFormat.RPM && rel.isPresent() && !rel.get().isEmpty()) {
+                version = version + "-" + rel.get();
+            }
+
+            Map<String, String> qualifiers = new LinkedHashMap<>();
+            if (!PurlHelper.isArchitectureIndependent(arch())) {
+                qualifiers.put("arch", arch());
+            }
+            if (format == PackageFormat.RPM) {
+                metadata().epoch().filter(e -> e != 0).ifPresent(e -> qualifiers.put("epoch", String.valueOf(e)));
+            }
+
+            return PurlHelper.build(type, namespace, name(), version.isEmpty() ? null : version, qualifiers);
         }
     }
 }

@@ -167,7 +167,7 @@ public final class DebReader {
                     "Missing control.tar in DEB package", PackageFormat.DEB);
         }
 
-        DebMetadata metadata = new DebMetadata(controlResult.fields(), files, controlResult.rawContent());
+        DebMetadata metadata = new DebMetadata(controlResult.fields(), files, controlResult.rawContent(), name);
         log.info("Read DEB package: {}_{}", metadata.name(), metadata.version());
 
         return new DebPackage(metadata, null, debianBinaryVersion);

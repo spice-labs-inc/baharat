@@ -15,8 +15,8 @@
  */
 package io.spicelabs.baharat;
 
-import com.github.packageurl.PackageURL;
 import io.spicelabs.baharat.common.Dependency;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.common.FileInfo;
 import org.jetbrains.annotations.NotNull;
 
@@ -221,7 +221,7 @@ public interface PackageMetadata {
      *
      * @return the Package URL object
      * @see <a href="https://github.com/package-url/purl-spec">Package URL Specification</a>
-     * @see PackageURL
+     * @see Purl
      */
-    @NotNull PackageURL purl();
+    @NotNull Purl purl();
 }

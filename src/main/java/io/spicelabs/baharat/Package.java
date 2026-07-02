@@ -15,13 +15,10 @@
  */
 package io.spicelabs.baharat;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
+import io.spicelabs.coordinates.Purl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -51,6 +48,7 @@ import java.util.stream.Stream;
  *   <li>{@link #format()} - Get the package format type</li>
  *   <li>{@link #metadata()} - Access package metadata (name, version, dependencies, etc.)</li>
  *   <li>{@link #payload()} - Stream payload entries (files, directories, symlinks)</li>
+ *   <li>{@link #purl()} - Get the canonical Package URL from the package metadata</li>
  * </ul>
  *
  * <h2>Format-Specific Access</h2>
@@ -135,117 +133,14 @@ public interface Package {
     }
 
     /**
-     * Returns the Package URL (PURL) for this package.
+     * Returns the canonical Package URL (PURL) for this package.
      *
-     * <p>Package URLs provide a standard way to identify packages across ecosystems.
-     * The format follows the <a href="https://github.com/package-url/purl-spec">PURL specification</a>:
-     * {@code pkg:type/namespace/name@version?qualifiers#subpath}
-     *
-     * <p>PURL types for different formats:
-     * <ul>
-     *   <li>RPM: {@code pkg:rpm/...}</li>
-     *   <li>DEB: {@code pkg:deb/...}</li>
-     *   <li>Pacman/ALPM: {@code pkg:alpm/...}</li>
-     *   <li>APK: {@code pkg:apk/...}</li>
-     *   <li>FreeBSD pkg: {@code pkg:freebsd/...}</li>
-     *   <li>OpenBSD pkg: {@code pkg:openbsd/...}</li>
-     * </ul>
-     *
-     * <p>Example PURLs:
-     * <ul>
-     *   <li>{@code pkg:rpm/fedora/curl@7.50.3-1.fc25?arch=x86_64}</li>
-     *   <li>{@code pkg:deb/debian/curl@7.50.3-1?arch=amd64}</li>
-     *   <li>{@code pkg:alpm/arch/curl@7.50.3-1?arch=x86_64}</li>
-     *   <li>{@code pkg:apk/alpine/curl@7.50.3-r0?arch=x86_64}</li>
-     * </ul>
-     *
-     * <p>Format-specific implementations may override this method to provide
-     * additional qualifiers or customized behavior.
+     * <p>The PURL is produced exactly once by the package metadata. Calling
+     * this method is equivalent to calling {@code metadata().purl()}.
      *
      * @return the Package URL object
      */
-    default @NotNull PackageURL packageUrl() {
-        return packageUrl(Optional.empty());
-    }
-
-    /**
-     * Returns the Package URL (PURL) for this package with an optional namespace.
-     *
-     * <p>The namespace typically represents the distribution or repository,
-     * such as "fedora", "debian", "alpine", "arch", etc.
-     *
-     * @param namespace the optional namespace (distribution name)
-     * @return the Package URL object
-     */
-    default @NotNull PackageURL packageUrl(@NotNull Optional<String> namespace) {
-        String type = switch (format()) {
-            case RPM -> "rpm";
-            case DEB -> "deb";
-            case PACMAN -> "alpm";
-            case APK -> "apk";
-            case FREEBSD_PKG -> "freebsd";
-            case OPENBSD_PKG -> "openbsd";
-        };
-
-        try {
-            PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                    .withType(type)
-                    .withName(metadata().name());
-
-            // Add namespace if present
-            namespace.ifPresent(builder::withNamespace);
-
-            // Add version
-            String version = buildVersionString(metadata());
-            if (!version.isEmpty()) {
-                builder.withVersion(version);
-            }
-
-            // Add qualifiers
-            String arch = metadata().arch();
-            if (!arch.isEmpty() && !arch.equals("noarch") && !arch.equals("all") && !arch.equals("any")) {
-                builder.withQualifier("arch", arch);
-            }
-
-            // Add epoch for RPM if present
-            if (format() == PackageFormat.RPM) {
-                metadata().epoch().ifPresent(epoch -> {
-                    if (epoch > 0) {
-                        builder.withQualifier("epoch", String.valueOf(epoch));
-                    }
-                });
-            }
-
-            return builder.build();
-        } catch (MalformedPackageURLException e) {
-            // This should not happen with valid package data
-            throw new IllegalStateException("Failed to build Package URL for package: " + metadata().name(), e);
-        }
-    }
-
-    /**
-     * Builds the version string for the PURL.
-     *
-     * <p>For formats with separate release fields, this combines version and release.
-     * For formats where release is already part of the version string (like APK),
-     * it returns the version as-is to avoid duplication.
-     *
-     * @param metadata the package metadata
-     * @return the combined version string
-     */
-    private static String buildVersionString(PackageMetadata metadata) {
-        String version = metadata.version();
-        Optional<String> release = metadata.release();
-
-        if (release.isPresent() && !release.get().isEmpty()) {
-            String rel = release.get();
-            // Don't append release if it's already part of the version string
-            // This handles formats like APK where version is "1.0-r1" and release is "r1"
-            if (version.endsWith("-" + rel)) {
-                return version;
-            }
-            return version + "-" + rel;
-        }
-        return version;
+    default @NotNull Purl purl() {
+        return metadata().purl();
     }
 }

@@ -143,7 +143,7 @@ public final class DebPackage implements Package {
      *
      * <p>Example usage with Goat Rodeo:
      * <pre>{@code
-     * String purl = pkg.packageUrl(DebPackage.inferNamespace(wrapper.path()));
+     * Purl purl = pkg.purl();
      * }</pre>
      *
      * @param filename the filename or path to examine

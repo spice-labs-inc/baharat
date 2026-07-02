@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import com.google.gson.JsonObject;
 import io.spicelabs.baharat.apk.ApkMetadata;
 import io.spicelabs.baharat.deb.DebMetadata;
@@ -50,13 +50,13 @@ class PackageMetadataPurlTest {
             fields.put("Architecture", "amd64");
 
             DebMetadata metadata = new DebMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            assertThat(purl.getType()).isEqualTo("deb");
-            assertThat(purl.getNamespace()).isEqualTo("debian");
-            assertThat(purl.getName()).isEqualTo("curl");
-            assertThat(purl.getVersion()).isEqualTo("7.81.0-1ubuntu1.7");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+            assertThat(purl.type).isEqualTo("deb");
+            assertThat(purl.namespace).isEqualTo("debian");
+            assertThat(purl.name).isEqualTo("curl");
+            assertThat(purl.version).isEqualTo("7.81.0-1ubuntu1.7");
+            assertThat(purl.qualifiers).containsEntry("arch", "amd64");
         }
 
         @Test
@@ -67,13 +67,13 @@ class PackageMetadataPurlTest {
             fields.put("Architecture", "all");
 
             DebMetadata metadata = new DebMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // "all" architecture should not include arch qualifier
-            assertThat(purl.getType()).isEqualTo("deb");
-            assertThat(purl.getName()).isEqualTo("bash-completion");
-            assertThat(purl.getVersion()).isEqualTo("2.11-5");
-            assertThat(purl.getQualifiers()).isNullOrEmpty();
+            assertThat(purl.type).isEqualTo("deb");
+            assertThat(purl.name).isEqualTo("bash-completion");
+            assertThat(purl.version).isEqualTo("2.11-5");
+            assertThat(purl.qualifiers).isNullOrEmpty();
         }
 
         @Test
@@ -84,12 +84,12 @@ class PackageMetadataPurlTest {
             fields.put("Architecture", "amd64");
 
             DebMetadata metadata = new DebMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            // PackageURL handles encoding internally
-            assertThat(purl.getName()).isEqualTo("lib++-dev");
-            assertThat(purl.getVersion()).isEqualTo("1.0");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+            // Coordinates handles encoding on canonicalization
+            assertThat(purl.name).isEqualTo("lib++-dev");
+            assertThat(purl.version).isEqualTo("1.0");
+            assertThat(purl.qualifiers).containsEntry("arch", "amd64");
         }
     }
 
@@ -105,13 +105,13 @@ class PackageMetadataPurlTest {
             fields.put("arch", "x86_64");
 
             PacmanMetadata metadata = new PacmanMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            assertThat(purl.getType()).isEqualTo("alpm");
-            assertThat(purl.getNamespace()).isEqualTo("arch");
-            assertThat(purl.getName()).isEqualTo("curl");
-            assertThat(purl.getVersion()).isEqualTo("8.4.0-1");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+            assertThat(purl.type).isEqualTo("alpm");
+            assertThat(purl.namespace).isEqualTo("arch");
+            assertThat(purl.name).isEqualTo("curl");
+            assertThat(purl.version).isEqualTo("8.4.0-1");
+            assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
         }
 
         @Test
@@ -122,13 +122,13 @@ class PackageMetadataPurlTest {
             fields.put("arch", "any");
 
             PacmanMetadata metadata = new PacmanMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // "any" architecture should not include arch qualifier
-            assertThat(purl.getType()).isEqualTo("alpm");
-            assertThat(purl.getName()).isEqualTo("bash-completion");
-            assertThat(purl.getVersion()).isEqualTo("2.11-1");
-            assertThat(purl.getQualifiers()).isNullOrEmpty();
+            assertThat(purl.type).isEqualTo("alpm");
+            assertThat(purl.name).isEqualTo("bash-completion");
+            assertThat(purl.version).isEqualTo("2.11-1");
+            assertThat(purl.qualifiers).isNullOrEmpty();
         }
     }
 
@@ -144,13 +144,13 @@ class PackageMetadataPurlTest {
             fields.put("arch", "x86_64");
 
             ApkMetadata metadata = new ApkMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            assertThat(purl.getType()).isEqualTo("apk");
-            assertThat(purl.getNamespace()).isEqualTo("alpine");
-            assertThat(purl.getName()).isEqualTo("curl");
-            assertThat(purl.getVersion()).isEqualTo("8.4.0-r0");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "x86_64");
+            assertThat(purl.type).isEqualTo("apk");
+            assertThat(purl.namespace).isEqualTo("alpine");
+            assertThat(purl.name).isEqualTo("curl");
+            assertThat(purl.version).isEqualTo("8.4.0-r0");
+            assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
         }
 
         @Test
@@ -161,13 +161,13 @@ class PackageMetadataPurlTest {
             fields.put("arch", "noarch");
 
             ApkMetadata metadata = new ApkMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // "noarch" architecture should not include arch qualifier
-            assertThat(purl.getType()).isEqualTo("apk");
-            assertThat(purl.getName()).isEqualTo("ca-certificates");
-            assertThat(purl.getVersion()).isEqualTo("20230506-r0");
-            assertThat(purl.getQualifiers()).isNullOrEmpty();
+            assertThat(purl.type).isEqualTo("apk");
+            assertThat(purl.name).isEqualTo("ca-certificates");
+            assertThat(purl.version).isEqualTo("20230506-r0");
+            assertThat(purl.qualifiers).isNullOrEmpty();
         }
     }
 
@@ -183,12 +183,12 @@ class PackageMetadataPurlTest {
             manifest.addProperty("arch", "amd64");
 
             FreeBsdMetadata metadata = new FreeBsdMetadata(manifest);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            assertThat(purl.getType()).isEqualTo("freebsd");
-            assertThat(purl.getName()).isEqualTo("curl");
-            assertThat(purl.getVersion()).isEqualTo("8.4.0");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+            assertThat(purl.type).isEqualTo("freebsd");
+            assertThat(purl.name).isEqualTo("curl");
+            assertThat(purl.version).isEqualTo("8.4.0");
+            assertThat(purl.qualifiers).containsEntry("arch", "amd64");
         }
 
         @Test
@@ -199,13 +199,13 @@ class PackageMetadataPurlTest {
             manifest.addProperty("arch", "*");
 
             FreeBsdMetadata metadata = new FreeBsdMetadata(manifest);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // "*" architecture should not include arch qualifier
-            assertThat(purl.getType()).isEqualTo("freebsd");
-            assertThat(purl.getName()).isEqualTo("pkg-config");
-            assertThat(purl.getVersion()).isEqualTo("0.29.2");
-            assertThat(purl.getQualifiers()).isNullOrEmpty();
+            assertThat(purl.type).isEqualTo("freebsd");
+            assertThat(purl.name).isEqualTo("pkg-config");
+            assertThat(purl.version).isEqualTo("0.29.2");
+            assertThat(purl.qualifiers).isNullOrEmpty();
         }
     }
 
@@ -226,12 +226,12 @@ class PackageMetadataPurlTest {
             );
 
             OpenBsdMetadata metadata = new OpenBsdMetadata(parseResult, "HTTP fetching library");
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            assertThat(purl.getType()).isEqualTo("openbsd");
-            assertThat(purl.getName()).isEqualTo("curl");
-            assertThat(purl.getVersion()).isEqualTo("8.4.0");
-            assertThat(purl.getQualifiers()).containsEntry("arch", "amd64");
+            assertThat(purl.type).isEqualTo("openbsd");
+            assertThat(purl.name).isEqualTo("curl");
+            assertThat(purl.version).isEqualTo("8.4.0");
+            assertThat(purl.qualifiers).containsEntry("arch", "amd64");
         }
 
         @Test
@@ -247,13 +247,13 @@ class PackageMetadataPurlTest {
             );
 
             OpenBsdMetadata metadata = new OpenBsdMetadata(parseResult, "System quirks");
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // No arch should not include arch qualifier
-            assertThat(purl.getType()).isEqualTo("openbsd");
-            assertThat(purl.getName()).isEqualTo("quirks");
-            assertThat(purl.getVersion()).isEqualTo("7.14");
-            assertThat(purl.getQualifiers()).isNullOrEmpty();
+            assertThat(purl.type).isEqualTo("openbsd");
+            assertThat(purl.name).isEqualTo("quirks");
+            assertThat(purl.version).isEqualTo("7.14");
+            assertThat(purl.qualifiers).isNullOrEmpty();
         }
     }
 
@@ -269,11 +269,11 @@ class PackageMetadataPurlTest {
             fields.put("Architecture", "amd64");
 
             DebMetadata metadata = new DebMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            // PackageURL stores the raw value and encodes on canonicalization
-            assertThat(purl.getName()).isEqualTo("pkg@2");
-            assertThat(purl.getVersion()).isEqualTo("1.0");
+            // Purl stores the raw value and encodes on canonicalization
+            assertThat(purl.name).isEqualTo("pkg@2");
+            assertThat(purl.version).isEqualTo("1.0");
         }
 
         @Test
@@ -284,11 +284,11 @@ class PackageMetadataPurlTest {
             fields.put("arch", "x86_64");
 
             PacmanMetadata metadata = new PacmanMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            // PackageURL stores the raw value
-            assertThat(purl.getName()).isEqualTo("my package");
-            assertThat(purl.getVersion()).isEqualTo("1.0");
+            // Purl stores the raw value
+            assertThat(purl.name).isEqualTo("my package");
+            assertThat(purl.version).isEqualTo("1.0");
         }
 
         @Test
@@ -299,11 +299,11 @@ class PackageMetadataPurlTest {
             fields.put("arch", "x86_64");
 
             ApkMetadata metadata = new ApkMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
             // Hyphens, underscores, dots, and tildes are preserved
-            assertThat(purl.getName()).isEqualTo("lib-test_pkg.so");
-            assertThat(purl.getVersion()).isEqualTo("1.0-beta~1");
+            assertThat(purl.name).isEqualTo("lib-test_pkg.so");
+            assertThat(purl.version).isEqualTo("1.0-beta~1");
         }
 
         @Test
@@ -314,11 +314,11 @@ class PackageMetadataPurlTest {
             manifest.addProperty("arch", "amd64");
 
             FreeBsdMetadata metadata = new FreeBsdMetadata(manifest);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            // PackageURL stores the raw value
-            assertThat(purl.getName()).isEqualTo("py:test");
-            assertThat(purl.getVersion()).isEqualTo("1.0");
+            // Purl stores the raw value
+            assertThat(purl.name).isEqualTo("py:test");
+            assertThat(purl.version).isEqualTo("1.0");
         }
 
         @Test
@@ -329,11 +329,11 @@ class PackageMetadataPurlTest {
             fields.put("Architecture", "amd64");
 
             DebMetadata metadata = new DebMetadata(fields);
-            PackageURL purl = metadata.purl();
+            Purl purl = metadata.purl();
 
-            // PackageURL stores the raw value
-            assertThat(purl.getName()).isEqualTo("pkg/subpkg");
-            assertThat(purl.getVersion()).isEqualTo("1.0");
+            // Purl stores the raw value
+            assertThat(purl.name).isEqualTo("pkg/subpkg");
+            assertThat(purl.version).isEqualTo("1.0");
         }
     }
 
@@ -342,7 +342,7 @@ class PackageMetadataPurlTest {
     class PurlFormatConsistencyTests {
 
         @Test
-        void allFormatsReturnValidPackageURL() {
+        void allFormatsReturnValidPurl() {
             // DEB
             Map<String, String> debFields = new HashMap<>();
             debFields.put("Package", "test");
@@ -390,36 +390,36 @@ class PackageMetadataPurlTest {
             debFields.put("Package", name);
             debFields.put("Version", version);
             debFields.put("Architecture", "amd64");
-            PackageURL debPurl = new DebMetadata(debFields).purl();
-            assertThat(debPurl.getName()).isEqualTo(name);
-            assertThat(debPurl.getVersion()).isEqualTo(version);
+            Purl debPurl = new DebMetadata(debFields).purl();
+            assertThat(debPurl.name).isEqualTo(name);
+            assertThat(debPurl.version).isEqualTo(version);
 
             // Pacman
             Map<String, Object> pacmanFields = new HashMap<>();
             pacmanFields.put("pkgname", name);
             pacmanFields.put("pkgver", version);
             pacmanFields.put("arch", "x86_64");
-            PackageURL pacmanPurl = new PacmanMetadata(pacmanFields).purl();
-            assertThat(pacmanPurl.getName()).isEqualTo(name);
-            assertThat(pacmanPurl.getVersion()).isEqualTo(version);
+            Purl pacmanPurl = new PacmanMetadata(pacmanFields).purl();
+            assertThat(pacmanPurl.name).isEqualTo(name);
+            assertThat(pacmanPurl.version).isEqualTo(version);
 
             // APK
             Map<String, Object> apkFields = new HashMap<>();
             apkFields.put("pkgname", name);
             apkFields.put("pkgver", version);
             apkFields.put("arch", "x86_64");
-            PackageURL apkPurl = new ApkMetadata(apkFields).purl();
-            assertThat(apkPurl.getName()).isEqualTo(name);
-            assertThat(apkPurl.getVersion()).isEqualTo(version);
+            Purl apkPurl = new ApkMetadata(apkFields).purl();
+            assertThat(apkPurl.name).isEqualTo(name);
+            assertThat(apkPurl.version).isEqualTo(version);
 
             // FreeBSD
             JsonObject freebsdManifest = new JsonObject();
             freebsdManifest.addProperty("name", name);
             freebsdManifest.addProperty("version", version);
             freebsdManifest.addProperty("arch", "amd64");
-            PackageURL freebsdPurl = new FreeBsdMetadata(freebsdManifest).purl();
-            assertThat(freebsdPurl.getName()).isEqualTo(name);
-            assertThat(freebsdPurl.getVersion()).isEqualTo(version);
+            Purl freebsdPurl = new FreeBsdMetadata(freebsdManifest).purl();
+            assertThat(freebsdPurl.name).isEqualTo(name);
+            assertThat(freebsdPurl.version).isEqualTo(version);
 
             // OpenBSD
             Map<String, String> openbsdMeta = new HashMap<>();
@@ -427,9 +427,9 @@ class PackageMetadataPurlTest {
             openbsdMeta.put("arch", "amd64");
             ContentsParser.ParseResult parseResult = new ContentsParser.ParseResult(
                     openbsdMeta, new ArrayList<>(), new ArrayList<>());
-            PackageURL openbsdPurl = new OpenBsdMetadata(parseResult, "").purl();
-            assertThat(openbsdPurl.getName()).isEqualTo(name);
-            assertThat(openbsdPurl.getVersion()).isEqualTo(version);
+            Purl openbsdPurl = new OpenBsdMetadata(parseResult, "").purl();
+            assertThat(openbsdPurl.name).isEqualTo(name);
+            assertThat(openbsdPurl.version).isEqualTo(version);
         }
 
         @Test
@@ -439,28 +439,28 @@ class PackageMetadataPurlTest {
             debFields.put("Package", "test");
             debFields.put("Version", "1.0");
             debFields.put("Architecture", "amd64");
-            assertThat(new DebMetadata(debFields).purl().getType()).isEqualTo("deb");
+            assertThat(new DebMetadata(debFields).purl().type).isEqualTo("deb");
 
             // Pacman
             Map<String, Object> pacmanFields = new HashMap<>();
             pacmanFields.put("pkgname", "test");
             pacmanFields.put("pkgver", "1.0");
             pacmanFields.put("arch", "x86_64");
-            assertThat(new PacmanMetadata(pacmanFields).purl().getType()).isEqualTo("alpm");
+            assertThat(new PacmanMetadata(pacmanFields).purl().type).isEqualTo("alpm");
 
             // APK
             Map<String, Object> apkFields = new HashMap<>();
             apkFields.put("pkgname", "test");
             apkFields.put("pkgver", "1.0");
             apkFields.put("arch", "x86_64");
-            assertThat(new ApkMetadata(apkFields).purl().getType()).isEqualTo("apk");
+            assertThat(new ApkMetadata(apkFields).purl().type).isEqualTo("apk");
 
             // FreeBSD
             JsonObject freebsdManifest = new JsonObject();
             freebsdManifest.addProperty("name", "test");
             freebsdManifest.addProperty("version", "1.0");
             freebsdManifest.addProperty("arch", "amd64");
-            assertThat(new FreeBsdMetadata(freebsdManifest).purl().getType()).isEqualTo("freebsd");
+            assertThat(new FreeBsdMetadata(freebsdManifest).purl().type).isEqualTo("freebsd");
 
             // OpenBSD
             Map<String, String> openbsdMeta = new HashMap<>();
@@ -468,7 +468,7 @@ class PackageMetadataPurlTest {
             openbsdMeta.put("arch", "amd64");
             ContentsParser.ParseResult parseResult = new ContentsParser.ParseResult(
                     openbsdMeta, new ArrayList<>(), new ArrayList<>());
-            assertThat(new OpenBsdMetadata(parseResult, "").purl().getType()).isEqualTo("openbsd");
+            assertThat(new OpenBsdMetadata(parseResult, "").purl().type).isEqualTo("openbsd");
         }
     }
 }

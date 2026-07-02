@@ -79,8 +79,8 @@ System.out.println("Architecture: " + pkg.arch());
 System.out.println("Format: " + pkg.format());
 
 // Generate Package URL
-PackageURL purl = pkg.packageUrl();
-System.out.println("PURL: " + purl.canonicalize());
+Purl purl = pkg.purl();
+System.out.println("PURL: " + purl.toCanonical());
 // Output: pkg:rpm/fedora/curl@7.50.3-1.fc25?arch=x86_64
 ```
 
@@ -289,7 +289,7 @@ object BaharatStrategy {
       case Some(format) =>
         Try(PackageReader.read(path)) match {
           case Success(pkg) =>
-            val purl = pkg.packageUrl().canonicalize()
+            val purl = pkg.purl().toCanonical()
 
             // Create ToProcess entries for payload files
             val payloadEntries = Try {
@@ -347,7 +347,7 @@ val computeToProcess: Vector[
 Baharat's unified API provides several advantages over the existing Debian strategy:
 
 1. **Six formats with one API**: Handle RPM, DEB, Pacman, APK, FreeBSD, and OpenBSD packages
-2. **Consistent PURL generation**: All formats use the same `packageUrl()` method
+2. **Consistent PURL generation**: All formats use the same `purl()` method
 3. **Stream-based payload access**: Memory-efficient processing of large packages
 4. **Type-safe metadata access**: Pattern matching for format-specific metadata
 

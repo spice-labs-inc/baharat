@@ -15,12 +15,11 @@
  */
 package io.spicelabs.baharat.apk;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
 import io.spicelabs.baharat.PackageMetadata;
 import io.spicelabs.baharat.common.Dependency;
 import io.spicelabs.baharat.common.FileInfo;
+import io.spicelabs.baharat.common.PurlHelper;
+import io.spicelabs.coordinates.Purl;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -161,29 +160,13 @@ public final class ApkMetadata implements PackageMetadata {
     }
 
     @Override
-    public @NotNull PackageURL purl() {
-        try {
-            PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                    .withType("apk")
-                    .withNamespace("alpine")  // Default namespace for Alpine Linux
-                    .withName(name());
-
-            // Add version
-            String ver = version();
-            if (!ver.isEmpty()) {
-                builder.withVersion(ver);
-            }
-
-            // Add qualifiers
-            String archValue = arch();
-            if (!archValue.isEmpty() && !"noarch".equalsIgnoreCase(archValue)) {
-                builder.withQualifier("arch", archValue);
-            }
-
-            return builder.build();
-        } catch (MalformedPackageURLException e) {
-            throw new IllegalStateException("Failed to build Package URL for APK package: " + name(), e);
+    public @NotNull Purl purl() {
+        var qualifiers = PurlHelper.newQualifiers();
+        if (!PurlHelper.isArchitectureIndependent(arch())) {
+            qualifiers.put("arch", arch());
         }
+
+        return PurlHelper.build("apk", "alpine", name(), version().isEmpty() ? null : version(), qualifiers);
     }
 
     // APK-specific fields

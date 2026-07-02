@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat.deb;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.PackageFormat;
 import io.spicelabs.baharat.testdata.PackageTestFiles;
@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -168,9 +167,11 @@ class DebReaderIntegrationTest {
         assertThat(debFiles).isNotEmpty();
 
         DebPackage pkg = null;
+        Path usedPath = null;
         for (Path path : debFiles) {
             try {
                 pkg = DebReader.read(path);
+                usedPath = path;
                 break;
             } catch (Exception e) {
                 // Continue to next file
@@ -179,13 +180,15 @@ class DebReaderIntegrationTest {
 
         assertThat(pkg).as("At least one DEB file should be readable").isNotNull();
 
-        PackageURL purl = pkg.metadata().purl();
+        Purl purl = pkg.metadata().purl();
 
         assertThat(purl).isNotNull();
-        assertThat(purl.getType()).isEqualTo("deb");
-        assertThat(purl.getName()).isEqualTo(pkg.metadata().name());
-        assertThat(purl.getVersion()).isEqualTo(pkg.metadata().version());
-        assertThat(purl.getNamespace()).isEqualTo("debian");
+        assertThat(purl.type).isEqualTo("deb");
+        assertThat(purl.name).isEqualTo(pkg.metadata().name());
+        assertThat(purl.version).isEqualTo(pkg.metadata().version());
+
+        String expectedNamespace = DebPackage.inferNamespace(usedPath.toString()).orElse("debian");
+        assertThat(purl.namespace).isEqualTo(expectedNamespace);
     }
 
     @Test
@@ -206,13 +209,13 @@ class DebReaderIntegrationTest {
 
         assertThat(pkg).as("At least one DEB file should be readable").isNotNull();
 
-        PackageURL fromPackage = pkg.packageUrl();
-        PackageURL fromMetadata = pkg.metadata().purl();
+        Purl fromPackage = pkg.purl();
+        Purl fromMetadata = pkg.metadata().purl();
 
         // Type and name must match
-        assertThat(fromPackage.getType()).isEqualTo(fromMetadata.getType());
-        assertThat(fromPackage.getName()).isEqualTo(fromMetadata.getName());
-        assertThat(fromPackage.getVersion()).isEqualTo(fromMetadata.getVersion());
+        assertThat(fromPackage.type).isEqualTo(fromMetadata.type);
+        assertThat(fromPackage.name).isEqualTo(fromMetadata.name);
+        assertThat(fromPackage.version).isEqualTo(fromMetadata.version);
     }
 
     @Test
@@ -233,36 +236,14 @@ class DebReaderIntegrationTest {
 
         assertThat(pkg).as("At least one DEB file should be readable").isNotNull();
 
-        PackageURL original = pkg.packageUrl();
-        String canonical = original.canonicalize();
-        PackageURL parsed = new PackageURL(canonical);
+        Purl original = pkg.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
 
-        assertThat(parsed.getType()).isEqualTo(original.getType());
-        assertThat(parsed.getName()).isEqualTo(original.getName());
-        assertThat(parsed.getVersion()).isEqualTo(original.getVersion());
-        assertThat(parsed.getQualifiers()).isEqualTo(original.getQualifiers());
-    }
-
-    @Test
-    @EnabledIf("hasDebFiles")
-    void purlWithCustomNamespaceOverridesDefault() throws Exception {
-        List<Path> debFiles = PackageTestFiles.getFiles(PackageTestFiles.DEBS, ".deb", 5);
-        assertThat(debFiles).isNotEmpty();
-
-        DebPackage pkg = null;
-        for (Path path : debFiles) {
-            try {
-                pkg = DebReader.read(path);
-                break;
-            } catch (Exception e) {
-                // Continue to next file
-            }
-        }
-
-        assertThat(pkg).as("At least one DEB file should be readable").isNotNull();
-
-        PackageURL purl = pkg.packageUrl(Optional.of("ubuntu"));
-        assertThat(purl.getNamespace()).isEqualTo("ubuntu");
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
     }
 
     @Test
@@ -273,16 +254,16 @@ class DebReaderIntegrationTest {
         for (Path path : debFiles) {
             try {
                 DebPackage pkg = DebReader.read(path);
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
                 String arch = pkg.metadata().arch();
 
                 if ("all".equals(arch)) {
                     // "all" architecture should not include arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch 'all' should not have arch qualifier", pkg.name())
+                    assertThat(purl.qualifiers).as("Package %s with arch 'all' should not have arch qualifier", pkg.name())
                             .isNullOrEmpty();
                 } else if (!arch.isEmpty()) {
                     // Other architectures should have arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
+                    assertThat(purl.qualifiers).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
                             .containsEntry("arch", arch);
                 }
             } catch (Exception e) {
@@ -304,15 +285,15 @@ class DebReaderIntegrationTest {
                 DebPackage pkg = DebReader.read(path);
                 totalCount++;
 
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
                 assertThat(purl).isNotNull();
-                assertThat(purl.getType()).isEqualTo("deb");
-                assertThat(purl.getName()).isNotEmpty();
+                assertThat(purl.type).isEqualTo("deb");
+                assertThat(purl.name).isNotEmpty();
 
                 // Verify roundtrip
-                String canonical = purl.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
-                assertThat(parsed.getName()).isEqualTo(purl.getName());
+                String canonical = purl.toCanonical();
+                Purl parsed = Purl.parse(canonical);
+                assertThat(parsed.name).isEqualTo(purl.name);
 
                 successCount++;
             } catch (Exception e) {

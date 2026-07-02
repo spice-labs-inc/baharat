@@ -71,8 +71,8 @@
         <!-- JSON parsing -->
         <gson.version>2.10.1</gson.version>
 
-        <!-- Package URL -->
-        <packageurl.version>1.5.0</packageurl.version>
+        <!-- Spice Labs canonical identifiers and PURLs -->
+        <coordinates.version>1.1.0</coordinates.version>
 
         <!-- Testing -->
         <junit.jupiter.version>5.10.2</junit.jupiter.version>
@@ -124,11 +124,11 @@
             <version>${gson.version}</version>
         </dependency>
 
-        <!-- Package URL library -->
+        <!-- Spice Labs canonical identifiers and PURLs -->
         <dependency>
-            <groupId>com.github.package-url</groupId>
-            <artifactId>packageurl-java</artifactId>
-            <version>${packageurl.version}</version>
+            <groupId>io.spicelabs</groupId>
+            <artifactId>coordinates</artifactId>
+            <version>${coordinates.version}</version>
         </dependency>
 
         <!-- JetBrains annotations for null-safety -->

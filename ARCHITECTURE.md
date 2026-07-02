@@ -121,8 +121,7 @@ public interface Package {
     String arch();
 
     // Package URL generation
-    PackageURL packageUrl();
-    PackageURL packageUrl(Optional<String> namespace);
+    Purl purl();
 }
 ```
 
@@ -156,7 +155,7 @@ public interface PackageMetadata {
     List<FileInfo> files();
 
     // Package URL
-    PackageURL purl();
+    Purl purl();
 }
 ```
 
@@ -369,33 +368,18 @@ pkg:TYPE/NAMESPACE/NAME@VERSION?QUALIFIERS
 
 ### PURL Implementation
 
-Two methods provide PURL generation:
-
-1. **`PackageMetadata.purl()`** - Format-specific implementation with default namespace
-2. **`Package.packageUrl(Optional<String> namespace)`** - Generic implementation with custom namespace
+There is exactly one canonical PURL per package. `Package.purl()` delegates to `PackageMetadata.purl()`, which is implemented per format and produces a `io.spicelabs.coordinates.Purl` value.
 
 ```java
-// PackageMetadata.purl() - used by format implementations
-public PackageURL purl() {
-    return PackageURLBuilder.aPackageURL()
-        .withType("rpm")
-        .withNamespace(vendor.toLowerCase())  // Format-specific logic
-        .withName(name())
-        .withVersion(version() + "-" + release())
-        .withQualifier("arch", arch())
-        .withQualifier("epoch", epoch())  // RPM-specific
-        .build();
+// Package.purl() - delegates to metadata
+public default Purl purl() {
+    return metadata().purl();
 }
 
-// Package.packageUrl() - generic fallback
-default PackageURL packageUrl(Optional<String> namespace) {
-    String type = switch (format()) {
-        case RPM -> "rpm";
-        case DEB -> "deb";
-        case PACMAN -> "alpm";
-        // ...
-    };
-    // Build PURL with common logic
+// PackageMetadata.purl() - format-specific implementation
+public Purl purl() {
+    // Build PURL with type-specific namespace, qualifiers, etc.
+    return PurlHelper.build(type, namespace, name(), version, qualifiers);
 }
 ```
 
@@ -505,8 +489,8 @@ void readRealPackage() throws Exception {
     assertThat(pkg.version()).isNotEmpty();
 
     // Verify PURL roundtrip
-    PackageURL purl = pkg.packageUrl();
-    PackageURL parsed = new PackageURL(purl.canonicalize());
+    Purl purl = pkg.purl();
+    Purl parsed = Purl.parse(purl.toCanonical());
     assertThat(parsed.getName()).isEqualTo(purl.getName());
 }
 ```
@@ -568,6 +552,6 @@ public InputStream decompress(InputStream in, String compressor) {
 | zstd-jni | Zstandard decompression | RPM, DEB, Pacman, FreeBSD |
 | Commons Compress | bzip2 decompression | RPM, DEB |
 | Bouncy Castle | PGP signature verification | RPM |
-| packageurl-java | PURL generation | All |
+| coordinates     | Canonical identifiers and PURLs | All |
 | Gson | JSON parsing | FreeBSD |
 | SLF4J | Logging | All |

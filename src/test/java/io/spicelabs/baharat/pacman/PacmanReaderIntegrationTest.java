@@ -15,7 +15,7 @@
  */
 package io.spicelabs.baharat.pacman;
 
-import com.github.packageurl.PackageURL;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.testdata.PackageTestFiles;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,6 @@ import org.junit.jupiter.api.condition.EnabledIf;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,13 +135,13 @@ class PacmanReaderIntegrationTest {
         Path path = pacmanFiles.get(0);
         PacmanPackage pkg = PacmanReader.read(path);
 
-        PackageURL purl = pkg.metadata().purl();
+        Purl purl = pkg.metadata().purl();
 
         assertThat(purl).isNotNull();
-        assertThat(purl.getType()).isEqualTo("alpm");
-        assertThat(purl.getName()).isEqualTo(pkg.metadata().name());
-        assertThat(purl.getVersion()).isEqualTo(pkg.metadata().version());
-        assertThat(purl.getNamespace()).isEqualTo("arch");
+        assertThat(purl.type).isEqualTo("alpm");
+        assertThat(purl.name).isEqualTo(pkg.metadata().name());
+        assertThat(purl.version).isEqualTo(pkg.metadata().version());
+        assertThat(purl.namespace).isEqualTo("arch");
     }
 
     @Test
@@ -154,13 +153,13 @@ class PacmanReaderIntegrationTest {
         Path path = pacmanFiles.get(0);
         PacmanPackage pkg = PacmanReader.read(path);
 
-        PackageURL fromPackage = pkg.packageUrl();
-        PackageURL fromMetadata = pkg.metadata().purl();
+        Purl fromPackage = pkg.purl();
+        Purl fromMetadata = pkg.metadata().purl();
 
         // Type and name must match
-        assertThat(fromPackage.getType()).isEqualTo(fromMetadata.getType());
-        assertThat(fromPackage.getName()).isEqualTo(fromMetadata.getName());
-        assertThat(fromPackage.getVersion()).isEqualTo(fromMetadata.getVersion());
+        assertThat(fromPackage.type).isEqualTo(fromMetadata.type);
+        assertThat(fromPackage.name).isEqualTo(fromMetadata.name);
+        assertThat(fromPackage.version).isEqualTo(fromMetadata.version);
     }
 
     @Test
@@ -172,27 +171,14 @@ class PacmanReaderIntegrationTest {
         Path path = pacmanFiles.get(0);
         PacmanPackage pkg = PacmanReader.read(path);
 
-        PackageURL original = pkg.packageUrl();
-        String canonical = original.canonicalize();
-        PackageURL parsed = new PackageURL(canonical);
+        Purl original = pkg.purl();
+        String canonical = original.toCanonical();
+        Purl parsed = Purl.parse(canonical);
 
-        assertThat(parsed.getType()).isEqualTo(original.getType());
-        assertThat(parsed.getName()).isEqualTo(original.getName());
-        assertThat(parsed.getVersion()).isEqualTo(original.getVersion());
-        assertThat(parsed.getQualifiers()).isEqualTo(original.getQualifiers());
-    }
-
-    @Test
-    @EnabledIf("hasPacmanFiles")
-    void purlWithCustomNamespaceOverridesDefault() throws Exception {
-        List<Path> pacmanFiles = PackageTestFiles.getFiles(PackageTestFiles.PACMAN, ".pkg.tar.zst", 1);
-        assertThat(pacmanFiles).isNotEmpty();
-
-        Path path = pacmanFiles.get(0);
-        PacmanPackage pkg = PacmanReader.read(path);
-
-        PackageURL purl = pkg.packageUrl(Optional.of("manjaro"));
-        assertThat(purl.getNamespace()).isEqualTo("manjaro");
+        assertThat(parsed.type).isEqualTo(original.type);
+        assertThat(parsed.name).isEqualTo(original.name);
+        assertThat(parsed.version).isEqualTo(original.version);
+        assertThat(parsed.qualifiers).isEqualTo(original.qualifiers);
     }
 
     @Test
@@ -203,16 +189,16 @@ class PacmanReaderIntegrationTest {
         for (Path path : pacmanFiles) {
             try {
                 PacmanPackage pkg = PacmanReader.read(path);
-                PackageURL purl = pkg.packageUrl();
+                Purl purl = pkg.purl();
                 String arch = pkg.metadata().arch();
 
                 if ("any".equals(arch)) {
                     // "any" architecture should not include arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch 'any' should not have arch qualifier", pkg.name())
+                    assertThat(purl.qualifiers).as("Package %s with arch 'any' should not have arch qualifier", pkg.name())
                             .isNullOrEmpty();
                 } else if (!arch.isEmpty()) {
                     // Other architectures should have arch qualifier
-                    assertThat(purl.getQualifiers()).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
+                    assertThat(purl.qualifiers).as("Package %s with arch '%s' should have arch qualifier", pkg.name(), arch)
                             .containsEntry("arch", arch);
                 }
             } catch (Exception e) {
@@ -234,15 +220,15 @@ class PacmanReaderIntegrationTest {
                 PacmanPackage pkg = PacmanReader.read(path);
                 totalCount++;
 
-                PackageURL purl = pkg.metadata().purl();
+                Purl purl = pkg.metadata().purl();
                 assertThat(purl).isNotNull();
-                assertThat(purl.getType()).isEqualTo("alpm");
-                assertThat(purl.getName()).isNotEmpty();
+                assertThat(purl.type).isEqualTo("alpm");
+                assertThat(purl.name).isNotEmpty();
 
                 // Verify roundtrip
-                String canonical = purl.canonicalize();
-                PackageURL parsed = new PackageURL(canonical);
-                assertThat(parsed.getName()).isEqualTo(purl.getName());
+                String canonical = purl.toCanonical();
+                Purl parsed = Purl.parse(canonical);
+                assertThat(parsed.name).isEqualTo(purl.name);
 
                 successCount++;
             } catch (Exception e) {

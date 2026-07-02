@@ -15,11 +15,10 @@
  */
 package io.spicelabs.baharat.rpm;
 
-import com.github.packageurl.MalformedPackageURLException;
-import com.github.packageurl.PackageURL;
-import com.github.packageurl.PackageURLBuilder;
 import io.spicelabs.baharat.common.Dependency;
 import io.spicelabs.baharat.common.FileInfo;
+import io.spicelabs.baharat.common.PurlHelper;
+import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.rpm.metadata.PackageMetadata;
 import org.jetbrains.annotations.NotNull;
 
@@ -136,43 +135,20 @@ final class MetadataAdapter implements io.spicelabs.baharat.PackageMetadata {
     }
 
     @Override
-    public @NotNull PackageURL purl() {
-        try {
-            PackageURLBuilder builder = PackageURLBuilder.aPackageURL()
-                    .withType("rpm")
-                    .withName(name());
+    public @NotNull Purl purl() {
+        String namespace = vendor().map(PurlHelper::normalizeNamespace).filter(s -> !s.isEmpty()).orElse("unknown");
 
-            // Add namespace (vendor) if available
-            Optional<String> vendorOpt = vendor();
-            if (vendorOpt.isPresent()) {
-                String namespace = vendorOpt.get().toLowerCase().replaceAll("\\s+", "-");
-                builder.withNamespace(namespace);
-            }
+        String ver = version();
+        String rel = rpm.release();
+        String version = rel.isEmpty() ? ver : (ver + "-" + rel);
 
-            // Add version (including release for RPM)
-            String ver = version();
-            String rel = rpm.release();
-            if (!rel.isEmpty()) {
-                builder.withVersion(ver + "-" + rel);
-            } else if (!ver.isEmpty()) {
-                builder.withVersion(ver);
-            }
-
-            // Add qualifiers
-            String archValue = arch();
-            if (!archValue.isEmpty() && !"noarch".equalsIgnoreCase(archValue)) {
-                builder.withQualifier("arch", archValue);
-            }
-
-            Optional<Integer> epochOpt = epoch();
-            if (epochOpt.isPresent() && epochOpt.get() != 0) {
-                builder.withQualifier("epoch", String.valueOf(epochOpt.get()));
-            }
-
-            return builder.build();
-        } catch (MalformedPackageURLException e) {
-            throw new IllegalStateException("Failed to build Package URL for RPM package: " + name(), e);
+        var qualifiers = PurlHelper.newQualifiers();
+        if (!PurlHelper.isArchitectureIndependent(arch())) {
+            qualifiers.put("arch", arch());
         }
+        epoch().filter(e -> e != 0).ifPresent(e -> qualifiers.put("epoch", String.valueOf(e)));
+
+        return PurlHelper.build("rpm", namespace, name(), version.isEmpty() ? null : version, qualifiers);
     }
 
     private @NotNull Dependency convertDependency(@NotNull io.spicelabs.baharat.rpm.metadata.Dependency rpmDep) {
