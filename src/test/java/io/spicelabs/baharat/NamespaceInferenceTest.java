@@ -20,6 +20,7 @@ import io.spicelabs.baharat.deb.DebPackage;
 import io.spicelabs.baharat.freebsd.FreeBsdPackage;
 import io.spicelabs.baharat.openbsd.OpenBsdPackage;
 import io.spicelabs.baharat.pacman.PacmanPackage;
+import io.spicelabs.baharat.rpm.RpmPackage;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -126,5 +127,103 @@ class NamespaceInferenceTest {
     void freeBsdInfersDragonFlyBsd() {
         assertThat(FreeBsdPackage.inferNamespace("/dragonfly/repo/foo.pkg"))
                 .contains("dragonflybsd");
+    }
+
+    // RPM namespace tests
+
+    @Test
+    void rpmInfersFedoraFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("1.fc40", "", ""))
+                .contains("fedora");
+        assertThat(RpmPackage.inferNamespace("3.fc18", "Fedora Project", ""))
+                .contains("fedora");
+    }
+
+    @Test
+    void rpmInfersCentosFromElTagAndDistribution() {
+        assertThat(RpmPackage.inferNamespace("16.el8", "CentOS", ""))
+                .contains("centos");
+    }
+
+    @Test
+    void rpmInfersRhelFromElTagWithoutDistribution() {
+        assertThat(RpmPackage.inferNamespace("20.el9", "", ""))
+                .contains("rhel");
+    }
+
+    @Test
+    void rpmInfersOpensuseFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("150400.3.1.suse", "", ""))
+                .contains("opensuse");
+        assertThat(RpmPackage.inferNamespace("1.2.opensuse", "", ""))
+                .contains("opensuse");
+    }
+
+    @Test
+    void rpmInfersOpensuseFromDistributionField() {
+        // SUSE packages may lack a distro tag in the release but have it in the
+        // distribution field (e.g., vendor "SUSE LLC <https://www.suse.com/>")
+        assertThat(RpmPackage.inferNamespace("160099.8.2", "openSUSE Tumbleweed", ""))
+                .contains("opensuse");
+        assertThat(RpmPackage.inferNamespace("160099.8.2", "SUSE Linux Enterprise", ""))
+                .contains("opensuse");
+    }
+
+    @Test
+    void rpmInfersAmazonFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("1.amzn2023", "", ""))
+                .contains("amazon");
+    }
+
+    @Test
+    void rpmInfersOracleLinuxFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("1.0.el9", "Oracle Linux", ""))
+                .contains("oraclelinux");
+        assertThat(RpmPackage.inferNamespace("1.el9", "Oracle Linux", ""))
+                .contains("oraclelinux");
+    }
+
+    @Test
+    void rpmInfersAlmaFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("1.el9", "AlmaLinux", ""))
+                .contains("alma");
+        assertThat(RpmPackage.inferNamespace("1.al9", "", ""))
+                .contains("alma");
+    }
+
+    @Test
+    void rpmInfersRockyFromReleaseTag() {
+        assertThat(RpmPackage.inferNamespace("1.el9", "Rocky Linux", ""))
+                .contains("rocky");
+        assertThat(RpmPackage.inferNamespace("1.rocky", "", ""))
+                .contains("rocky");
+    }
+
+    @Test
+    void rpmInfersFromSourcePath() {
+        assertThat(RpmPackage.inferNamespace("", "", "/repo/fedora/foo.rpm"))
+                .contains("fedora");
+        assertThat(RpmPackage.inferNamespace("", "", "/repo/centos/foo.rpm"))
+                .contains("centos");
+        assertThat(RpmPackage.inferNamespace("", "", "/repo/opensuse/foo.rpm"))
+                .contains("opensuse");
+    }
+
+    @Test
+    void rpmReturnsEmptyForUnknown() {
+        assertThat(RpmPackage.inferNamespace("1", "", ""))
+                .isEmpty();
+        assertThat(RpmPackage.inferNamespace("", "", "/generic/path/foo.rpm"))
+                .isEmpty();
+    }
+
+    @Test
+    void rpmFilenameOnlyInferNamespace() {
+        assertThat(RpmPackage.inferNamespace("sed-4.9-1.fc40.x86_64.rpm"))
+                .contains("fedora");
+        assertThat(RpmPackage.inferNamespace("which-2.21-16.el8.x86_64.rpm"))
+                .contains("rhel");
+        assertThat(RpmPackage.inferNamespace("/repo/centos/which-2.21-16.el8.x86_64.rpm"))
+                .contains("centos");
     }
 }
