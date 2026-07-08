@@ -21,7 +21,9 @@ import io.spicelabs.baharat.common.PurlHelper;
 import io.spicelabs.coordinates.Purl;
 import io.spicelabs.baharat.rpm.metadata.PackageMetadata;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -33,9 +35,15 @@ import java.util.stream.Collectors;
 final class MetadataAdapter implements io.spicelabs.baharat.PackageMetadata {
 
     private final @NotNull PackageMetadata rpm;
+    private final @Nullable Path sourcePath;
 
     MetadataAdapter(@NotNull PackageMetadata rpm) {
+        this(rpm, null);
+    }
+
+    MetadataAdapter(@NotNull PackageMetadata rpm, @Nullable Path sourcePath) {
         this.rpm = rpm;
+        this.sourcePath = sourcePath;
     }
 
     @Override
@@ -136,7 +144,11 @@ final class MetadataAdapter implements io.spicelabs.baharat.PackageMetadata {
 
     @Override
     public @NotNull Purl purl() {
-        String namespace = vendor().map(PurlHelper::normalizeNamespace).filter(s -> !s.isEmpty()).orElse("unknown");
+        String namespace = RpmPackage.inferNamespace(
+                rpm.release(),
+                rpm.distribution().orElse(""),
+                sourcePath == null ? "" : sourcePath.toString())
+                .orElse("unknown");
 
         String ver = version();
         String rel = rpm.release();

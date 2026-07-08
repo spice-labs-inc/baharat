@@ -452,29 +452,68 @@ class ReaderIntegrationTest {
 
     @Test
     @EnabledIf("hasTestRpmFiles")
-    void purlVendorNamespaceExtraction() throws Exception {
-        // Test that vendor is extracted as namespace when available
+    void purlNamespaceIsDistroNotVendor() throws Exception {
+        // The pURL namespace for RPM must be the distro (e.g., "fedora", "centos"),
+        // NOT the vendor field (which may contain a company name with a URL).
+        // See https://github.com/package-url/purl-spec — RPM namespace = distribution.
         List<Path> rpms = TestFiles.getAllRpmFiles();
 
+        int checked = 0;
         for (Path path : rpms) {
             try {
                 RpmPackage rpm = RpmReader.read(path);
-                PackageMetadata rpmMeta = rpm.rpmMetadata();
                 Purl purl = rpm.metadata().purl();
 
-                Optional<String> vendor = rpmMeta.vendor();
-                if (vendor.isPresent() && !vendor.get().isEmpty()) {
-                    // If vendor is present, namespace should be set
-                    String expectedNamespace = vendor.get().toLowerCase().replaceAll("\\s+", "-");
-                    assertThat(purl.namespace)
-                            .as("Vendor '%s' should produce namespace '%s' for package %s",
-                                    vendor.get(), expectedNamespace, rpm.name())
-                            .isEqualTo(expectedNamespace);
-                }
+                // The namespace must be a clean distro identifier — no URLs, angle
+                // brackets, or spaces (which would indicate the vendor was used).
+                assertThat(purl.namespace)
+                        .as("Namespace for %s must not contain URL/vendor artifacts", rpm.name())
+                        .doesNotContain("<")
+                        .doesNotContain(">")
+                        .doesNotContain("/")
+                        .doesNotContain(" ");
+
+                // The namespace must match what inferNamespace produces
+                assertThat(purl.namespace)
+                        .as("Namespace for %s must match inferNamespace", rpm.name())
+                        .isEqualTo(rpm.inferNamespace().orElse("unknown"));
+                checked++;
             } catch (Exception e) {
                 // Some packages might have issues, continue with others
             }
         }
+        assertThat(checked).as("should have checked at least one package").isGreaterThan(0);
+    }
+
+    @Test
+    @EnabledIf("hasTestRpmFiles")
+    void purlNamespaceForFedoraPackage() throws Exception {
+        Path path = TestFiles.getPath(V4_RPM);
+        RpmPackage rpm = RpmReader.read(path);
+
+        Purl purl = rpm.metadata().purl();
+
+        // sed-4.9-1.fc40 is a Fedora package — release "1.fc40" → namespace "fedora"
+        assertThat(purl.namespace)
+                .as("Fedora package %s should have 'fedora' namespace", rpm.name())
+                .isEqualTo("fedora");
+    }
+
+    @Test
+    @EnabledIf("hasTestRpmFiles")
+    void purlNamespaceForCentosPackage() throws Exception {
+        // CentOS packages have el<N> in the release and "CentOS" in the distribution field
+        List<Path> centosRpms = TestFiles.getRpmFilesIn("distributions/centos");
+        if (centosRpms.isEmpty()) return;
+
+        Path path = centosRpms.get(0);
+        RpmPackage rpm = RpmReader.read(path);
+
+        Purl purl = rpm.metadata().purl();
+
+        assertThat(purl.namespace)
+                .as("CentOS package %s should have 'centos' namespace", rpm.name())
+                .isEqualTo("centos");
     }
 
     @Test

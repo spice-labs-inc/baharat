@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
@@ -92,7 +95,7 @@ public final class RpmPackage implements io.spicelabs.baharat.Package {
         this.signatureHeader = signatureHeader;
         this.header = header;
         this.metadata = new PackageMetadata(header);
-        this.metadataAdapter = new MetadataAdapter(this.metadata);
+        this.metadataAdapter = new MetadataAdapter(this.metadata, sourcePath);
         this.payloadOffset = payloadOffset;
         this.sourcePath = sourcePath;
     }
@@ -256,6 +259,158 @@ public final class RpmPackage implements io.spicelabs.baharat.Package {
      */
     public @NotNull String nevra() {
         return metadata.nevra();
+    }
+
+    // ── PURL namespace inference ──────────────────────────────────────────
+
+    private static final Pattern FC_DISTTAG = Pattern.compile("\\.fc\\d+");
+    private static final Pattern EL_DISTTAG = Pattern.compile("\\.el\\d+");
+    private static final Pattern SUSE_DISTTAG = Pattern.compile("\\.(?:suse|opensuse|sles)");
+    private static final Pattern AMZN_DISTTAG = Pattern.compile("\\.amzn\\d*");
+    private static final Pattern OL_DISTTAG = Pattern.compile("\\.ol\\d+");
+    private static final Pattern AL_DISTTAG = Pattern.compile("\\.al\\d+");
+    private static final Pattern ROCKY_DISTTAG = Pattern.compile("\\.rocky");
+    private static final Pattern MAGEIA_DISTTAG = Pattern.compile("\\.mageia");
+
+    /**
+     * Infers the PURL namespace (distribution) from RPM metadata.
+     *
+     * <p>Per the <a href="https://github.com/package-url/purl-spec">pURL spec</a>,
+     * the namespace for {@code rpm} packages is the distribution name
+     * (e.g., {@code fedora}, {@code opensuse}, {@code centos}), <em>not</em> the
+     * vendor. The vendor field often contains a company name with contact info
+     * (e.g., {@code "SUSE LLC <https://www.suse.com/>"}) which is not a valid
+     * namespace.
+     *
+     * <p>This method consults three sources, in order of reliability:
+     * <ol>
+     *   <li><b>Release string</b> — RPM releases carry standardized distro tags
+     *       such as {@code fc40} (Fedora), {@code el8} (Enterprise Linux),
+     *       {@code suse}, {@code amzn}, {@code ol9}, {@code al9},
+     *       {@code rocky}, {@code mageia}.</li>
+     *   <li><b>Distribution field</b> — the RPM {@code DISTRIBUTION} header tag.
+     *       This disambiguates {@code el<N>} packages (e.g., "CentOS" vs
+     *       "Red Hat") and may be the only source for packages whose release
+     *       lacks a recognizable tag.</li>
+     *   <li><b>Source path / filename</b> — a last-resort heuristic matching the
+     *       pattern used by {@code DebPackage} and other formats.</li>
+     * </ol>
+     *
+     * @param release      the RPM release string (e.g., {@code "1.fc40"})
+     * @param distribution the RPM distribution field, or empty string if unset
+     * @param sourcePath   the source file path, or empty string if unknown
+     * @return an Optional containing the inferred namespace, or empty if unknown
+     */
+    public static @NotNull Optional<String> inferNamespace(
+            @NotNull String release, @NotNull String distribution, @NotNull String sourcePath) {
+        String rel = release.toLowerCase(Locale.ROOT);
+
+        // 1. Unambiguous release-string distro tags
+        if (FC_DISTTAG.matcher(rel).find()) {
+            return Optional.of("fedora");
+        }
+        if (SUSE_DISTTAG.matcher(rel).find()) {
+            return Optional.of("opensuse");
+        }
+        if (AMZN_DISTTAG.matcher(rel).find()) {
+            return Optional.of("amazon");
+        }
+        if (OL_DISTTAG.matcher(rel).find()) {
+            return Optional.of("oraclelinux");
+        }
+        if (AL_DISTTAG.matcher(rel).find()) {
+            return Optional.of("alma");
+        }
+        if (ROCKY_DISTTAG.matcher(rel).find()) {
+            return Optional.of("rocky");
+        }
+        if (MAGEIA_DISTTAG.matcher(rel).find()) {
+            return Optional.of("mageia");
+        }
+
+        // 2. el<N> is ambiguous — use the distribution field to disambiguate
+        if (EL_DISTTAG.matcher(rel).find()) {
+            Optional<String> fromDist = inferFromDistribution(distribution);
+            if (fromDist.isPresent()) {
+                return fromDist;
+            }
+            return Optional.of("rhel");
+        }
+
+        // 3. Distribution field (may be the only source for some packages)
+        Optional<String> fromDist = inferFromDistribution(distribution);
+        if (fromDist.isPresent()) {
+            return fromDist;
+        }
+
+        // 4. Source path / filename
+        return inferFromPath(sourcePath);
+    }
+
+    /**
+     * Infers the PURL namespace from a filename or path.
+     *
+     * <p>This is a convenience overload that examines the filename for
+     * distribution indicators. It is less reliable than
+     * {@link #inferNamespace(String, String, String)} because it lacks the
+     * release string and distribution field.
+     *
+     * @param filename the filename or path to examine
+     * @return an Optional containing the inferred namespace, or empty if unknown
+     */
+    public static @NotNull Optional<String> inferNamespace(@NotNull String filename) {
+        return inferFromPath(filename);
+    }
+
+    /**
+     * Infers the PURL namespace from this package's metadata and source path.
+     *
+     * @return an Optional containing the inferred namespace, or empty if unknown
+     */
+    public @NotNull Optional<String> inferNamespace() {
+        return inferNamespace(
+                metadata.release(),
+                metadata.distribution().orElse(""),
+                sourcePath == null ? "" : sourcePath.toString());
+    }
+
+    private static @NotNull Optional<String> inferFromDistribution(@NotNull String distribution) {
+        if (distribution.isEmpty()) {
+            return Optional.empty();
+        }
+        String lower = distribution.toLowerCase(Locale.ROOT);
+        if (lower.contains("fedora")) return Optional.of("fedora");
+        if (lower.contains("centos")) return Optional.of("centos");
+        if (lower.contains("red hat") || lower.contains("rhel")) return Optional.of("rhel");
+        if (lower.contains("opensuse")) return Optional.of("opensuse");
+        if (lower.contains("suse")) return Optional.of("opensuse");
+        if (lower.contains("amazon")) return Optional.of("amazon");
+        if (lower.contains("oracle")) return Optional.of("oraclelinux");
+        if (lower.contains("alma")) return Optional.of("alma");
+        if (lower.contains("rocky")) return Optional.of("rocky");
+        if (lower.contains("mageia")) return Optional.of("mageia");
+        return Optional.empty();
+    }
+
+    private static @NotNull Optional<String> inferFromPath(@NotNull String path) {
+        if (path.isEmpty()) {
+            return Optional.empty();
+        }
+        String lower = path.toLowerCase(Locale.ROOT);
+        if (FC_DISTTAG.matcher(lower).find() || lower.contains("fedora")) return Optional.of("fedora");
+        if (lower.contains("centos")) return Optional.of("centos");
+        if (EL_DISTTAG.matcher(lower).find() || lower.contains("redhat") || lower.contains("rhel")) {
+            return Optional.of("rhel");
+        }
+        if (SUSE_DISTTAG.matcher(lower).find() || lower.contains("opensuse") || lower.contains("suse")) {
+            return Optional.of("opensuse");
+        }
+        if (AMZN_DISTTAG.matcher(lower).find() || lower.contains("amazon")) return Optional.of("amazon");
+        if (OL_DISTTAG.matcher(lower).find() || lower.contains("oracle")) return Optional.of("oraclelinux");
+        if (AL_DISTTAG.matcher(lower).find() || lower.contains("alma")) return Optional.of("alma");
+        if (ROCKY_DISTTAG.matcher(lower).find() || lower.contains("rocky")) return Optional.of("rocky");
+        if (MAGEIA_DISTTAG.matcher(lower).find() || lower.contains("mageia")) return Optional.of("mageia");
+        return Optional.empty();
     }
 
     @Override
