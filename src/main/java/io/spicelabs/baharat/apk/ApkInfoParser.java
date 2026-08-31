@@ -74,8 +74,8 @@ public final class ApkInfoParser {
         try {
             return parse(new BufferedReader(new StringReader(content)));
         } catch (IOException e) {
-            // Should not happen with StringReader
-            throw new RuntimeException("Unexpected I/O error reading from string", e);
+            // StringReader cannot throw IOException — internal-invariant violation.
+            throw new IllegalStateException("Unexpected I/O error reading from string", e);
         }
     }
 

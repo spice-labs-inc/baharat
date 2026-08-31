@@ -122,8 +122,9 @@ public final class PkgInfoParser {
         try {
             return parse(new BufferedReader(new java.io.StringReader(content)));
         } catch (IOException e) {
-            // StringReader doesn't throw IOException
-            throw new RuntimeException(e);
+            // StringReader cannot throw IOException — an internal-invariant violation, not
+            // corruption escaping the API (corruption must cross as checked).
+            throw new IllegalStateException("StringReader cannot throw IOException", e);
         }
     }
 

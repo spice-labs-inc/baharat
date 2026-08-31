@@ -177,7 +177,8 @@ public final class ContentsParser {
         try {
             return parse(new BufferedReader(new java.io.StringReader(content)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            // StringReader cannot throw IOException — internal-invariant violation.
+            throw new IllegalStateException("StringReader cannot throw IOException", e);
         }
     }
 }

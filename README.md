@@ -147,11 +147,25 @@ try (Stream<PackageEntry> entries = PackageReader.streamPayload(path)) {
 This library includes protections against common attacks:
 
 - **Path traversal**: Payload paths are validated to prevent `../` escapes
-- **Decompression bombs**: Configurable limit on decompressed size (default 10GB)
-- **Integer overflow**: Safe arithmetic in offset calculations
-- **Resource exhaustion**: Limits on array sizes and string lengths
+- **Decompression bombs**: Configurable limit on decompressed size (default 2 GiB per read pass,
+  injectable via `BudgetLimits`) — verified by `DebBudgetTest`, `ApkBudgetTest`,
+  `FreeBsdBudgetTest`, `OpenBsdBudgetTest`, `PacmanBudgetTest`
+- **Integer overflow**: Safe arithmetic (`Math.addExact`) in offset calculations —
+  `HeaderStrictAccessorTest.overflowedOffsetRejectedByIntAccessors`, `HeaderParserCapTest`
+- **Resource exhaustion**: Limits on array sizes and string lengths — RPM header caps
+  (100k entries / 64 MiB data store, `HeaderParserCapTest`), entry-count caps, 10 MiB
+  metadata-member caps
+- **Strict truncation**: truncated archives throw instead of returning partial data —
+  `TruncationSweepBombTest`, `CpioSecurityTest`, `ArArchiveSecurityTest`
+- **Stream exception boundary**: mid-stream corruption surfaces as the documented
+  `BaharatStreamException` (never a bare `RuntimeException`) — `StreamBoundaryAndCriticalTagsTest`
+- **Extractor write-through protection**: extraction refuses to write or delete through
+  archive-created symlinks — `ExtractorSymlinkWriteThroughTest`
+- **Property-based fuzzing** (jqwik): `PackageReaderFuzzBombTest`
 
 For security-sensitive applications, always verify package signatures before trusting content.
+
+See [docs/adr/](docs/adr/) for the architecture decision records.
 
 ---
 

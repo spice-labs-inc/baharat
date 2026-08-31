@@ -15,10 +15,13 @@
  */
 package io.spicelabs.baharat.deb;
 
+import io.spicelabs.baharat.BaharatStreamException;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.PackageException;
 import io.spicelabs.baharat.PackageFormat;
 import io.spicelabs.baharat.adapter.InputStreamSource;
+import io.spicelabs.baharat.common.BudgetLimits;
+import io.spicelabs.baharat.common.CountedLimitedInputStream;
 import io.spicelabs.baharat.common.FileInfo;
 import io.spicelabs.baharat.common.SecurityUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -137,6 +140,16 @@ public final class DebReader {
      */
     private static @NotNull DebPackage readFromStream(@NotNull InputStream input, @NotNull String name)
             throws PackageException, IOException {
+        return readFromStream(input, name, BudgetLimits.DEFAULT);
+    }
+
+    /**
+     * Package-private overload with explicit budgets so
+     * boundary tests can use small injected values.
+     */
+    static @NotNull DebPackage readFromStream(@NotNull InputStream input, @NotNull String name,
+                                              @NotNull BudgetLimits limits)
+            throws PackageException, IOException {
         ArArchiveReader ar = new ArArchiveReader(input);
         ar.readHeader();
 
@@ -144,17 +157,24 @@ public final class DebReader {
         DebControlParser.ParseResult controlResult = null;
         List<FileInfo> files = new ArrayList<>();
 
+        int arMembers = 0;
         ArArchiveReader.ArEntry entry;
         while ((entry = ar.nextEntry()) != null) {
+            if (++arMembers > limits.maxEntries()) {
+                throw new PackageException.InvalidPackageException(
+                        "DEB archive exceeds maximum member count: " + limits.maxEntries(),
+                        PackageFormat.DEB);
+            }
             String entryName = entry.name();
             log.trace("Processing ar entry: {}", entryName);
 
             if (entryName.equals("debian-binary")) {
-                debianBinaryVersion = readDebianBinary(ar.getEntryInputStream(entry));
+                debianBinaryVersion = readDebianBinary(ar.getEntryInputStream(entry), limits.memberCap());
             } else if (entryName.startsWith("control.tar")) {
-                controlResult = readControlTarWithRaw(ar.getEntryInputStream(entry), entryName);
+                controlResult = readControlTarWithRaw(ar.getEntryInputStream(entry), entryName,
+                        limits.memberCap());
             } else if (entryName.startsWith("data.tar")) {
-                files = readDataTarFileList(ar.getEntryInputStream(entry), entryName);
+                files = readDataTarFileList(ar.getEntryInputStream(entry), entryName, limits);
             }
         }
 
@@ -262,15 +282,21 @@ public final class DebReader {
         }
     }
 
-    private static @NotNull String readDebianBinary(@NotNull InputStream in) throws IOException {
+    private static @NotNull String readDebianBinary(@NotNull InputStream in, long memberCap)
+            throws IOException {
+        // Capped read: debian-binary is tiny; a hostile member must not be
+        // materialized unbounded.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
+        in = new CountedLimitedInputStream(in, memberCap, "debian-binary");
         in.transferTo(out);
         return out.toString(StandardCharsets.UTF_8).trim();
     }
 
     private static @NotNull DebControlParser.ParseResult readControlTarWithRaw(
-            @NotNull InputStream in, @NotNull String name) throws IOException, PackageException {
+            @NotNull InputStream in, @NotNull String name, long memberCap)
+            throws IOException, PackageException {
         InputStream decompressed = decompressStream(in, name);
+        decompressed = new CountedLimitedInputStream(decompressed, memberCap, "control.tar");
         TarArchiveInputStream tar = new TarArchiveInputStream(decompressed);
 
         TarArchiveEntry entry;
@@ -286,14 +312,23 @@ public final class DebReader {
                 "Missing control file in control.tar", PackageFormat.DEB);
     }
 
-    private static @NotNull List<FileInfo> readDataTarFileList(@NotNull InputStream in, @NotNull String name)
-            throws IOException {
+    private static @NotNull List<FileInfo> readDataTarFileList(@NotNull InputStream in,
+                                                               @NotNull String name,
+                                                               @NotNull BudgetLimits limits)
+            throws IOException, PackageException {
         InputStream decompressed = decompressStream(in, name);
+        decompressed = new CountedLimitedInputStream(decompressed, limits.decompressedCap(), "data.tar");
         TarArchiveInputStream tar = new TarArchiveInputStream(decompressed);
 
         List<FileInfo> files = new ArrayList<>();
         TarArchiveEntry entry;
+        int entryCount = 0;
         while ((entry = tar.getNextEntry()) != null) {
+            if (++entryCount > limits.maxEntries()) {
+                throw new PackageException.InvalidPackageException(
+                        "DEB data.tar exceeds maximum entry count: " + limits.maxEntries(),
+                        PackageFormat.DEB);
+            }
             String path = entry.getName();
             // Normalize path - remove leading ./
             if (path.startsWith("./")) {
@@ -324,9 +359,10 @@ public final class DebReader {
                 linkTarget = java.util.Optional.of(validatedTarget);
             }
 
+            long entrySize = entry.isSparse() ? entry.getRealSize() : entry.getSize();
             files.add(new FileInfo(
                     path,
-                    entry.getSize(),
+                    entrySize,
                     mode,
                     entry.getLastModifiedDate().toInstant(),
                     entry.getUserName() != null ? entry.getUserName() : "root",
@@ -364,6 +400,7 @@ public final class DebReader {
         private final TarArchiveInputStream tar;
         private TarArchiveEntry nextEntry;
         private boolean done = false;
+        private IOException pendingFailure = null;
 
         TarEntryIterator(TarArchiveInputStream tar) {
             this.tar = tar;
@@ -377,17 +414,30 @@ public final class DebReader {
                     done = true;
                 }
             } catch (IOException e) {
+                // Strict truncation: a corrupt or truncated tar must
+                // surface loudly instead of silently ending the stream with partial data.
                 done = true;
+                pendingFailure = e;
+            }
+        }
+
+        private void failIfPending() {
+            if (pendingFailure != null) {
+                throw new BaharatStreamException(
+                        "Corrupt or truncated tar archive: " + pendingFailure.getMessage(),
+                        PackageFormat.DEB, pendingFailure);
             }
         }
 
         @Override
         public boolean hasNext() {
+            failIfPending();
             return !done && nextEntry != null;
         }
 
         @Override
         public PackageEntry next() {
+            failIfPending();
             TarArchiveEntry current = nextEntry;
             advance();
 
@@ -411,16 +461,20 @@ public final class DebReader {
                 // Security: Validate symlink target for path traversal
                 String validatedTarget = SecurityUtils.validateSymlinkTarget(linkTarget, path);
                 if (validatedTarget == null) {
-                    throw new RuntimeException(new PackageException.InvalidPackageException(
+                    throw new BaharatStreamException(
                             "Dangerous symlink target detected for " + path + ": " + linkTarget,
-                            PackageFormat.DEB));
+                            PackageFormat.DEB, new PackageException.InvalidPackageException(
+                                    "Dangerous symlink target detected for " + path + ": " + linkTarget,
+                                    PackageFormat.DEB));
                 }
                 return new PackageEntry.SymlinkEntry(path, mode | FileInfo.S_IFLNK, mtime, user, group,
                         validatedTarget);
             } else {
-                // Regular file - wrap the tar stream in a bounded stream
+                // Regular file - wrap the tar stream in a bounded stream. Sparse entries
+                // expose their REAL size (the logical size is attacker-controlled).
+                long entrySize = current.isSparse() ? current.getRealSize() : current.getSize();
                 return new PackageEntry.FileEntry(path, mode | FileInfo.S_IFREG, mtime, user, group,
-                        current.getSize(), new BoundedTarInputStream(tar, current.getSize()));
+                        entrySize, new BoundedTarInputStream(tar, entrySize, !current.isSparse()));
             }
         }
     }
@@ -431,17 +485,23 @@ public final class DebReader {
     private static class BoundedTarInputStream extends InputStream {
         private final TarArchiveInputStream tar;
         private long remaining;
+        private final boolean enforceTruncation;
 
-        BoundedTarInputStream(TarArchiveInputStream tar, long size) {
+        BoundedTarInputStream(TarArchiveInputStream tar, long size, boolean enforceTruncation) {
             this.tar = tar;
             this.remaining = size;
+            this.enforceTruncation = enforceTruncation;
         }
 
         @Override
         public int read() throws IOException {
             if (remaining <= 0) return -1;
             int b = tar.read();
-            if (b >= 0) remaining--;
+            if (b >= 0) {
+                remaining--;
+            } else if (remaining > 0 && enforceTruncation) {
+                throw new IOException("Truncated tar entry: " + remaining + " bytes missing");
+            }
             return b;
         }
 
@@ -450,7 +510,11 @@ public final class DebReader {
             if (remaining <= 0) return -1;
             int toRead = (int) Math.min(len, remaining);
             int read = tar.read(b, off, toRead);
-            if (read > 0) remaining -= read;
+            if (read > 0) {
+                remaining -= read;
+            } else if (read < 0 && remaining > 0 && enforceTruncation) {
+                throw new IOException("Truncated tar entry: " + remaining + " bytes missing");
+            }
             return read;
         }
 

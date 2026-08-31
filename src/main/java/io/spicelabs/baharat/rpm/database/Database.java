@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -312,15 +313,18 @@ public final class Database implements AutoCloseable {
         return Files.exists(DEFAULT_DB_PATH) && isSqliteDatabase(DEFAULT_DB_PATH);
     }
 
-    private static boolean isSqliteDatabase(Path path) {
-        try {
-            byte[] header = Files.readAllBytes(path);
+    static boolean isSqliteDatabase(Path path) {
+        // Read ONLY the 16 magic bytes — the previous
+        // Files.readAllBytes materialized the entire RPM database (hundreds of MB) to
+        // inspect a 16-byte header.
+        try (InputStream in = Files.newInputStream(path)) {
+            byte[] header = in.readNBytes(16);
             if (header.length < 16) {
                 return false;
             }
             // SQLite database files start with "SQLite format 3"
             return header[0] == 'S' && header[1] == 'Q' && header[2] == 'L' &&
-                   header[3] == 'i' && header[4] == 't' && header[5] == 'e';
+                    header[3] == 'i' && header[4] == 't' && header[5] == 'e';
         } catch (IOException e) {
             return false;
         }

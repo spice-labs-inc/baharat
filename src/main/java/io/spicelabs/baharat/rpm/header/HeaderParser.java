@@ -48,6 +48,20 @@ public final class HeaderParser {
 
     private static final int HEADER_INTRO_SIZE = 16;
     private static final int RESERVED_VALUE = 0;
+    private static final int INDEX_ENTRY_SIZE = 16;
+
+    /**
+     * Maximum index entries accepted in any header (matches {@link Header#MAX_ARRAY_SIZE};
+     * real RPMs have thousands, never 100k).
+     */
+    static final int MAX_ENTRY_COUNT = Header.MAX_ARRAY_SIZE;
+
+    /**
+     * Maximum data-store bytes accepted in any header. 64 MiB is far above any legitimate
+     * RPM (even 100k-entry packages stay below ~15 MiB) while blocking multi-GiB hostile
+     * allocations.
+     */
+    static final int MAX_DATA_SIZE = 64 * 1024 * 1024;
 
     private HeaderParser() {
         // Utility class
@@ -63,6 +77,16 @@ public final class HeaderParser {
      * @throws IOException if an I/O error occurs
      */
     public static @NotNull Header parse(@NotNull BinaryReader reader, boolean alignAfter)
+            throws InvalidFormatException, IOException {
+        return parse(reader, alignAfter, MAX_ENTRY_COUNT, MAX_DATA_SIZE);
+    }
+
+    /**
+     * Package-private overload with explicit caps so
+     * boundary tests can exercise the limits with small injected values.
+     */
+    static @NotNull Header parse(@NotNull BinaryReader reader, boolean alignAfter,
+                                 int maxEntryCount, int maxDataSize)
             throws InvalidFormatException, IOException {
 
         long startPosition = reader.position();
@@ -88,11 +112,23 @@ public final class HeaderParser {
         int dataSize = reader.readInt();
         log.trace("Header entry count: {}, data size: {}", entryCount, dataSize);
 
-        if (entryCount < 0) {
-            throw new InvalidFormatException("Invalid entry count: " + entryCount);
+        // Validate-BEFORE-allocate: both fields are hostile;
+        // unbounded allocations from a 4-byte field are the OOM class. The caps are
+        // generous for any legitimate RPM (100k entries / 64 MiB data store).
+        if (entryCount < 0 || entryCount > maxEntryCount) {
+            throw new InvalidFormatException(String.format(
+                    "Invalid entry count: %d (max %d)", entryCount, maxEntryCount));
         }
-        if (dataSize < 0) {
-            throw new InvalidFormatException("Invalid data size: " + dataSize);
+        if (dataSize < 0 || dataSize > maxDataSize) {
+            throw new InvalidFormatException(String.format(
+                    "Invalid data size: %d (max %d)", dataSize, maxDataSize));
+        }
+        // Overflow-check the index-table arithmetic before allocating.
+        try {
+            Math.multiplyExact(entryCount, INDEX_ENTRY_SIZE);
+        } catch (ArithmeticException e) {
+            throw new InvalidFormatException(
+                    "Invalid entry count (index table size overflow): " + entryCount);
         }
 
         // Read index entries

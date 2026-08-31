@@ -15,6 +15,7 @@
  */
 package io.spicelabs.baharat.rpm.payload;
 
+import io.spicelabs.baharat.BaharatStreamException;
 import io.spicelabs.baharat.rpm.exception.InvalidFormatException;
 import io.spicelabs.baharat.rpm.io.BoundedInputStream;
 import org.jetbrains.annotations.NotNull;
@@ -118,8 +119,13 @@ public final class CpioArchiveReader implements AutoCloseable {
         byte[] headerBytes = new byte[HEADER_SIZE];
         int read = readFully(input, headerBytes);
         if (read < HEADER_SIZE) {
+            // Strict truncation: a CPIO archive whose header is cut off
+            // is CORRUPT — the trailer entry is mandatory, so a clean end-of-stream can
+            // only occur right after TRAILER!!! (handled by the `finished` flag above).
             finished = true;
-            return null;
+            throw new InvalidFormatException(
+                    "Truncated CPIO archive: expected " + HEADER_SIZE + "-byte header, got "
+                            + read + " bytes");
         }
 
         String header = new String(headerBytes, StandardCharsets.US_ASCII);
@@ -242,7 +248,9 @@ public final class CpioArchiveReader implements AutoCloseable {
                     hasNext = next != null;
                     needsAdvance = false;
                 } catch (IOException | InvalidFormatException e) {
-                    throw new RuntimeException("Error reading CPIO archive", e);
+                    // Stream-lambda boundary: checked corruption must not be
+                    // wrapped in a bare RuntimeException — use the documented wrapper.
+                    throw new BaharatStreamException("Error reading CPIO archive", e);
                 }
             }
         };
@@ -270,7 +278,9 @@ public final class CpioArchiveReader implements AutoCloseable {
         int offset = 0;
         while (offset < buffer.length) {
             int read = in.read(buffer, offset, buffer.length - offset);
-            if (read < 0) {
+            if (read <= 0) {
+                // read == 0 is no-progress: break so the caller's short-read
+                // check reports truncation instead of spinning forever.
                 break;
             }
             offset += read;
@@ -284,7 +294,11 @@ public final class CpioArchiveReader implements AutoCloseable {
             long skipped = in.skip(remaining);
             if (skipped <= 0) {
                 if (in.read() < 0) {
-                    break;
+                    // Mid-skip EOF misaligns every subsequent parse — loud error instead
+                    // of silently producing garbage.
+                    throw new IOException(
+                            "Truncated CPIO archive: unexpected end of stream while skipping "
+                                    + count + " padding bytes");
                 }
                 skipped = 1;
             }

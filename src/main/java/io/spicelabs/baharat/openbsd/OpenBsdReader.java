@@ -15,10 +15,13 @@
  */
 package io.spicelabs.baharat.openbsd;
 
+import io.spicelabs.baharat.BaharatStreamException;
 import io.spicelabs.baharat.PackageEntry;
 import io.spicelabs.baharat.PackageException;
 import io.spicelabs.baharat.PackageFormat;
 import io.spicelabs.baharat.adapter.InputStreamSource;
+import io.spicelabs.baharat.common.BudgetLimits;
+import io.spicelabs.baharat.common.CountedLimitedInputStream;
 import io.spicelabs.baharat.common.FileInfo;
 import io.spicelabs.baharat.common.SecurityUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -114,21 +117,42 @@ public final class OpenBsdReader {
 
     private static @NotNull OpenBsdPackage readFromStream(@NotNull InputStream input, @NotNull String name)
             throws PackageException, IOException {
+        return readFromStream(input, name, BudgetLimits.DEFAULT);
+    }
+
+    /**
+     * Package-private overload with explicit budgets.
+     */
+    static @NotNull OpenBsdPackage readFromStream(@NotNull InputStream input, @NotNull String name,
+                                                  @NotNull BudgetLimits limits)
+            throws PackageException, IOException {
         try (InputStream gzip = new GZIPInputStream(input)) {
-            TarArchiveInputStream tar = new TarArchiveInputStream(gzip);
+            CountedLimitedInputStream counted = new CountedLimitedInputStream(
+                    gzip, limits.decompressedCap(), "openbsd package payload");
+            TarArchiveInputStream tar = new TarArchiveInputStream(counted);
 
             ContentsParser.ParseResult contents = null;
             String description = "";
 
             TarArchiveEntry entry;
+            int entryCount = 0;
             while ((entry = tar.getNextEntry()) != null) {
+                if (++entryCount > limits.maxEntries()) {
+                    throw new PackageException.InvalidPackageException(
+                            "OpenBSD package exceeds maximum entry count: " + limits.maxEntries(),
+                            PackageFormat.OPENBSD_PKG);
+                }
                 String entryName = entry.getName();
 
                 if (entryName.equals("+CONTENTS")) {
-                    contents = ContentsParser.parse(tar);
+                    contents = ContentsParser.parse(new CountedLimitedInputStream(
+                            tar, limits.memberCap(), "+CONTENTS"));
                 } else if (entryName.equals("+DESC")) {
+                    // Capped member read.
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
-                    tar.transferTo(out);
+                    CountedLimitedInputStream member = new CountedLimitedInputStream(
+                            tar, limits.memberCap(), "+DESC");
+                    member.transferTo(out);
                     description = out.toString(StandardCharsets.UTF_8).trim();
                 }
             }
@@ -214,6 +238,7 @@ public final class OpenBsdReader {
         private final TarArchiveInputStream tar;
         private TarArchiveEntry nextEntry;
         private boolean done = false;
+        private IOException pendingFailure = null;
 
         TarEntryIterator(TarArchiveInputStream tar) {
             this.tar = tar;
@@ -227,17 +252,30 @@ public final class OpenBsdReader {
                     done = true;
                 }
             } catch (IOException e) {
+                // Strict truncation: a corrupt or truncated tar must
+                // surface loudly instead of silently ending the stream with partial data.
                 done = true;
+                pendingFailure = e;
+            }
+        }
+
+        private void failIfPending() {
+            if (pendingFailure != null) {
+                throw new BaharatStreamException(
+                        "Corrupt or truncated tar archive: " + pendingFailure.getMessage(),
+                        PackageFormat.OPENBSD_PKG, pendingFailure);
             }
         }
 
         @Override
         public boolean hasNext() {
+            failIfPending();
             return !done && nextEntry != null;
         }
 
         @Override
         public PackageEntry next() {
+            failIfPending();
             TarArchiveEntry current = nextEntry;
             advance();
 
@@ -254,15 +292,17 @@ public final class OpenBsdReader {
                 // Security: Validate symlink target for path traversal
                 String validatedTarget = SecurityUtils.validateSymlinkTarget(linkTarget, path);
                 if (validatedTarget == null) {
-                    throw new RuntimeException(new PackageException.InvalidPackageException(
+                    throw new BaharatStreamException(
                             "Dangerous symlink target detected for " + path + ": " + linkTarget,
-                            PackageFormat.OPENBSD_PKG));
+                            PackageFormat.OPENBSD_PKG, new PackageException.InvalidPackageException(
+                                    "Dangerous symlink target detected for " + path + ": " + linkTarget,
+                                    PackageFormat.OPENBSD_PKG));
                 }
                 return new PackageEntry.SymlinkEntry(path, mode | FileInfo.S_IFLNK, mtime, user, group,
                         validatedTarget);
             } else {
                 return new PackageEntry.FileEntry(path, mode | FileInfo.S_IFREG, mtime, user, group,
-                        current.getSize(), new BoundedTarInputStream(tar, current.getSize()));
+                        current.getSize(), new BoundedTarInputStream(tar, current.getSize(), !current.isSparse()));
             }
         }
     }
@@ -270,17 +310,23 @@ public final class OpenBsdReader {
     private static class BoundedTarInputStream extends InputStream {
         private final TarArchiveInputStream tar;
         private long remaining;
+        private final boolean enforceTruncation;
 
-        BoundedTarInputStream(TarArchiveInputStream tar, long size) {
+        BoundedTarInputStream(TarArchiveInputStream tar, long size, boolean enforceTruncation) {
             this.tar = tar;
             this.remaining = size;
+            this.enforceTruncation = enforceTruncation;
         }
 
         @Override
         public int read() throws IOException {
             if (remaining <= 0) return -1;
             int b = tar.read();
-            if (b >= 0) remaining--;
+            if (b >= 0) {
+                remaining--;
+            } else if (remaining > 0 && enforceTruncation) {
+                throw new IOException("Truncated tar entry: " + remaining + " bytes missing");
+            }
             return b;
         }
 
@@ -289,7 +335,11 @@ public final class OpenBsdReader {
             if (remaining <= 0) return -1;
             int toRead = (int) Math.min(len, remaining);
             int read = tar.read(b, off, toRead);
-            if (read > 0) remaining -= read;
+            if (read > 0) {
+                remaining -= read;
+            } else if (read < 0 && remaining > 0 && enforceTruncation) {
+                throw new IOException("Truncated tar entry: " + remaining + " bytes missing");
+            }
             return read;
         }
 

@@ -264,7 +264,9 @@ class CpioSecurityTest {
 
     @Test
     void handlesTruncatedFileData() throws Exception {
-        // Create archive with file claiming 1000 bytes but only 100 available
+        // Updated with user approval (2026-08-28): truncated file
+        // content must surface LOUDLY (IOException) instead of being returned silently
+        // (silent partial data is the worst class).
         byte[] archive = createCpioArchiveWithTruncatedData("test.txt", 1000, 100);
         ByteArrayInputStream in = new ByteArrayInputStream(archive);
 
@@ -273,9 +275,9 @@ class CpioSecurityTest {
             assertThat(entry).isNotNull();
             assertThat(entry.size()).isEqualTo(1000);
 
-            // Try to read all data - should get truncated
-            byte[] data = entry.dataStream().readAllBytes();
-            assertThat(data.length).isLessThan(1000);
+            assertThatThrownBy(() -> entry.dataStream().readAllBytes())
+                    .isInstanceOf(java.io.IOException.class)
+                    .hasMessageContaining("Truncated");
         }
     }
 
@@ -283,7 +285,9 @@ class CpioSecurityTest {
 
     @Test
     void handlesMissingTrailer() throws Exception {
-        // Create entry without TRAILER!!!
+        // Updated with user approval (2026-08-28): a CPIO archive
+        // without the mandatory TRAILER!!! entry is CORRUPT — it must throw instead of
+        // silently ending the iteration.
         byte[] entry = createCpioEntry("test.txt", "content", 0100644);
         ByteArrayInputStream in = new ByteArrayInputStream(entry);
 
@@ -291,9 +295,9 @@ class CpioSecurityTest {
             CpioArchiveReader.CpioEntry first = reader.nextEntry();
             assertThat(first).isNotNull();
 
-            // Second call should return null (end of data)
-            CpioArchiveReader.CpioEntry second = reader.nextEntry();
-            assertThat(second).isNull();
+            assertThatThrownBy(reader::nextEntry)
+                    .isInstanceOf(InvalidFormatException.class)
+                    .hasMessageContaining("Truncated CPIO archive");
         }
     }
 

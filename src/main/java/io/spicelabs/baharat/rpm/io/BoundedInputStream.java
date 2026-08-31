@@ -54,6 +54,8 @@ public final class BoundedInputStream extends InputStream {
         int result = source.read();
         if (result >= 0) {
             remaining--;
+        } else {
+            checkTruncated(1);
         }
         return result;
     }
@@ -73,8 +75,22 @@ public final class BoundedInputStream extends InputStream {
         int read = source.read(b, off, toRead);
         if (read > 0) {
             remaining -= read;
+        } else if (read < 0) {
+            checkTruncated(toRead);
         }
         return read;
+    }
+
+    /**
+     * The delegate ended before this bounded section was fully consumed: the enclosing
+     * archive is truncated (silently returning partial content would surface
+     * wrong data with no error signal).
+     */
+    private void checkTruncated(int attempted) throws IOException {
+        if (remaining > 0) {
+            throw new IOException("Truncated bounded section: expected " + remaining
+                    + " more bytes, underlying stream ended after " + attempted + " requested");
+        }
     }
 
     @Override
@@ -105,15 +121,18 @@ public final class BoundedInputStream extends InputStream {
      * This should be called to ensure the underlying stream is positioned
      * at the end of this section.
      *
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs, or the underlying stream ends before the
+     *         section is fully consumed (truncated archive).
      */
     public void skipRemaining() throws IOException {
         while (remaining > 0) {
             long skipped = source.skip(remaining);
             if (skipped <= 0) {
                 // skip() returned 0, try reading
-                if (source.read() < 0) {
-                    break;
+                int read = source.read();
+                if (read < 0) {
+                    throw new IOException("Truncated bounded section: expected " + remaining
+                            + " more bytes, underlying stream ended");
                 }
                 skipped = 1;
             }

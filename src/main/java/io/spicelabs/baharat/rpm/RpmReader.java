@@ -142,6 +142,11 @@ public final class RpmReader {
         Header header = HeaderParser.parse(reader, false);
         log.trace("Main header parsed: {} entries", header.entries().size());
 
+        // Critical-tag validation: a header whose
+        // name/version/arch tags are missing or corrupt is NOT a usable package — fail
+        // loud at open instead of surfacing empty metadata silently.
+        requireCriticalTags(header);
+
         // Record payload offset
         long payloadOffset = reader.position();
         log.trace("Payload starts at offset: {}", payloadOffset);
@@ -170,6 +175,7 @@ public final class RpmReader {
             Header signatureHeader = HeaderParser.parse(reader, true);
             Header header = HeaderParser.parse(reader, false);
 
+            requireCriticalTags(header);
             PackageMetadata metadata = new PackageMetadata(header);
             log.debug("Streaming payload for: {}-{}", metadata.name(), metadata.version());
 
@@ -213,6 +219,7 @@ public final class RpmReader {
         Header signatureHeader = HeaderParser.parse(reader, true);
         Header header = HeaderParser.parse(reader, false);
 
+        requireCriticalTags(header);
         PackageMetadata metadata = new PackageMetadata(header);
 
         // Create payload reader
@@ -242,6 +249,7 @@ public final class RpmReader {
             Header signatureHeader = HeaderParser.parse(reader, true);
             Header header = HeaderParser.parse(reader, false);
 
+            requireCriticalTags(header);
             PackageMetadata metadata = new PackageMetadata(header);
             log.debug("PayloadReader ready for: {}-{}", metadata.name(), metadata.version());
 
@@ -264,6 +272,22 @@ public final class RpmReader {
      */
     public static @NotNull PackageMetadata readMetadata(@NotNull Path path) throws FormatException, IOException {
         return read(path).rpmMetadata();
+    }
+
+    /** Loud rejection when the main header lacks the mandatory NAME/VERSION/ARCH tags. */
+    private static void requireCriticalTags(@NotNull Header header) throws FormatException {
+        if (header.getString(io.spicelabs.baharat.rpm.header.HeaderTag.NAME.tag()).isEmpty()) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "RPM header missing required NAME tag");
+        }
+        if (header.getString(io.spicelabs.baharat.rpm.header.HeaderTag.VERSION.tag()).isEmpty()) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "RPM header missing required VERSION tag");
+        }
+        if (header.getString(io.spicelabs.baharat.rpm.header.HeaderTag.ARCH.tag()).isEmpty()) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "RPM header missing required ARCH tag");
+        }
     }
 
     /**
