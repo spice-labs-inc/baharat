@@ -65,8 +65,9 @@ public final class Header {
     public static final int MAGIC = 0x8EADE801;
 
     // Security limits to prevent DoS attacks
-    // Reduced from 1M to 100K - typical packages have thousands of files, not millions
-    private static final int MAX_ARRAY_SIZE = 100_000; // Max elements in any array
+    // Reduced from 1M to 100K - typical packages have thousands of files, not millions.
+    // Package-private so HeaderParser can apply the same bound at PARSE time (finding B1).
+    static final int MAX_ARRAY_SIZE = 100_000; // Max elements in any array
 
     private final List<IndexEntry> entries;
     private final Map<Integer, IndexEntry> entriesByTag;
@@ -166,9 +167,11 @@ public final class Header {
                 List<String> strings = new ArrayList<>(Math.min(entry.count(), 1000));
                 int offset = entry.offset();
                 for (int i = 0; i < entry.count(); i++) {
-                    // Validate offset before reading
+                    // Validate offset before reading. A mid-array out-of-bounds means the
+                    // entry's declared count does not match the data store — CORRUPT. The
+                    // whole array is unavailable, never a silently partial list (catalog §6).
                     if (offset < 0 || offset >= dataStore.length) {
-                        break;
+                        return Optional.empty();
                     }
                     String s = readNullTerminatedString(offset);
                     strings.add(s);
@@ -202,7 +205,7 @@ public final class Header {
                 case INT64 -> 8;
                 default -> 0;
             };
-            if (size == 0 || offset < 0 || offset + size > dataStore.length) {
+            if (size == 0 || offset < 0 || !boundsOk(offset, size)) {
                 return Optional.empty();
             }
             ByteBuffer buffer = ByteBuffer.wrap(dataStore).order(ByteOrder.BIG_ENDIAN);
@@ -233,7 +236,7 @@ public final class Header {
                 case INT64 -> 8;
                 default -> 0;
             };
-            if (size == 0 || offset < 0 || offset + size > dataStore.length) {
+            if (size == 0 || offset < 0 || !boundsOk(offset, size)) {
                 return Optional.empty();
             }
             ByteBuffer buffer = ByteBuffer.wrap(dataStore).order(ByteOrder.BIG_ENDIAN);
@@ -386,6 +389,74 @@ public final class Header {
             }
             return Optional.empty();
         });
+    }
+
+    /** Overflow-safe bounds check (finding B10): offset + size with raw + wraps negative
+     *  for offsets near Integer.MAX_VALUE, passing the check and then throwing an
+     *  unchecked IndexOutOfBoundsException from an Optional accessor. */
+    private boolean boundsOk(int offset, int size) {
+        int end;
+        try {
+            end = Math.addExact(offset, size);
+        } catch (ArithmeticException e) {
+            return false;
+        }
+        return end <= dataStore.length;
+    }
+
+    /**
+     * Strict variant of {@link #getString(int)}: corruption (type mismatch, out-of-bounds)
+     * throws instead of returning empty (Fresh Scent Phase 6, decision D4).
+     *
+     * @throws InvalidFormatException if the tag exists but is corrupt
+     */
+    public @NotNull String getStringStrict(int tag) throws io.spicelabs.baharat.rpm.exception.InvalidFormatException {
+        IndexEntry entry = entriesByTag.get(tag);
+        if (entry == null) {
+            return "";
+        }
+        if (entry.type() != TagType.STRING && entry.type() != TagType.I18N_STRING) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "Tag " + tag + " is not a string tag");
+        }
+        if (entry.offset() < 0 || entry.offset() >= dataStore.length) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "Tag " + tag + " offset out of bounds: " + entry.offset());
+        }
+        return readNullTerminatedString(entry.offset());
+    }
+
+    /**
+     * Strict variant of {@link #getInt(int)}: corruption throws instead of returning empty.
+     *
+     * @throws InvalidFormatException if the tag exists but is corrupt
+     */
+    public int getIntStrict(int tag) throws io.spicelabs.baharat.rpm.exception.InvalidFormatException {
+        IndexEntry entry = entriesByTag.get(tag);
+        if (entry == null) {
+            return 0;
+        }
+        int size = switch (entry.type()) {
+            case INT8 -> 1;
+            case INT16 -> 2;
+            case INT32 -> 4;
+            case INT64 -> 8;
+            default -> throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "Tag " + tag + " is not an integer tag");
+        };
+        if (entry.offset() < 0 || !boundsOk(entry.offset(), size)) {
+            throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "Tag " + tag + " offset out of bounds: " + entry.offset());
+        }
+        ByteBuffer buffer = ByteBuffer.wrap(dataStore).order(ByteOrder.BIG_ENDIAN);
+        return switch (entry.type()) {
+            case INT8 -> buffer.get(entry.offset());
+            case INT16 -> buffer.getShort(entry.offset());
+            case INT32 -> buffer.getInt(entry.offset());
+            case INT64 -> (int) buffer.getLong(entry.offset());
+            default -> throw new io.spicelabs.baharat.rpm.exception.InvalidFormatException(
+                    "Tag " + tag + " is not an integer tag");
+        };
     }
 
     private @NotNull String readNullTerminatedString(int offset) {

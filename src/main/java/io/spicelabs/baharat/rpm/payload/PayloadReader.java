@@ -15,6 +15,8 @@
  */
 package io.spicelabs.baharat.rpm.payload;
 
+import io.spicelabs.baharat.BaharatStreamException;
+import io.spicelabs.baharat.PackageFormat;
 import io.spicelabs.baharat.rpm.exception.InvalidFormatException;
 import io.spicelabs.baharat.rpm.exception.UnsupportedFormatException;
 import io.spicelabs.baharat.rpm.metadata.FileInfo;
@@ -146,8 +148,9 @@ public final class PayloadReader implements AutoCloseable {
             // Security: Validate path for traversal attacks
             String validatedPath = validatePath(path);
             if (validatedPath == null) {
-                throw new RuntimeException(new InvalidFormatException(
-                        "Path traversal detected in payload entry: " + path));
+                throw new BaharatStreamException("Path traversal detected in payload entry: " + path,
+                        PackageFormat.RPM, new InvalidFormatException(
+                                "Path traversal detected in payload entry: " + path));
             }
             path = validatedPath;
 
@@ -170,13 +173,15 @@ public final class PayloadReader implements AutoCloseable {
                 try {
                     target = cpioEntry.readLinkTarget();
                 } catch (IOException e) {
-                    throw new RuntimeException("Failed to read symlink target", e);
+                    throw new BaharatStreamException("Failed to read symlink target", e);
                 }
                 // Security: Validate symlink target for path traversal
                 String validatedTarget = validateSymlinkTarget(target, path);
                 if (validatedTarget == null) {
-                    throw new RuntimeException(new InvalidFormatException(
-                            "Dangerous symlink target detected for " + path + ": " + target));
+                    throw new BaharatStreamException(
+                            "Dangerous symlink target detected for " + path + ": " + target,
+                            PackageFormat.RPM, new InvalidFormatException(
+                                    "Dangerous symlink target detected for " + path + ": " + target));
                 }
                 return new PayloadEntry.SymlinkEntry(
                         path,

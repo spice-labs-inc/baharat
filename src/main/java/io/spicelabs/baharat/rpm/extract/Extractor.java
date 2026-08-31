@@ -170,12 +170,50 @@ public final class Extractor {
             return;
         }
 
+        // Security (Fresh Scent Phase 6, finding B13, decision D7): a PREVIOUS archive
+        // entry may have created a symlink anywhere in the parent chain of this path.
+        // Writing or deleting through it would operate OUTSIDE the target directory
+        // (e.g. [symlink "etc" -> /etc, file "etc/passwd"] would clobber /etc/passwd).
+        // Verify every component is a real directory before operating.
+        verifySafeParents(targetDir, targetPath);
+
         if (entry instanceof PayloadEntry.DirectoryEntry dir) {
             extractDirectory(dir, targetPath, extracted);
         } else if (entry instanceof PayloadEntry.SymlinkEntry symlink) {
             extractSymlink(symlink, targetPath, extracted, skipped);
         } else if (entry instanceof PayloadEntry.FileEntry file) {
             extractFile(file, targetPath, extracted);
+        }
+    }
+
+    /**
+     * Verifies that the parent chain of {@code targetPath} contains no symlink components
+     * and resolves (realpath) inside {@code targetDir}. Fails loud on any violation —
+     * never write or delete through an archive-created symlink (catalog §6/§7).
+     */
+    private void verifySafeParents(@NotNull Path targetDir, @NotNull Path targetPath)
+            throws IOException {
+        Path parent = targetPath.getParent();
+        if (parent == null) {
+            return;
+        }
+        Path current = targetDir;
+        for (Path component : targetDir.relativize(parent)) {
+            current = current.resolve(component);
+            if (Files.isSymbolicLink(current)) {
+                throw new IOException(
+                        "Refusing to write through symlink component: " + current);
+            }
+        }
+        // Final containment check via realpath (also catches symlinks created AFTER a
+        // component was verified, and races with external actors).
+        if (Files.exists(parent, LinkOption.NOFOLLOW_LINKS)) {
+            Path realParent = parent.toRealPath();
+            Path realTarget = targetDir.toRealPath();
+            if (!realParent.startsWith(realTarget)) {
+                throw new IOException(
+                        "Refusing to write outside target directory via symlink: " + targetPath);
+            }
         }
     }
 

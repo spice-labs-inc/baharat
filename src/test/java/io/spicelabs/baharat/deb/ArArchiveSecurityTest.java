@@ -53,17 +53,16 @@ class ArArchiveSecurityTest {
 
     @Test
     void handlesNegativeSize() throws Exception {
-        // Note: Long.parseLong accepts negative values, so the parser accepts them
-        // This documents the current behavior - negative sizes don't throw during parsing
+        // Updated with user approval (2026-08-28, Fresh Scent Phase 6): negative ar entry
+        // sizes are now REJECTED — the old behavior silently accepted them and skipped all
+        // member content (catalog §4/§6).
         byte[] archive = createArArchiveWithBadSize("test.txt", "-12345    ");
         ByteArrayInputStream in = new ByteArrayInputStream(archive);
 
         try (ArArchiveReader reader = new ArArchiveReader(in)) {
-            ArArchiveReader.ArEntry entry = reader.nextEntry();
-            // Parser accepts negative size - this may be a security consideration
-            // for callers who should validate entry.size() >= 0
-            assertThat(entry).isNotNull();
-            assertThat(entry.size()).isLessThan(0);
+            assertThatThrownBy(reader::nextEntry)
+                    .isInstanceOf(PackageException.InvalidPackageException.class)
+                    .hasMessageContaining("Negative ar entry size");
         }
     }
 

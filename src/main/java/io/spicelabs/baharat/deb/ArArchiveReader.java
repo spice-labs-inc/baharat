@@ -118,8 +118,13 @@ public final class ArArchiveReader implements AutoCloseable {
         // Read entry header
         byte[] header = new byte[HEADER_SIZE];
         int read = input.read(header);
-        if (read <= 0) {
-            return null; // End of archive
+        if (read < 0) {
+            return null; // Clean end of archive
+        }
+        if (read == 0) {
+            // No-progress stream (catalog §5): fail loud, never spin or misparse.
+            throw new PackageException.InvalidPackageException(
+                    "No progress reading ar entry header", PackageFormat.DEB);
         }
         if (read != HEADER_SIZE) {
             throw new PackageException.InvalidPackageException(
@@ -141,6 +146,12 @@ public final class ArArchiveReader implements AutoCloseable {
         int groupId = (int) parseLong(header, 34, 6);
         int mode = (int) parseOctal(header, 40, 8);
         long size = parseLong(header, 48, 10);
+        if (size < 0) {
+            // Negative size would make currentEntryRemaining negative and silently skip
+            // all content (catalog §4/§6).
+            throw new PackageException.InvalidPackageException(
+                    "Negative ar entry size: " + size, PackageFormat.DEB);
+        }
 
         // Handle BSD-style long filenames (name starts with #1/)
         if (name.startsWith("#1/")) {
@@ -219,7 +230,15 @@ public final class ArArchiveReader implements AutoCloseable {
                 int toRead = (int) Math.min(currentEntryRemaining, 8192);
                 byte[] buf = new byte[toRead];
                 int read = input.read(buf);
-                if (read <= 0) break;
+                if (read < 0) {
+                    // Premature EOF mid-member misaligns the archive (catalog §5/§6) —
+                    // loud instead of silently producing garbage later.
+                    throw new IOException("Truncated ar archive: unexpected end of stream "
+                            + "with " + currentEntryRemaining + " bytes remaining");
+                }
+                if (read == 0) {
+                    throw new IOException("No progress skipping ar member content");
+                }
                 currentEntryRemaining -= read;
             } else {
                 currentEntryRemaining -= skipped;
@@ -228,20 +247,33 @@ public final class ArArchiveReader implements AutoCloseable {
         currentEntryRemaining = 0;
     }
 
-    private static long parseLong(byte[] data, int offset, int length) {
+    private static long parseLong(byte[] data, int offset, int length) throws PackageException {
         String str = new String(data, offset, length, StandardCharsets.US_ASCII).trim();
         if (str.isEmpty()) {
             return 0;
         }
-        return Long.parseLong(str);
+        try {
+            return Long.parseLong(str);
+        } catch (NumberFormatException e) {
+            // Hostile non-numeric field: checked PackageException, never an unchecked
+            // NumberFormatException escaping the IOException/PackageException contract
+            // (catalog §7).
+            throw new PackageException.InvalidPackageException(
+                    "Invalid numeric ar field: '" + str + "'", PackageFormat.DEB, e);
+        }
     }
 
-    private static long parseOctal(byte[] data, int offset, int length) {
+    private static long parseOctal(byte[] data, int offset, int length) throws PackageException {
         String str = new String(data, offset, length, StandardCharsets.US_ASCII).trim();
         if (str.isEmpty()) {
             return 0;
         }
-        return Long.parseLong(str, 8);
+        try {
+            return Long.parseLong(str, 8);
+        } catch (NumberFormatException e) {
+            throw new PackageException.InvalidPackageException(
+                    "Invalid octal ar field: '" + str + "'", PackageFormat.DEB, e);
+        }
     }
 
     @Override
@@ -284,6 +316,8 @@ public final class ArArchiveReader implements AutoCloseable {
             if (b >= 0) {
                 remaining--;
                 currentEntryRemaining--;
+            } else {
+                throwTruncated();
             }
             return b;
         }
@@ -298,8 +332,15 @@ public final class ArArchiveReader implements AutoCloseable {
             if (read > 0) {
                 remaining -= read;
                 currentEntryRemaining -= read;
+            } else if (read < 0) {
+                throwTruncated();
             }
             return read;
+        }
+
+        /** Truncated member content must surface loudly (catalog §6). */
+        private void throwTruncated() throws IOException {
+            throw new IOException("Truncated ar member: " + remaining + " bytes missing");
         }
 
         @Override

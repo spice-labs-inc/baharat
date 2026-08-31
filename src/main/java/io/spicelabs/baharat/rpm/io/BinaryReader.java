@@ -182,7 +182,9 @@ public final class BinaryReader {
         int offset = 0;
         while (offset < length) {
             int read = input.read(buffer, offset, length - offset);
-            if (read < 0) {
+            if (read <= 0) {
+                // read == 0 is no-progress (catalog §5): treat as failure rather than
+                // spinning forever on a broken stream.
                 throw new EOFException("Unexpected end of stream at position " + position +
                         ", expected " + length + " bytes but got " + offset);
             }
