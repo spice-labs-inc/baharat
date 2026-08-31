@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * OpenBSD reader budget tests (Fresh Scent Phase 5, B2/B5).
+ * OpenBSD reader budget tests.
  */
 class OpenBsdBudgetTest {
 
@@ -40,7 +40,7 @@ class OpenBsdBudgetTest {
         return TarFixtures.gzipTar(all);
     }
 
-    // Requirement: catalog §2 / finding B5 / plan Phase 5.2
+
     // Theory: the +DESC member read is capped — oversized members fail loud.
     @Test
     void oversizedDescRejected() throws IOException, PackageException {
@@ -54,7 +54,7 @@ class OpenBsdBudgetTest {
                 .hasMessageContaining("Decompressed data exceeds");
     }
 
-    // Requirement: catalog §9 / plan Phase 5.1
+
     @Test
     void entryCountCapEnforced() throws IOException, PackageException {
         java.util.List<TarFixtures.Entry> many = new java.util.ArrayList<>();

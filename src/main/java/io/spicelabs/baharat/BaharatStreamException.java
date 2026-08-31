@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Unchecked exception thrown when a package format violation is detected MID-STREAM by a
- * {@code Stream<...>}-based API (Fresh Scent Phase 4/6, code-smell catalog §7).
+ * {@code Stream<...>}-based API.
  *
  * <p>Java streams cannot propagate checked exceptions, so stream-lambda paths use this
  * dedicated, documented wrapper instead of bare {@link RuntimeException}. Every

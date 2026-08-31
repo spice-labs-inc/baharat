@@ -52,14 +52,14 @@ public final class HeaderParser {
 
     /**
      * Maximum index entries accepted in any header (matches {@link Header#MAX_ARRAY_SIZE};
-     * real RPMs have thousands, never 100k). Fresh Scent Phase 4, finding B1.
+     * real RPMs have thousands, never 100k).
      */
     static final int MAX_ENTRY_COUNT = Header.MAX_ARRAY_SIZE;
 
     /**
      * Maximum data-store bytes accepted in any header. 64 MiB is far above any legitimate
      * RPM (even 100k-entry packages stay below ~15 MiB) while blocking multi-GiB hostile
-     * allocations. Fresh Scent Phase 4, finding B1 (plan decision D3).
+     * allocations.
      */
     static final int MAX_DATA_SIZE = 64 * 1024 * 1024;
 
@@ -82,7 +82,7 @@ public final class HeaderParser {
     }
 
     /**
-     * Package-private overload with explicit caps (Fresh Scent Phase 4, finding B1) so
+     * Package-private overload with explicit caps so
      * boundary tests can exercise the limits with small injected values.
      */
     static @NotNull Header parse(@NotNull BinaryReader reader, boolean alignAfter,
@@ -112,7 +112,7 @@ public final class HeaderParser {
         int dataSize = reader.readInt();
         log.trace("Header entry count: {}, data size: {}", entryCount, dataSize);
 
-        // Validate-BEFORE-allocate (code-smell catalog §3): both fields are hostile;
+        // Validate-BEFORE-allocate: both fields are hostile;
         // unbounded allocations from a 4-byte field are the OOM class. The caps are
         // generous for any legitimate RPM (100k entries / 64 MiB data store).
         if (entryCount < 0 || entryCount > maxEntryCount) {
@@ -123,7 +123,7 @@ public final class HeaderParser {
             throw new InvalidFormatException(String.format(
                     "Invalid data size: %d (max %d)", dataSize, maxDataSize));
         }
-        // Overflow-check the index-table arithmetic before allocating (catalog §4).
+        // Overflow-check the index-table arithmetic before allocating.
         try {
             Math.multiplyExact(entryCount, INDEX_ENTRY_SIZE);
         } catch (ArithmeticException e) {

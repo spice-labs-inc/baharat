@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Pacman reader budget + symlink-policy tests (Fresh Scent Phase 5, B2/B14).
+ * Pacman reader budget and symlink-policy tests.
  */
 class PacmanBudgetTest {
 
@@ -42,7 +42,7 @@ class PacmanBudgetTest {
         return TarFixtures.tar(all);
     }
 
-    // Requirement: catalog §9 / plan Phase 5.1
+
     @Test
     void entryCountCapEnforced() throws IOException, PackageException {
         List<TarFixtures.Entry> many = new ArrayList<>();
@@ -57,7 +57,7 @@ class PacmanBudgetTest {
                 .hasMessageContaining("maximum entry count");
     }
 
-    // Requirement: catalog §6 / finding B14 / plan Phase 5.3 (uniform symlink policy)
+    // Requirement: (uniform symlink policy)
     // Theory: dangerous symlink targets are SKIPPED (previously an EMPTY target was
     //         stored silently); absolute targets are valid metadata (D5 decision).
     @Test

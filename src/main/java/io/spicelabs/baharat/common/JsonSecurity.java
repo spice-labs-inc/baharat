@@ -20,8 +20,7 @@ import io.spicelabs.baharat.PackageFormat;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Depth guard for GSON-based JSON parsing (Fresh Scent Phase 5, finding B12, catalog §8
- * analog).
+ * Depth guard for GSON-based JSON parsing.
  *
  * <p>GSON's {@code JsonParser.parseString} is recursive descent with NO depth limit; a
  * hostile {@code [[[[...]]]]} manifest overflows the stack with a

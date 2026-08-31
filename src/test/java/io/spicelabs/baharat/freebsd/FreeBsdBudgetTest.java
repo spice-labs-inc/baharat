@@ -29,11 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * FreeBSD reader budget + JSON-depth tests (Fresh Scent Phase 5, B2/B5/B12).
+ * FreeBSD reader budget and JSON-depth tests.
  */
 class FreeBsdBudgetTest {
 
-    // Requirement: catalog §2 / finding B5 / plan Phase 5.2
+
     // Theory: the +MANIFEST member read is capped — an oversized member fails loud.
     @Test
     void oversizedManifestRejected() throws IOException, PackageException {
@@ -46,7 +46,7 @@ class FreeBsdBudgetTest {
                 .hasMessageContaining("Decompressed data exceeds");
     }
 
-    // Requirement: catalog §8 analog / finding B12 / plan Phase 5 (JSON depth guard)
+    // Requirement: (JSON depth guard)
     // Theory: a deep-nesting +MANIFEST must be rejected loudly — GSON recursion has no
     //         depth limit and would otherwise die with an uncatchable StackOverflowError.
     @Test
@@ -59,7 +59,7 @@ class FreeBsdBudgetTest {
                 .hasMessageContaining("nesting depth");
     }
 
-    // Requirement: catalog §9 / plan Phase 5.1
+
     @Test
     void entryCountCapEnforced() throws IOException, PackageException {
         // +MANIFEST placed AFTER the files: the entry cap must fire before it is reached

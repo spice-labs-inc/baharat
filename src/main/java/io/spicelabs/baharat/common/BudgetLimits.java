@@ -18,9 +18,9 @@ package io.spicelabs.baharat.common;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Resource budgets for package parsing (Fresh Scent Phase 5, finding B2, catalog §0/§9).
+ * Resource budgets for package parsing.
  *
- * <p>Defaults follow plan decision D3: 2 GiB decompressed data per read pass (loud
+ * <p>Defaults: 2 GiB decompressed data per read pass (loud
  * rejection above — a real-world giant package like texlive-full stays parseable), 100 000
  * entries, 10 MiB per metadata member. All three are injectable through the readers'
  * package-private overloads so boundary tests can use small values.

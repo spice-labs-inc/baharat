@@ -122,14 +122,14 @@ public final class ApkReader {
     }
 
     /**
-     * Package-private overload with explicit budgets (Fresh Scent Phase 5, finding B2).
+     * Package-private overload with explicit budgets.
      */
     static @NotNull ApkPackage readFromStream(@NotNull InputStream input, @NotNull String name,
                                               @NotNull BudgetLimits limits)
             throws PackageException, IOException {
         try (InputStream gzip = new GZIPInputStream(input)) {
             // Decompressed-byte budget: the whole tar is inflated during this metadata
-            // pass (header reads + skips); cap it loudly (catalog §9).
+            // pass (header reads + skips); cap it loudly.
             CountedLimitedInputStream counted = new CountedLimitedInputStream(
                     gzip, limits.decompressedCap(), "apk payload");
             TarArchiveInputStream tar = new TarArchiveInputStream(counted);
@@ -237,8 +237,8 @@ public final class ApkReader {
 
     /**
      * Builds FileInfo for a tar entry, or returns null when the entry must be skipped
-     * (dangerous symlink target — uniform policy across the tar readers, Fresh Scent
-     * Phase 5, finding B14; the previous code stored an EMPTY target silently, catalog §6).
+     * (dangerous symlink target — uniform policy across the tar readers; the previous
+     * code stored an EMPTY target silently).
      */
     private static FileInfo createFileInfo(@NotNull TarArchiveEntry entry) {
         String path = entry.getName();
@@ -295,7 +295,7 @@ public final class ApkReader {
                     done = true;
                 }
             } catch (IOException e) {
-                // Strict truncation (catalog §5/§6): a corrupt or truncated tar must
+                // Strict truncation: a corrupt or truncated tar must
                 // surface loudly instead of silently ending the stream with partial data.
                 done = true;
                 pendingFailure = e;

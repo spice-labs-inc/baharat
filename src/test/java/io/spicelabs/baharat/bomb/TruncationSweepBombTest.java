@@ -35,9 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Truncation-sweep and no-progress tests (Fresh Scent Phase 4, findings B3/B8/B15,
- * catalog §5/§6). Lives in the {@code bomb} package so a reintroduced hang or unbounded
- * loop poisons only the isolated fork.
+ * Truncation-sweep and no-progress tests. Lives in the {@code bomb} package so a
+ * reintroduced hang or unbounded loop poisons only the isolated fork.
  */
 class TruncationSweepBombTest {
 
@@ -67,11 +66,11 @@ class TruncationSweepBombTest {
         return out.toByteArray();
     }
 
-    // Requirement: catalog §6 / finding B3 / plan Phase 4.2
+
     // Theory: EVERY strict prefix of a valid CPIO archive must either parse completely
     //         (full length) or throw — never silently end the iteration with partial data.
     //         Entries delivered before the cut must be IDENTICAL to the full parse
-    //         (content compare, not length — catalog §13).
+    //         (content compare, not length).
     // Revert-check: restoring `finished = true; return null` on short headers makes every
     //               mid-archive cut silently "succeed" with fewer entries.
     @Test
@@ -109,7 +108,7 @@ class TruncationSweepBombTest {
         return names;
     }
 
-    // Requirement: catalog §6 / finding B15 / plan Phase 4.3
+
     // Theory: a member whose content is cut off must surface loudly on read — the bounded
     //         entry stream throws instead of returning silently partial bytes.
     // Revert-check: removing checkTruncated in BoundedInputStream makes readAllBytes
@@ -121,7 +120,7 @@ class TruncationSweepBombTest {
         assertThatThrownBy(stream::readAllBytes).isInstanceOf(IOException.class);
     }
 
-    // Requirement: catalog §5 / finding B8 / plan Phase 4.5
+
     // Theory: a no-progress stream (read returns 0 forever) must terminate with an error,
     //         not spin — BinaryReader.readBytes treats read <= 0 as failure.
     @Test
@@ -142,7 +141,7 @@ class TruncationSweepBombTest {
         assertThatThrownBy(() -> reader.readBytes(16)).isInstanceOf(IOException.class);
     }
 
-    // Requirement: catalog §5 / finding B8 / plan Phase 4.5
+
     // Theory: CpioArchiveReader.readFully treats read <= 0 as end (no spin); the caller's
     //         short-read check then throws InvalidFormatException — loud and terminating.
     @Test
@@ -163,11 +162,9 @@ class TruncationSweepBombTest {
         assertThatThrownBy(reader::nextEntry).isInstanceOf(InvalidFormatException.class);
     }
 
-    // Requirement: catalog §5 / finding B3 / plan Phase 4.2 — mid-archive IOException in
-    //         a tar payload stream surfaces as BaharatStreamException, not silent end.
-    // Theory: covered via the tar readers' TarEntryIterator pending-failure (tested in
-    //         Phase 5 with real tar fixtures through each reader).
-    // Here: a placeholder pin to keep the exception contract visible in the bomb fork.
+    // Theory: a mid-archive IOException in a tar payload stream surfaces as
+    //         BaharatStreamException, not a silent end (covered via the tar readers'
+    //         TarEntryIterator pending-failure path).
     @Test
     void baharatStreamExceptionCarriesCheckedCause() {
         IOException cause = new IOException("boom");

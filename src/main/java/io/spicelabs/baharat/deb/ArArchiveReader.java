@@ -122,7 +122,7 @@ public final class ArArchiveReader implements AutoCloseable {
             return null; // Clean end of archive
         }
         if (read == 0) {
-            // No-progress stream (catalog §5): fail loud, never spin or misparse.
+            // No-progress stream: fail loud, never spin or misparse.
             throw new PackageException.InvalidPackageException(
                     "No progress reading ar entry header", PackageFormat.DEB);
         }
@@ -148,7 +148,7 @@ public final class ArArchiveReader implements AutoCloseable {
         long size = parseLong(header, 48, 10);
         if (size < 0) {
             // Negative size would make currentEntryRemaining negative and silently skip
-            // all content (catalog §4/§6).
+            // all content.
             throw new PackageException.InvalidPackageException(
                     "Negative ar entry size: " + size, PackageFormat.DEB);
         }
@@ -231,7 +231,7 @@ public final class ArArchiveReader implements AutoCloseable {
                 byte[] buf = new byte[toRead];
                 int read = input.read(buf);
                 if (read < 0) {
-                    // Premature EOF mid-member misaligns the archive (catalog §5/§6) —
+                    // Premature EOF mid-member misaligns the archive  —
                     // loud instead of silently producing garbage later.
                     throw new IOException("Truncated ar archive: unexpected end of stream "
                             + "with " + currentEntryRemaining + " bytes remaining");
@@ -257,7 +257,6 @@ public final class ArArchiveReader implements AutoCloseable {
         } catch (NumberFormatException e) {
             // Hostile non-numeric field: checked PackageException, never an unchecked
             // NumberFormatException escaping the IOException/PackageException contract
-            // (catalog §7).
             throw new PackageException.InvalidPackageException(
                     "Invalid numeric ar field: '" + str + "'", PackageFormat.DEB, e);
         }
@@ -338,7 +337,7 @@ public final class ArArchiveReader implements AutoCloseable {
             return read;
         }
 
-        /** Truncated member content must surface loudly (catalog §6). */
+        /** Truncated member content must surface loudly. */
         private void throwTruncated() throws IOException {
             throw new IOException("Truncated ar member: " + remaining + " bytes missing");
         }

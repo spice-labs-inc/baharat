@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * SQLite-magic detection tests (Fresh Scent Phase 4, finding B6, catalog §1).
+ * SQLite-magic detection tests.
  *
  * <p>The implementation reads exactly 16 bytes via {@code readNBytes(16)} — the previous
  * {@code Files.readAllBytes} materialized the entire RPM database (hundreds of MB).
@@ -58,7 +58,7 @@ class DatabaseMagicReadTest {
         assertThat(Database.isSqliteDatabase(db)).isFalse();
     }
 
-    // Requirement: catalog §1 / finding B6 / plan Phase 4.4
+
     // Theory: probing a multi-hundred-MB RPM database must not materialize it. The 100 MB
     //         sparse fixture stays cheap with readNBytes(16); a revert to readAllBytes
     //         materializes the whole file (and at production DB sizes OOMs the fork).

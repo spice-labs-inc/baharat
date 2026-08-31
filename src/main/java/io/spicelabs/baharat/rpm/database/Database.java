@@ -314,9 +314,9 @@ public final class Database implements AutoCloseable {
     }
 
     static boolean isSqliteDatabase(Path path) {
-        // Fresh Scent Phase 4 (finding B1/B6): read ONLY the 16 magic bytes — the previous
+        // Read ONLY the 16 magic bytes — the previous
         // Files.readAllBytes materialized the entire RPM database (hundreds of MB) to
-        // inspect a 16-byte header (catalog §1).
+        // inspect a 16-byte header.
         try (InputStream in = Files.newInputStream(path)) {
             byte[] header = in.readNBytes(16);
             if (header.length < 16) {

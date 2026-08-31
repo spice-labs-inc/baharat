@@ -35,7 +35,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Extractor symlink write-through tests (Fresh Scent Phase 6, finding B13, decision D7).
+ * Extractor symlink write-through tests.
  *
  * <p>The deterministic exploit: payload order {@code [symlink "outside" -> <canaryDir>,
  * file "outside/secret.txt"]} with {@code overwrite=true} previously DELETED and replaced
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ExtractorSymlinkWriteThroughTest {
 
-    // Requirement: catalog §6/§7 / finding B13 / plan Phase 6.2
+
     // Theory: every write/delete must verify that the parent chain of the target path
     //         contains no symlink components (NOFOLLOW walk) and that the real path
     //         resolves inside the target directory.
@@ -102,7 +102,7 @@ class ExtractorSymlinkWriteThroughTest {
                 .isEqualTo("hello");
     }
 
-    // Requirement: finding B13 — a DIRECTORY entry whose path passes through a previously
+    // Requirement: a DIRECTORY entry whose path passes through a previously
     //         created symlink must also be refused (createDirectories follows links).
     @Test
     void directoryThroughSymlinkRefused(@TempDir Path dir)
@@ -143,7 +143,7 @@ class ExtractorSymlinkWriteThroughTest {
                 .flatMap(n -> Arbitraries.shuffle(pool).map(all -> all.subList(0, n)));
     }
 
-    // Requirement: catalog §6 / finding B13 / plan Phase 7 (entry-order property)
+    // Requirement: (entry-order property)
     // Theory: NO ordering of symlink/file/dir entries may let the extractor write through a
     //         symlink — the canary file outside the target must survive every permutation.
     // Revert-check: removing verifySafeParents lets orderings where the symlink precedes the

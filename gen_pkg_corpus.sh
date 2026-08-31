@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# gen_pkg_corpus.sh — reproduce the baharat real-package test corpus (Fresh Scent Phase 8).
+# gen_pkg_corpus.sh — reproduce the baharat real-package test corpus.
 #
 # Builds minimal REAL distro packages (deb/apk/pacman/rpm/freebsd-style/OpenBSD-style) in
 # Docker using the actual distro tools, then writes them into a corpus directory with

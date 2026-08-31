@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Synthetic package fixtures for the Fresh Scent budget tests (Phase 5).
+ * Synthetic package fixtures for the reader budget tests.
  */
 public final class TarFixtures {
 
@@ -121,7 +121,7 @@ public final class TarFixtures {
      * Hand-built GNU sparse 1.0 (PAX) tar: one entry with LOGICAL size 1 MiB and only 8
      * physical bytes. commons-compress delivers the logical size zero-filled, and
      * {@code getRealSize()} reports the value the stream actually delivers — readers must
-     * use it, not the raw header size (finding B16).
+     * use it, not the raw header size.
      */
     public static byte[] gnuSparseTar() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();

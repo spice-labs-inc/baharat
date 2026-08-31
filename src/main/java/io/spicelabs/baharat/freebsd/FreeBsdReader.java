@@ -128,7 +128,7 @@ public final class FreeBsdReader {
     }
 
     /**
-     * Package-private overload with explicit budgets (Fresh Scent Phase 5, finding B2).
+     * Package-private overload with explicit budgets.
      */
     static @NotNull FreeBsdPackage readFromStream(@NotNull InputStream input, @NotNull String name,
                                                   @NotNull BudgetLimits limits)
@@ -150,7 +150,7 @@ public final class FreeBsdReader {
             String entryName = entry.getName();
 
             if (entryName.equals("+MANIFEST") || entryName.equals("+COMPACT_MANIFEST")) {
-                // Capped member read (catalog §2) + JSON depth guard (finding B12).
+                // Capped member read + JSON depth guard.
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 CountedLimitedInputStream member = new CountedLimitedInputStream(
                         tar, limits.memberCap(), entryName);
@@ -349,7 +349,7 @@ public final class FreeBsdReader {
                     done = true;
                 }
             } catch (IOException e) {
-                // Strict truncation (catalog §5/§6): a corrupt or truncated tar must
+                // Strict truncation: a corrupt or truncated tar must
                 // surface loudly instead of silently ending the stream with partial data.
                 done = true;
                 pendingFailure = e;

@@ -27,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Header strict-accessor + int-overflow tests (Fresh Scent Phase 6, finding B10,
- * catalog §4/§6).
+ * Header strict-accessor and int-overflow tests.
  */
 class HeaderStrictAccessorTest {
 
@@ -44,7 +43,7 @@ class HeaderStrictAccessorTest {
         return out.toByteArray();
     }
 
-    // Requirement: catalog §4 / finding B10 / plan Phase 6.3
+
     // Theory: offset = Integer.MAX_VALUE with size 4 wraps NEGATIVE in raw arithmetic,
     //         passed the bounds check, then threw an unchecked IndexOutOfBoundsException
     //         from an Optional accessor. Math.addExact must reject it (empty / strict throw).
@@ -57,7 +56,7 @@ class HeaderStrictAccessorTest {
                 .isInstanceOf(InvalidFormatException.class);
     }
 
-    // Requirement: finding B10 / plan Phase 6.3 (strict accessors, decision D4)
+    // Requirement: (strict accessors)
     // Theory: strict accessors report corruption loudly; lenient accessors return empty.
     @Test
     void strictAccessorsThrowOnCorruptData() throws InvalidFormatException {
@@ -72,7 +71,7 @@ class HeaderStrictAccessorTest {
                 .isInstanceOf(InvalidFormatException.class);
     }
 
-    // Requirement: finding B10 / plan Phase 6.3 (type mismatch)
+    // Requirement: (type mismatch)
     @Test
     void strictAccessorsRejectTypeMismatch() throws InvalidFormatException, java.io.IOException {
         Header header = headerWith(TagType.INT32, 0, 1, intStore(7));
@@ -81,9 +80,9 @@ class HeaderStrictAccessorTest {
         assertThat(header.getIntStrict(HeaderTag.NAME.tag())).isEqualTo(7);
     }
 
-    // Requirement: finding B10 / plan Phase 6.3 (partial-array fix)
+    // Requirement: (partial-array fix)
     // Theory: a STRING_ARRAY whose count exceeds the data store is CORRUPT — the whole
-    //         array is unavailable, never a silently partial list (catalog §6).
+    //         array is unavailable, never a silently partial list.
     // Revert-check: restoring the `break` returns a partial list.
     @Test
     void stringArrayOobReturnsEmptyNotPartial() {

@@ -53,9 +53,9 @@ class ArArchiveSecurityTest {
 
     @Test
     void handlesNegativeSize() throws Exception {
-        // Updated with user approval (2026-08-28, Fresh Scent Phase 6): negative ar entry
+        // Updated with user approval (2026-08-28): negative ar entry
         // sizes are now REJECTED — the old behavior silently accepted them and skipped all
-        // member content (catalog §4/§6).
+        // member content.
         byte[] archive = createArArchiveWithBadSize("test.txt", "-12345    ");
         ByteArrayInputStream in = new ByteArrayInputStream(archive);
 

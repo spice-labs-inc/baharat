@@ -129,7 +129,7 @@ public final class PacmanReader {
     }
 
     /**
-     * Package-private overload with explicit budgets (Fresh Scent Phase 5, finding B2).
+     * Package-private overload with explicit budgets.
      */
     static @NotNull PacmanPackage readFromStream(@NotNull InputStream input, @NotNull String name,
                                                  @NotNull BudgetLimits limits)
@@ -331,7 +331,7 @@ public final class PacmanReader {
 
     /**
      * Builds FileInfo for a tar entry, or returns null when the entry must be skipped
-     * (dangerous symlink target — uniform policy, Fresh Scent Phase 5, finding B14).
+     * (dangerous symlink target — uniform policy).
      */
     private static FileInfo createFileInfo(@NotNull TarArchiveEntry entry) {
         String path = entry.getName();
@@ -346,7 +346,7 @@ public final class PacmanReader {
         }
 
         // Security: Validate symlink target if this is a symlink — on failure the entry is
-        // SKIPPED (uniform across readers, finding B14; previously stored an empty target).
+        // SKIPPED (uniform across readers; previously stored an empty target).
         java.util.Optional<String> linkTarget = java.util.Optional.empty();
         if (entry.isSymbolicLink()) {
             String target = entry.getLinkName();
@@ -393,7 +393,7 @@ public final class PacmanReader {
                     done = true;
                 }
             } catch (IOException e) {
-                // Strict truncation (catalog §5/§6): a corrupt or truncated tar must
+                // Strict truncation: a corrupt or truncated tar must
                 // surface loudly instead of silently ending the stream with partial data.
                 done = true;
                 pendingFailure = e;

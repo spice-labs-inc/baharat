@@ -27,7 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 /**
- * Fuzz harness for {@link PackageReader} (Fresh Scent Phase 7, catalog §13).
+ * Fuzz harness for {@link PackageReader}.
  *
  * <p>Invariant: arbitrary bytes through the public read path must TERMINATE and throw only
  * the documented checked types ({@code PackageException}/{@code IOException}). The harness
@@ -61,7 +61,7 @@ class PackageReaderFuzzBombTest {
         return magic.flatMap(m -> tail.map(t -> concat(m, t)));
     }
 
-    // Requirement: catalog §13 / plan Phase 7
+
     // Theory: no input may hang the reader, escape an unchecked exception, or die with an
     //         Error. Only PackageException/IOException subclasses are tolerated.
     // Revert-check: any unchecked escape reintroduced in the readers fails the property.
@@ -77,7 +77,7 @@ class PackageReaderFuzzBombTest {
         }
     }
 
-    // Requirement: catalog §13 / plan Phase 7 (truncation fuzz)
+    // Requirement: (truncation fuzz)
     // Theory: every PREFIX of a hostile sample must also terminate with checked types only
     //         (truncation is the classic silent-wrong-data trigger).
     @Property(tries = 100)

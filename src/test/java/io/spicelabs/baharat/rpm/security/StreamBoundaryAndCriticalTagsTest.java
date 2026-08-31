@@ -36,11 +36,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Stream-boundary and critical-tag tests (Fresh Scent Phase 6, findings B4/B10, catalog §7).
+ * Stream-boundary and critical-tag tests.
  */
 class StreamBoundaryAndCriticalTagsTest {
 
-    // Requirement: catalog §7 / finding B4 / plan Phase 6.1
+
     // Theory: checked corruption detected MID-STREAM must surface as the documented
     //         BaharatStreamException (carrying the checked cause), never a bare
     //         RuntimeException or a silent end.
@@ -62,7 +62,7 @@ class StreamBoundaryAndCriticalTagsTest {
         }
     }
 
-    // Requirement: catalog §6 / finding B10 / plan Phase 6.3
+
     // Theory: an RPM whose main header lacks the mandatory NAME/VERSION/ARCH tags must be
     //         rejected LOUDLY at open — never surfaced as empty metadata.
     // Revert-check: removing requireCriticalTags lets read() succeed with name "".
@@ -87,7 +87,7 @@ class StreamBoundaryAndCriticalTagsTest {
         assertThat(RpmReader.read(rpmFile).name()).isEqualTo("evil");
     }
 
-    // Requirement: catalog §7 / finding B4 / plan Phase 6.1 (RPM payload path)
+    // Requirement: (RPM payload path)
     // Theory: PayloadReader.entries() traversal violations surface as the documented
     //         BaharatStreamException (never a bare RuntimeException).
     // Revert-check: wrapping in bare RuntimeException fails the type assertion.

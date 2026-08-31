@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * Minimal synthetic RPM builder for the Fresh Scent Phase 6 security tests.
+ * Minimal synthetic RPM builder for the security tests.
  *
  * <p>Builds a structurally valid RPM (lead + empty signature header + main header with
  * string tags + gzip-compressed CPIO payload) so the write-through and critical-tag tests

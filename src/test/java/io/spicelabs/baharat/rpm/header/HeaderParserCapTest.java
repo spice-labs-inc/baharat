@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * Header-parser allocation caps (Fresh Scent Phase 4, finding B1, catalog §3).
+ * Header-parser allocation caps.
  *
  * <p>Uses the package-private capped overload so the boundaries are exercised with small
  * injected values (the production caps are 100k entries / 64 MiB).
@@ -59,7 +59,7 @@ class HeaderParserCapTest {
         return new byte[]{(byte) (v >> 24), (byte) (v >> 16), (byte) (v >> 8), (byte) v};
     }
 
-    // Requirement: catalog §3 / finding B1 / plan Phase 4.1
+
     // Theory: entryCount and dataSize are 4-byte hostile fields; they must be rejected
     //         BEFORE `new ArrayList<>(entryCount)` / `readBytes(dataSize)` allocate.
     // Boundaries: cap−1 / cap / cap+1 for both fields.
@@ -96,7 +96,7 @@ class HeaderParserCapTest {
                 .isInstanceOf(InvalidFormatException.class);
     }
 
-    // Requirement: catalog §4 / plan Phase 4.1
+
     // Theory: Integer.MAX_VALUE entryCount would overflow index arithmetic and allocate;
     //         it must be rejected loudly from the 16-byte intro alone.
     @Test

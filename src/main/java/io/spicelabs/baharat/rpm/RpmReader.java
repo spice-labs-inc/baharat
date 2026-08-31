@@ -142,9 +142,9 @@ public final class RpmReader {
         Header header = HeaderParser.parse(reader, false);
         log.trace("Main header parsed: {} entries", header.entries().size());
 
-        // Critical-tag validation (Fresh Scent Phase 6, finding B10): a header whose
+        // Critical-tag validation: a header whose
         // name/version/arch tags are missing or corrupt is NOT a usable package — fail
-        // loud at open instead of surfacing empty metadata silently (catalog §6).
+        // loud at open instead of surfacing empty metadata silently.
         requireCriticalTags(header);
 
         // Record payload offset

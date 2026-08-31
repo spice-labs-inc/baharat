@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
- * APK reader budget + symlink-policy + sparse tests (Fresh Scent Phase 5, B2/B14/B16).
+ * APK reader budget, symlink-policy, and sparse-entry tests.
  */
 class ApkBudgetTest {
 
@@ -42,7 +42,7 @@ class ApkBudgetTest {
         return TarFixtures.gzipTar(all);
     }
 
-    // Requirement: catalog §9 / finding B2 / plan Phase 5.1
+
     // Theory: read() inflates the whole tar with no cap — the injected cap must trip loud.
     @Test
     void decompressionBombRejected() throws IOException, PackageException {
@@ -55,7 +55,7 @@ class ApkBudgetTest {
                 .hasMessageContaining("Decompressed data exceeds");
     }
 
-    // Requirement: catalog §9 / plan Phase 5.1
+
     @Test
     void entryCountCapEnforced() throws IOException, PackageException {
         List<TarFixtures.Entry> many = new ArrayList<>();
@@ -70,7 +70,7 @@ class ApkBudgetTest {
                 .hasMessageContaining("maximum entry count");
     }
 
-    // Requirement: catalog §6 / finding B14 / plan Phase 5.3 (uniform symlink policy)
+    // Requirement: (uniform symlink policy)
     // Theory: a dangerous symlink (target escapes root) is SKIPPED in read() — never
     //         silently stored with an empty target (the previous behavior).
     //         An ABSOLUTE target is valid metadata and must be preserved (D5 decision).
@@ -91,7 +91,7 @@ class ApkBudgetTest {
         assertThat(abs.get().linkTarget()).contains("/etc/issue");
     }
 
-    // Requirement: catalog §3 / finding B16 / plan Phase 5.4
+
     // Theory: GNU sparse entries carry an attacker-controlled LOGICAL size (here 1 MiB
     //         for 8 real bytes); readers must expose the REAL size.
     // Revert-check: reverting to entry.getSize() reports 1 MiB for an 8-byte member.
@@ -119,7 +119,7 @@ class ApkBudgetTest {
         assertThat(sparse).isPresent();
         // commons-compress delivers the LOGICAL size zero-filled for sparse entries and
         // reports it via getRealSize(); the raw header size (8) would under-report what
-        // the stream delivers. Readers must use getRealSize() (finding B16).
+        // the stream delivers. Readers must use getRealSize().
         assertThat(sparse.get().size()).isEqualTo(1024L * 1024L);
     }
 

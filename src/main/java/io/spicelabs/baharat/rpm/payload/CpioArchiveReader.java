@@ -119,7 +119,7 @@ public final class CpioArchiveReader implements AutoCloseable {
         byte[] headerBytes = new byte[HEADER_SIZE];
         int read = readFully(input, headerBytes);
         if (read < HEADER_SIZE) {
-            // Strict truncation (catalog §5/§6): a CPIO archive whose header is cut off
+            // Strict truncation: a CPIO archive whose header is cut off
             // is CORRUPT — the trailer entry is mandatory, so a clean end-of-stream can
             // only occur right after TRAILER!!! (handled by the `finished` flag above).
             finished = true;
@@ -248,7 +248,7 @@ public final class CpioArchiveReader implements AutoCloseable {
                     hasNext = next != null;
                     needsAdvance = false;
                 } catch (IOException | InvalidFormatException e) {
-                    // Stream-lambda boundary (catalog §7): checked corruption must not be
+                    // Stream-lambda boundary: checked corruption must not be
                     // wrapped in a bare RuntimeException — use the documented wrapper.
                     throw new BaharatStreamException("Error reading CPIO archive", e);
                 }
@@ -279,7 +279,7 @@ public final class CpioArchiveReader implements AutoCloseable {
         while (offset < buffer.length) {
             int read = in.read(buffer, offset, buffer.length - offset);
             if (read <= 0) {
-                // read == 0 is no-progress (catalog §5): break so the caller's short-read
+                // read == 0 is no-progress: break so the caller's short-read
                 // check reports truncation instead of spinning forever.
                 break;
             }
@@ -295,7 +295,7 @@ public final class CpioArchiveReader implements AutoCloseable {
             if (skipped <= 0) {
                 if (in.read() < 0) {
                     // Mid-skip EOF misaligns every subsequent parse — loud error instead
-                    // of silently producing garbage (catalog §5/§6).
+                    // of silently producing garbage.
                     throw new IOException(
                             "Truncated CPIO archive: unexpected end of stream while skipping "
                                     + count + " padding bytes");

@@ -83,7 +83,7 @@ public final class BoundedInputStream extends InputStream {
 
     /**
      * The delegate ended before this bounded section was fully consumed: the enclosing
-     * archive is truncated (catalog §6 — silently returning partial content would surface
+     * archive is truncated (silently returning partial content would surface
      * wrong data with no error signal).
      */
     private void checkTruncated(int attempted) throws IOException {
@@ -122,7 +122,7 @@ public final class BoundedInputStream extends InputStream {
      * at the end of this section.
      *
      * @throws IOException if an I/O error occurs, or the underlying stream ends before the
-     *         section is fully consumed (truncated archive — catalog §5/§6)
+     *         section is fully consumed (truncated archive).
      */
     public void skipRemaining() throws IOException {
         while (remaining > 0) {

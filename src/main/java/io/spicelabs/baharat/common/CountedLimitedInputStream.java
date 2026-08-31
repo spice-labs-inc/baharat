@@ -22,14 +22,14 @@ import java.io.InputStream;
 
 /**
  * An {@link InputStream} that counts decompressed bytes and FAILS LOUDLY (IOException) when
- * a budget is exceeded (Fresh Scent Phase 5, finding B2, catalog §9).
+ * a budget is exceeded.
  *
  * <p>Place it between a decompressor and an archive/metadata reader so every decompressed
  * byte — including bytes consumed by tar-skip/header reads — counts against the budget.
- * A budget trip must never silently truncate an archive (catalog §6).
+ * A budget trip must never silently truncate an archive.
  *
  * <p>{@code skip()} is counted read-and-discard so it cannot bypass the budget; a
- * no-progress delegate fails loudly instead of spinning (catalog §5).
+ * no-progress delegate fails loudly instead of spinning.
  */
 public final class CountedLimitedInputStream extends InputStream {
 

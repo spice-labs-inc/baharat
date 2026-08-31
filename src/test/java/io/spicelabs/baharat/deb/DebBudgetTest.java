@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * DEB reader budget tests (Fresh Scent Phase 5, finding B2/B5, catalog §9).
+ * DEB reader budget tests.
  *
  * <p>Lives in package {@code deb} to use the package-private capped
  * {@code readFromStream(InputStream, String, BudgetLimits)} overload.
@@ -52,7 +52,7 @@ class DebBudgetTest {
                 TarFixtures.ArMember.of("data.tar", dataTar));
     }
 
-    // Requirement: catalog §9 / finding B2 / plan Phase 5.1
+
     // Theory: read() decompresses the whole data.tar (headers + skips) with NO cap
     //         previously — a bomb-sized payload inflated unbounded. The cap must trip
     //         LOUDLY (IOException), never silently truncate.
@@ -70,7 +70,7 @@ class DebBudgetTest {
                 .hasMessageContaining("Decompressed data exceeds");
     }
 
-    // Requirement: catalog §2 / finding B5 / plan Phase 5.2
+
     // Theory: the debian-binary member is capped (10 MiB default; small injected here).
     @Test
     void oversizedDebianBinaryRejected() throws IOException, PackageException {
@@ -86,7 +86,7 @@ class DebBudgetTest {
                 .hasMessageContaining("Decompressed data exceeds");
     }
 
-    // Requirement: catalog §9 / plan Phase 5.1
+
     // Theory: the ar member-count cap fails loud beyond the bound.
     @Test
     void memberCountCapEnforced() throws IOException, PackageException {

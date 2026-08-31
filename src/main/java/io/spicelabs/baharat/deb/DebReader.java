@@ -144,7 +144,7 @@ public final class DebReader {
     }
 
     /**
-     * Package-private overload with explicit budgets (Fresh Scent Phase 5, finding B2) so
+     * Package-private overload with explicit budgets so
      * boundary tests can use small injected values.
      */
     static @NotNull DebPackage readFromStream(@NotNull InputStream input, @NotNull String name,
@@ -284,7 +284,7 @@ public final class DebReader {
 
     private static @NotNull String readDebianBinary(@NotNull InputStream in, long memberCap)
             throws IOException {
-        // Capped read (catalog §2): debian-binary is tiny; a hostile member must not be
+        // Capped read: debian-binary is tiny; a hostile member must not be
         // materialized unbounded.
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         in = new CountedLimitedInputStream(in, memberCap, "debian-binary");
@@ -414,7 +414,7 @@ public final class DebReader {
                     done = true;
                 }
             } catch (IOException e) {
-                // Strict truncation (catalog §5/§6): a corrupt or truncated tar must
+                // Strict truncation: a corrupt or truncated tar must
                 // surface loudly instead of silently ending the stream with partial data.
                 done = true;
                 pendingFailure = e;
@@ -471,7 +471,7 @@ public final class DebReader {
                         validatedTarget);
             } else {
                 // Regular file - wrap the tar stream in a bounded stream. Sparse entries
-                // expose their REAL size (finding B16: the logical size is attacker-controlled).
+                // expose their REAL size (the logical size is attacker-controlled).
                 long entrySize = current.isSparse() ? current.getRealSize() : current.getSize();
                 return new PackageEntry.FileEntry(path, mode | FileInfo.S_IFREG, mtime, user, group,
                         entrySize, new BoundedTarInputStream(tar, entrySize, !current.isSparse()));

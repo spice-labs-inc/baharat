@@ -121,7 +121,7 @@ public final class OpenBsdReader {
     }
 
     /**
-     * Package-private overload with explicit budgets (Fresh Scent Phase 5, finding B2).
+     * Package-private overload with explicit budgets.
      */
     static @NotNull OpenBsdPackage readFromStream(@NotNull InputStream input, @NotNull String name,
                                                   @NotNull BudgetLimits limits)
@@ -148,7 +148,7 @@ public final class OpenBsdReader {
                     contents = ContentsParser.parse(new CountedLimitedInputStream(
                             tar, limits.memberCap(), "+CONTENTS"));
                 } else if (entryName.equals("+DESC")) {
-                    // Capped member read (catalog §2).
+                    // Capped member read.
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
                     CountedLimitedInputStream member = new CountedLimitedInputStream(
                             tar, limits.memberCap(), "+DESC");
@@ -252,7 +252,7 @@ public final class OpenBsdReader {
                     done = true;
                 }
             } catch (IOException e) {
-                // Strict truncation (catalog §5/§6): a corrupt or truncated tar must
+                // Strict truncation: a corrupt or truncated tar must
                 // surface loudly instead of silently ending the stream with partial data.
                 done = true;
                 pendingFailure = e;

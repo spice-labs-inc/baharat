@@ -264,9 +264,9 @@ class CpioSecurityTest {
 
     @Test
     void handlesTruncatedFileData() throws Exception {
-        // Updated with user approval (2026-08-28, Fresh Scent Phase 4): truncated file
+        // Updated with user approval (2026-08-28): truncated file
         // content must surface LOUDLY (IOException) instead of being returned silently
-        // (catalog §6 — silent partial data is the worst class).
+        // (silent partial data is the worst class).
         byte[] archive = createCpioArchiveWithTruncatedData("test.txt", 1000, 100);
         ByteArrayInputStream in = new ByteArrayInputStream(archive);
 
@@ -285,9 +285,9 @@ class CpioSecurityTest {
 
     @Test
     void handlesMissingTrailer() throws Exception {
-        // Updated with user approval (2026-08-28, Fresh Scent Phase 4): a CPIO archive
+        // Updated with user approval (2026-08-28): a CPIO archive
         // without the mandatory TRAILER!!! entry is CORRUPT — it must throw instead of
-        // silently ending the iteration (catalog §5/§6).
+        // silently ending the iteration.
         byte[] entry = createCpioEntry("test.txt", "content", 0100644);
         ByteArrayInputStream in = new ByteArrayInputStream(entry);
 

@@ -170,7 +170,7 @@ public final class Extractor {
             return;
         }
 
-        // Security (Fresh Scent Phase 6, finding B13, decision D7): a PREVIOUS archive
+        // Security: a PREVIOUS archive
         // entry may have created a symlink anywhere in the parent chain of this path.
         // Writing or deleting through it would operate OUTSIDE the target directory
         // (e.g. [symlink "etc" -> /etc, file "etc/passwd"] would clobber /etc/passwd).
@@ -189,7 +189,7 @@ public final class Extractor {
     /**
      * Verifies that the parent chain of {@code targetPath} contains no symlink components
      * and resolves (realpath) inside {@code targetDir}. Fails loud on any violation —
-     * never write or delete through an archive-created symlink (catalog §6/§7).
+     * never write or delete through an archive-created symlink.
      */
     private void verifySafeParents(@NotNull Path targetDir, @NotNull Path targetPath)
             throws IOException {
