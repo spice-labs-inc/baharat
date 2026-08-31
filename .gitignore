@@ -28,6 +28,7 @@ dependency-reduced-pom.xml
 
 # Test files
 test-output/
+/.jqwik-*
 
 # Local environment
 .env
