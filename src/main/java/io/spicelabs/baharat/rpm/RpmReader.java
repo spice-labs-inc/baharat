@@ -108,7 +108,10 @@ public final class RpmReader {
         try (InputStream in = Files.newInputStream(path)) {
             RpmPackage rpm = read(in);
             log.info("Read RPM package: {}-{}-{}", rpm.name(), rpm.version(), rpm.release());
-            return rpm;
+            // Re-wrap with the source path so Package.payload() can stream lazily
+            // (mirrors DebReader.read(Path) and the other four readers).
+            return new RpmPackage(rpm.lead(), rpm.signatureHeader(), rpm.header(),
+                    rpm.payloadOffset(), path);
         }
     }
 

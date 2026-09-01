@@ -176,6 +176,10 @@ public final class PackageReader {
     /**
      * Reads an RPM package from a file path.
      *
+     * <p>The returned package retains the source path, so
+     * {@link io.spicelabs.baharat.Package#payload()} streams payload entries as
+     * documented on the {@link io.spicelabs.baharat.Package} interface.
+     *
      * @param path the path to the RPM file
      * @return the parsed RPM package
      * @throws PackageException if the package cannot be read
@@ -191,6 +195,11 @@ public final class PackageReader {
 
     /**
      * Reads an RPM package from an InputStream.
+     *
+     * <p>Because an InputStream is not re-readable, the returned package cannot
+     * stream payload via {@link io.spicelabs.baharat.Package#payload()} — that
+     * call throws {@link PackageException} with guidance. To stream payload from
+     * a stream, use {@code RpmReader.streamPayload(InputStream)} directly.
      *
      * @param stm the InputStream containing the RPM file
      * @return the parsed RPM package

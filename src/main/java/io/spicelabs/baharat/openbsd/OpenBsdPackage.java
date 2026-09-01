@@ -87,9 +87,31 @@ public final class OpenBsdPackage implements Package {
     }
 
     @Override
+    /**
+     * Streams the payload entries of this package.
+     *
+     * <p>The stream must be closed after use to release resources.
+     *
+     * <p>Requires this package to have been read from a file {@link Path} (e.g.,
+     * {@code OpenBsdReader.read(Path)} or {@code PackageReader.readOpenBsd(Path)}),
+     * which retains the source path for lazy re-reading. Packages read from an
+     * {@link java.io.InputStream} have no re-readable source and throw
+     * {@link PackageException} with guidance; stream such packages directly via
+     * {@link OpenBsdReader#streamPayload(java.io.InputStream, String)} or
+     * {@link PackageReader#streamPayload(Path)} instead.
+     *
+     * @return a stream of payload entries
+     * @throws IOException if an I/O error occurs
+     * @throws PackageException if the payload cannot be read (e.g., no source path)
+     */
     public @NotNull Stream<PackageEntry> payload() throws IOException, PackageException {
         if (sourcePath == null) {
-            throw new PackageException("Cannot stream payload without source path", PackageFormat.OPENBSD_PKG);
+            throw new PackageException(
+                    "Cannot stream payload without source path: packages read from an "
+                    + "InputStream cannot stream payload lazily. Read from a Path instead, "
+                    + "or stream the payload directly via streamPayload(Path) or "
+                    + "streamPayload(InputStream).",
+                    PackageFormat.OPENBSD_PKG);
         }
         return OpenBsdReader.streamPayload(sourcePath);
     }

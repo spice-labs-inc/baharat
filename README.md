@@ -140,6 +140,22 @@ try (Stream<PackageEntry> entries = PackageReader.streamPayload(path)) {
 }
 ```
 
+You can also stream via the package object itself when it was read from a file
+path (this is the path Goat Rodeo uses):
+
+```java
+Package pkg = PackageReader.read(path);
+try (Stream<PackageEntry> entries = pkg.payload()) {
+    entries.forEach(entry -> System.out.println(entry.path()));
+}
+```
+
+> **Note:** `Package.payload()` requires the package to have been read from a
+> `Path`. Packages read from an `InputStream` cannot re-read their source, so
+> `payload()` throws `PackageException` with guidance; stream those directly via
+> `streamPayload(Path)` or the format reader's `streamPayload(InputStream)`.
+> See [docs/payload-streaming.md](docs/payload-streaming.md).
+
 ---
 
 ## 🔐 Security Considerations
@@ -165,7 +181,7 @@ This library includes protections against common attacks:
 
 For security-sensitive applications, always verify package signatures before trusting content.
 
-See [docs/adr/](docs/adr/) for the architecture decision records.
+See [plans/adr/](plans/adr/) for the architecture decision records.
 
 ---
 

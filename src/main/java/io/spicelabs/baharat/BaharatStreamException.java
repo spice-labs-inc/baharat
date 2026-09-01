@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
  * {@code Stream<...>}-based API.
  *
  * <p>Java streams cannot propagate checked exceptions, so stream-lambda paths use this
- * dedicated, documented wrapper instead of bare {@link RuntimeException}. Every
- * {@code streamPayload(...)} method's javadoc names this type; callers that must treat
- * hostile input as recoverable catch it explicitly. Non-stream entry points throw the
- * checked {@link PackageException} hierarchy.
+ * dedicated, documented wrapper instead of bare {@link RuntimeException}. Callers of any
+ * {@code streamPayload(...)} API may encounter this type; callers that must treat hostile
+ * input as recoverable catch it explicitly. Non-stream entry points throw the checked
+ * {@link PackageException} hierarchy.
  *
  * <p>It carries the checked cause ({@link PackageException} or {@link java.io.IOException})
  * so callers can recover the precise failure.
@@ -35,6 +35,12 @@ public class BaharatStreamException extends RuntimeException {
 
     private final @Nullable PackageFormat format;
 
+    /**
+     * @deprecated use {@link #BaharatStreamException(String, Throwable)} or
+     * {@link #BaharatStreamException(String, PackageFormat, Throwable)} instead so the
+     * wrapper always carries the recoverable checked cause it documents.
+     */
+    @Deprecated
     public BaharatStreamException(@NotNull String message) {
         super(message);
         this.format = null;
