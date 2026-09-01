@@ -168,6 +168,7 @@ public final class PackageTestFiles {
     }
 
     // Convenience constants for resource directories
+    public static final String RPMS = "rpms";
     public static final String DEBS = "debs";
     public static final String APKS = "apks";
     public static final String PACMAN = "pacman";

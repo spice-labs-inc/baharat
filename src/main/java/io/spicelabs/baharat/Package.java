@@ -99,9 +99,19 @@ public interface Package {
      * }
      * }</pre>
      *
+     * <p><b>Source-path requirement:</b> lazy streaming re-reads the package
+     * source, so this method requires the package to have been read from a file
+     * {@link java.nio.file.Path} (e.g., {@code PackageReader.read(Path)}).
+     * Packages read from an {@link java.io.InputStream} have no re-readable
+     * source: {@code payload()} throws {@link PackageException} whose message
+     * explains the restriction and names the alternatives (streaming directly
+     * via {@code streamPayload(Path)} or the format reader's
+     * {@code streamPayload(InputStream)} overload).
+     *
      * @return a stream of payload entries
      * @throws IOException if an I/O error occurs
-     * @throws PackageException if the payload cannot be read
+     * @throws PackageException if the payload cannot be read (e.g., the package
+     *         was read from an InputStream and has no source path)
      */
     @NotNull Stream<PackageEntry> payload() throws IOException, PackageException;
 
