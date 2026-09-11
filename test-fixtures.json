@@ -1,0 +1,72 @@
+{
+  "$comment": [
+    "What Surveyor's integration tests take from this repository, at the commit its jar was built",
+    "from (./build-surveyor expectations). tests[]: unit-test source roots; expectations[]: the data",
+    "files that drive tests (their id field is the test ID); fixtures[]: paths to export by tier",
+    "(0 committed and small, 1 nightly, 2 full corpora); downloads[]: fetched at the given tier."
+  ],
+  "schemaVersion": 1,
+  "component": "baharat",
+  "tests": [
+    "src/test/java"
+  ],
+  "expectations": [
+    {
+      "glob": "src/test/resources/expected/*.json",
+      "format": "baharat-expected",
+      "cases": "$[*]",
+      "idField": "id"
+    }
+  ],
+  "fixtures": [
+    {
+      "path": "src/test/resources/apks/libcap-2.70-r0.apk",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/debs/hostname_3.23+nmu2ubuntu2_amd64.deb",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/freebsd/tree-2.2.1.pkg",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/openbsd/tree-0.62.tgz",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/pacman/tree-2.2.1-1-x86_64.pkg.tar.zst",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/rpms",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/expected",
+      "tier": 0
+    },
+    {
+      "path": "src/test/resources/apks",
+      "tier": 1
+    },
+    {
+      "path": "src/test/resources/debs",
+      "tier": 1
+    },
+    {
+      "path": "src/test/resources/freebsd",
+      "tier": 1
+    },
+    {
+      "path": "src/test/resources/openbsd",
+      "tier": 2
+    },
+    {
+      "path": "src/test/resources/pacman",
+      "tier": 2
+    }
+  ],
+  "downloads": []
+}
