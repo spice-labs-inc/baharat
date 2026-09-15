@@ -1,0 +1,1233 @@
+[
+  {
+    "id": "pacman/7zip-25.01-1-x86_64.pkg.tar.zst",
+    "file": "7zip-25.01-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "7zip",
+    "version": "25.01-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/7zip@25.01-1?arch=x86_64",
+    "dependencies": [
+      "gcc-libs",
+      "glibc",
+      "sh"
+    ],
+    "provides": [
+      "p7zip"
+    ],
+    "fileCount": 17,
+    "error": null
+  },
+  {
+    "id": "pacman/aalib-1.4rc5-19-x86_64.pkg.tar.zst",
+    "file": "aalib-1.4rc5-19-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "aalib",
+    "version": "1.4rc5-19",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/aalib@1.4rc5-19?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "gpm",
+      "libx11",
+      "ncurses",
+      "slang"
+    ],
+    "provides": [],
+    "fileCount": 88,
+    "error": null
+  },
+  {
+    "id": "pacman/acl-2.3.2-1-x86_64.pkg.tar.zst",
+    "file": "acl-2.3.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "acl",
+    "version": "2.3.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/acl@2.3.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libacl.so = 1-64",
+      "xfsacl"
+    ],
+    "fileCount": 99,
+    "error": null
+  },
+  {
+    "id": "pacman/acpi-1.8-2-x86_64.pkg.tar.zst",
+    "file": "acpi-1.8-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "acpi",
+    "version": "1.8-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/acpi@1.8-2?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "pacman/acpid-2.0.34-2-x86_64.pkg.tar.zst",
+    "file": "acpid-2.0.34-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "acpid",
+    "version": "2.0.34-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/acpid@2.0.34-2?arch=x86_64",
+    "dependencies": [
+      "bash"
+    ],
+    "provides": [],
+    "fileCount": 27,
+    "error": null
+  },
+  {
+    "id": "pacman/attr-2.5.2-1-x86_64.pkg.tar.zst",
+    "file": "attr-2.5.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "attr",
+    "version": "2.5.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/attr@2.5.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libattr.so = 1-64",
+      "xfsattr"
+    ],
+    "fileCount": 74,
+    "error": null
+  },
+  {
+    "id": "pacman/bash-5.3.9-1-x86_64.pkg.tar.zst",
+    "file": "bash-5.3.9-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "bash",
+    "version": "5.3.9-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/bash@5.3.9-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "libreadline.so = 8-64",
+      "ncurses",
+      "readline"
+    ],
+    "provides": [
+      "sh"
+    ],
+    "fileCount": 269,
+    "error": null
+  },
+  {
+    "id": "pacman/binutils-2.45.1+r35+g12d0a1dbc1b9-1-x86_64.pkg.tar.zst",
+    "file": "binutils-2.45.1+r35+g12d0a1dbc1b9-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "binutils",
+    "version": "2.45.1+r35+g12d0a1dbc1b9-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/binutils@2.45.1%2Br35%2Bg12d0a1dbc1b9-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "jansson",
+      "libelf",
+      "zlib",
+      "zstd"
+    ],
+    "provides": [
+      "libctf.so = 0-64",
+      "libgprofng.so = 0-64",
+      "libsframe.so = 2-64"
+    ],
+    "fileCount": 477,
+    "error": null
+  },
+  {
+    "id": "pacman/bison-3.8.2-8-x86_64.pkg.tar.zst",
+    "file": "bison-3.8.2-8-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "bison",
+    "version": "3.8.2-8",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/bison@3.8.2-8?arch=x86_64",
+    "dependencies": [
+      "gettext",
+      "glibc",
+      "m4",
+      "sh"
+    ],
+    "provides": [],
+    "fileCount": 329,
+    "error": null
+  },
+  {
+    "id": "pacman/brotli-1.2.0-1-x86_64.pkg.tar.zst",
+    "file": "brotli-1.2.0-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "brotli",
+    "version": "1.2.0-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/brotli@1.2.0-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libbrotlicommon.so = 1-64",
+      "libbrotlidec.so = 1-64",
+      "libbrotlienc.so = 1-64"
+    ],
+    "fileCount": 36,
+    "error": null
+  },
+  {
+    "id": "pacman/bzip2-1.0.8-6-x86_64.pkg.tar.zst",
+    "file": "bzip2-1.0.8-6-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "bzip2",
+    "version": "1.0.8-6",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/bzip2@1.0.8-6?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "sh"
+    ],
+    "provides": [
+      "libbz2.so = 1.0-64"
+    ],
+    "fileCount": 28,
+    "error": null
+  },
+  {
+    "id": "pacman/ca-certificates-mozilla-3.120-1-x86_64.pkg.tar.zst",
+    "file": "ca-certificates-mozilla-3.120-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "ca-certificates-mozilla",
+    "version": "3.120-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/ca-certificates-mozilla@3.120-1?arch=x86_64",
+    "dependencies": [
+      "ca-certificates-utils >= 20181109-3"
+    ],
+    "provides": [],
+    "fileCount": 5,
+    "error": null
+  },
+  {
+    "id": "pacman/coreutils-9.9-1-x86_64.pkg.tar.zst",
+    "file": "coreutils-9.9-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "coreutils",
+    "version": "9.9-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/coreutils@9.9-1?arch=x86_64",
+    "dependencies": [
+      "acl",
+      "attr",
+      "glibc",
+      "gmp",
+      "libcap",
+      "openssl"
+    ],
+    "provides": [],
+    "fileCount": 439,
+    "error": null
+  },
+  {
+    "id": "pacman/cracklib-2.10.3-1-x86_64.pkg.tar.zst",
+    "file": "cracklib-2.10.3-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "cracklib",
+    "version": "2.10.3-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/cracklib@2.10.3-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "zlib"
+    ],
+    "provides": [],
+    "fileCount": 174,
+    "error": null
+  },
+  {
+    "id": "pacman/curl-8.18.0-2-x86_64.pkg.tar.zst",
+    "file": "curl-8.18.0-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "curl",
+    "version": "8.18.0-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/curl@8.18.0-2?arch=x86_64",
+    "dependencies": [
+      "brotli",
+      "ca-certificates",
+      "krb5",
+      "libbrotlidec.so = 1-64",
+      "libcrypto.so = 3-64",
+      "libgssapi_krb5.so = 2-64",
+      "libidn2",
+      "libidn2.so = 0-64",
+      "libnghttp2",
+      "libnghttp2.so = 14-64",
+      "libnghttp3",
+      "libnghttp3.so = 9-64",
+      "libngtcp2",
+      "libngtcp2.so = 16-64",
+      "libpsl",
+      "libpsl.so = 5-64",
+      "libssh2",
+      "libssh2.so = 1-64",
+      "libssl.so = 3-64",
+      "libz.so = 1-64",
+      "libzstd.so = 1-64",
+      "openssl",
+      "zlib",
+      "zstd"
+    ],
+    "provides": [
+      "libcurl.so = 4-64"
+    ],
+    "fileCount": 562,
+    "error": null
+  },
+  {
+    "id": "pacman/dash-0.5.12-1-x86_64.pkg.tar.zst",
+    "file": "dash-0.5.12-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "dash",
+    "version": "0.5.12-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/dash@0.5.12-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "libedit",
+      "libedit.so = 0-64"
+    ],
+    "provides": [],
+    "fileCount": 10,
+    "error": null
+  },
+  {
+    "id": "pacman/dbus-1.16.2-1-x86_64.pkg.tar.zst",
+    "file": "dbus-1.16.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "dbus",
+    "version": "1.16.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/dbus@1.16.2-1?arch=x86_64",
+    "dependencies": [
+      "audit",
+      "expat",
+      "glibc",
+      "libaudit.so = 1-64",
+      "libcap-ng",
+      "libcap-ng.so = 0-64",
+      "libexpat.so = 1-64",
+      "libsystemd.so = 0-64",
+      "systemd-libs"
+    ],
+    "provides": [
+      "libdbus",
+      "libdbus-1.so = 3-64"
+    ],
+    "fileCount": 95,
+    "error": null
+  },
+  {
+    "id": "pacman/debugedit-5.2-1-x86_64.pkg.tar.zst",
+    "file": "debugedit-5.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "debugedit",
+    "version": "5.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/debugedit@5.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "libelf",
+      "xxhash"
+    ],
+    "provides": [],
+    "fileCount": 11,
+    "error": null
+  },
+  {
+    "id": "pacman/diffutils-3.12-2-x86_64.pkg.tar.zst",
+    "file": "diffutils-3.12-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "diffutils",
+    "version": "3.12-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/diffutils@3.12-2?arch=x86_64",
+    "dependencies": [
+      "bash",
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 124,
+    "error": null
+  },
+  {
+    "id": "pacman/dosfstools-4.2-5-x86_64.pkg.tar.zst",
+    "file": "dosfstools-4.2-5-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "dosfstools",
+    "version": "4.2-5",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/dosfstools@4.2-5?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 39,
+    "error": null
+  },
+  {
+    "id": "pacman/e2fsprogs-1.47.3-2-x86_64.pkg.tar.zst",
+    "file": "e2fsprogs-1.47.3-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "e2fsprogs",
+    "version": "1.47.3-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/e2fsprogs@1.47.3-2?arch=x86_64",
+    "dependencies": [
+      "sh",
+      "util-linux-libs"
+    ],
+    "provides": [
+      "libcom_err.so = 2-64",
+      "libe2p.so = 2-64",
+      "libext2fs.so = 2-64",
+      "libss.so = 2-64"
+    ],
+    "fileCount": 209,
+    "error": null
+  },
+  {
+    "id": "pacman/elfutils-0.194-1-x86_64.pkg.tar.zst",
+    "file": "elfutils-0.194-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "elfutils",
+    "version": "0.194-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/elfutils@0.194-1?arch=x86_64",
+    "dependencies": [
+      "gcc-libs",
+      "glibc",
+      "libarchive",
+      "libarchive.so = 13-64",
+      "libelf = 0.194",
+      "sh"
+    ],
+    "provides": [],
+    "fileCount": 58,
+    "error": null
+  },
+  {
+    "id": "pacman/expat-2.7.3-1-x86_64.pkg.tar.zst",
+    "file": "expat-2.7.3-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "expat",
+    "version": "2.7.3-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/expat@2.7.3-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libexpat.so = 1-64"
+    ],
+    "fileCount": 29,
+    "error": null
+  },
+  {
+    "id": "pacman/fakeroot-1.37.2-1-x86_64.pkg.tar.zst",
+    "file": "fakeroot-1.37.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "fakeroot",
+    "version": "1.37.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/fakeroot@1.37.2-1?arch=x86_64",
+    "dependencies": [
+      "filesystem",
+      "glibc",
+      "sed",
+      "sh",
+      "util-linux"
+    ],
+    "provides": [],
+    "fileCount": 46,
+    "error": null
+  },
+  {
+    "id": "pacman/flex-2.6.4-5-x86_64.pkg.tar.zst",
+    "file": "flex-2.6.4-5-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "flex",
+    "version": "2.6.4-5",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/flex@2.6.4-5?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "m4",
+      "sh"
+    ],
+    "provides": [],
+    "fileCount": 99,
+    "error": null
+  },
+  {
+    "id": "pacman/gawk-5.3.2-1-x86_64.pkg.tar.zst",
+    "file": "gawk-5.3.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "gawk",
+    "version": "5.3.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/gawk@5.3.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "mpfr",
+      "sh"
+    ],
+    "provides": [
+      "awk"
+    ],
+    "fileCount": 162,
+    "error": null
+  },
+  {
+    "id": "pacman/gcc-libs-15.2.1+r447+g6a64f6c3ebb8-1-x86_64.pkg.tar.zst",
+    "file": "gcc-libs-15.2.1+r447+g6a64f6c3ebb8-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "gcc-libs",
+    "version": "15.2.1+r447+g6a64f6c3ebb8-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/gcc-libs@15.2.1%2Br447%2Bg6a64f6c3ebb8-1?arch=x86_64",
+    "dependencies": [
+      "glibc >= 2.27"
+    ],
+    "provides": [
+      "gcc-libs-multilib",
+      "libasan.so = 8-64",
+      "libgfortran.so = 5-64",
+      "libgo.so = 24-64",
+      "libgphobos.so = 6-64",
+      "liblsan.so = 0-64",
+      "libtsan.so = 2-64",
+      "libubsan.so = 1-64"
+    ],
+    "fileCount": 64,
+    "error": null
+  },
+  {
+    "id": "pacman/gettext-0.25-3-x86_64.pkg.tar.zst",
+    "file": "gettext-0.25-3-x86_64.pkg.tar.zst",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZstdIOException: Unknown frame descriptor"
+  },
+  {
+    "id": "pacman/git-2.52.0-2-x86_64.pkg.tar.zst",
+    "file": "git-2.52.0-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "git",
+    "version": "2.52.0-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/git@2.52.0-2?arch=x86_64",
+    "dependencies": [
+      "curl",
+      "expat",
+      "grep",
+      "openssl",
+      "pcre2",
+      "perl",
+      "perl-error",
+      "perl-mailtools",
+      "shadow",
+      "zlib-ng"
+    ],
+    "provides": [],
+    "fileCount": 773,
+    "error": null
+  },
+  {
+    "id": "pacman/glibc-2.42+r50+g453e6b8dbab9-1-x86_64.pkg.tar.zst",
+    "file": "glibc-2.42+r50+g453e6b8dbab9-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "glibc",
+    "version": "2.42+r50+g453e6b8dbab9-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/glibc@2.42%2Br50%2Bg453e6b8dbab9-1?arch=x86_64",
+    "dependencies": [
+      "filesystem",
+      "linux-api-headers >= 4.10",
+      "tzdata"
+    ],
+    "provides": [],
+    "fileCount": 1617,
+    "error": null
+  },
+  {
+    "id": "pacman/gzip-1.14-2-x86_64.pkg.tar.zst",
+    "file": "gzip-1.14-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "gzip",
+    "version": "1.14-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/gzip@1.14-2?arch=x86_64",
+    "dependencies": [
+      "bash",
+      "coreutils",
+      "glibc",
+      "grep",
+      "sed"
+    ],
+    "provides": [],
+    "fileCount": 32,
+    "error": null
+  },
+  {
+    "id": "pacman/htop-3.4.1-1-x86_64.pkg.tar.zst",
+    "file": "htop-3.4.1-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "htop",
+    "version": "3.4.1-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/htop@3.4.1-1?arch=x86_64",
+    "dependencies": [
+      "libcap",
+      "libcap.so = 2-64",
+      "libncursesw.so = 6-64",
+      "libnl",
+      "ncurses"
+    ],
+    "provides": [],
+    "fileCount": 16,
+    "error": null
+  },
+  {
+    "id": "pacman/keyutils-1.6.3-3-x86_64.pkg.tar.zst",
+    "file": "keyutils-1.6.3-3-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "keyutils",
+    "version": "1.6.3-3",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/keyutils@1.6.3-3?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "sh"
+    ],
+    "provides": [
+      "libkeyutils.so = 1-64"
+    ],
+    "fileCount": 75,
+    "error": null
+  },
+  {
+    "id": "pacman/lame-3.100-6-x86_64.pkg.tar.zst",
+    "file": "lame-3.100-6-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "lame",
+    "version": "3.100-6",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/lame@3.100-6?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "ncurses"
+    ],
+    "provides": [
+      "libmp3lame.so = 0-64"
+    ],
+    "fileCount": 34,
+    "error": null
+  },
+  {
+    "id": "pacman/libxcrypt-4.5.2-1-x86_64.pkg.tar.zst",
+    "file": "libxcrypt-4.5.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "libxcrypt",
+    "version": "4.5.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/libxcrypt@4.5.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libcrypt.so = 2-64"
+    ],
+    "fileCount": 24,
+    "error": null
+  },
+  {
+    "id": "pacman/linux-api-headers-6.18-1-x86_64.pkg.tar.zst",
+    "file": "linux-api-headers-6.18-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "linux-api-headers",
+    "version": "6.18-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/linux-api-headers@6.18-1?arch=x86_64",
+    "dependencies": [],
+    "provides": [],
+    "fileCount": 1083,
+    "error": null
+  },
+  {
+    "id": "pacman/musl-1.2.5-6-x86_64.pkg.tar.zst",
+    "file": "musl-1.2.5-6-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "musl",
+    "version": "1.2.5-6",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/musl@1.2.5-6?arch=x86_64",
+    "dependencies": [],
+    "provides": [],
+    "fileCount": 259,
+    "error": null
+  },
+  {
+    "id": "pacman/openssl-3.6.0-1-x86_64.pkg.tar.zst",
+    "file": "openssl-3.6.0-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "openssl",
+    "version": "3.6.0-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/openssl@3.6.0-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libcrypto.so = 3-64",
+      "libssl.so = 3-64"
+    ],
+    "fileCount": 6729,
+    "error": null
+  },
+  {
+    "id": "pacman/pam-1.7.1-1-x86_64.pkg.tar.zst",
+    "file": "pam-1.7.1-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "pam",
+    "version": "1.7.1-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/pam@1.7.1-1?arch=x86_64",
+    "dependencies": [
+      "audit",
+      "glibc",
+      "libaudit.so = 1-64",
+      "libcrypt.so = 2-64",
+      "libnsl",
+      "libtirpc",
+      "libxcrypt",
+      "pambase",
+      "systemd-libs"
+    ],
+    "provides": [
+      "libpam.so = 0-64",
+      "libpam_misc.so = 0-64",
+      "libpamc.so = 0-64"
+    ],
+    "fileCount": 602,
+    "error": null
+  },
+  {
+    "id": "pacman/perl-5.42.0-1-x86_64.pkg.tar.zst",
+    "file": "perl-5.42.0-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "perl",
+    "version": "5.42.0-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/perl@5.42.0-1?arch=x86_64",
+    "dependencies": [
+      "db5.3",
+      "gdbm >= 1.17",
+      "glibc",
+      "libcrypt.so = 2-64",
+      "libxcrypt"
+    ],
+    "provides": [
+      "perl-archive-tar = 3.04",
+      "perl-attribute-handlers = 1.03",
+      "perl-autodie = 2.37",
+      "perl-autoloader = 5.74",
+      "perl-autouse = 1.11",
+      "perl-base = 2.27",
+      "perl-bignum = 0.67",
+      "perl-carp = 1.54",
+      "perl-compress-raw-bzip2 = 2.213",
+      "perl-compress-raw-zlib = 2.213",
+      "perl-config-perl-v = 0.38",
+      "perl-constant = 1.33",
+      "perl-cpan = 2.38",
+      "perl-cpan-meta = 2.150010",
+      "perl-cpan-meta-requirements = 2.143",
+      "perl-cpan-meta-yaml = 0.020",
+      "perl-data-dumper = 2.192",
+      "perl-db_file = 1.859",
+      "perl-devel-ppport = 3.73",
+      "perl-devel-selfstubber = 1.06",
+      "perl-digest = 1.20",
+      "perl-digest-md5 = 2.59",
+      "perl-digest-sha = 6.04",
+      "perl-dumpvalue = 1.21",
+      "perl-encode = 3.21",
+      "perl-encoding-warnings = 0.14",
+      "perl-env = 1.06",
+      "perl-experimental = 0.035",
+      "perl-exporter = 5.79",
+      "perl-extutils-cbuilder = 0.280242",
+      "perl-extutils-constant = 0.25",
+      "perl-extutils-install = 2.22",
+      "perl-extutils-makemaker = 7.76",
+      "perl-extutils-manifest = 1.75",
+      "perl-extutils-parsexs = 3.57",
+      "perl-extutils-pl2bat = 0.005",
+      "perl-file-fetch = 1.04",
+      "perl-file-path = 2.18",
+      "perl-file-temp = 0.2311",
+      "perl-filter-simple = 0.96",
+      "perl-filter-util-call = 1.64",
+      "perl-findbin = 1.54",
+      "perl-getopt-long = 2.58",
+      "perl-http-tiny = 0.090",
+      "perl-i18n-collate = 1.02",
+      "perl-i18n-langtags = 0.45",
+      "perl-if = 0.0610",
+      "perl-io = 1.55",
+      "perl-io-compress = 2.213",
+      "perl-io-socket-ip = 0.43",
+      "perl-io-zlib = 1.15",
+      "perl-ipc-cmd = 1.04",
+      "perl-ipc-sysv = 2.09",
+      "perl-json-pp = 4.16",
+      "perl-lib = 0.65",
+      "perl-libnet = 3.15",
+      "perl-locale-maketext = 1.33",
+      "perl-locale-maketext-simple = 0.21_01",
+      "perl-math-bigint = 2.005002",
+      "perl-math-bigint-fastcalc = 0.5020",
+      "perl-math-complex = 1.63",
+      "perl-memoize = 1.17",
+      "perl-mime-base64 = 3.16_01",
+      "perl-module-corelist = 5.20250702",
+      "perl-module-load = 0.36",
+      "perl-module-load-conditional = 0.74",
+      "perl-module-loaded = 0.08",
+      "perl-module-metadata = 1.000038",
+      "perl-net-ping = 2.76",
+      "perl-params-check = 0.38",
+      "perl-parent = 0.244",
+      "perl-pathtools = 3.94",
+      "perl-perl-ostype = 1.010",
+      "perl-perlfaq = 5.20250619",
+      "perl-perlio-via-quotedprint = 0.10",
+      "perl-pod-checker = 1.77",
+      "perl-pod-escapes = 1.07",
+      "perl-pod-perldoc = 3.2801",
+      "perl-pod-simple = 3.45",
+      "perl-pod-usage = 2.05",
+      "perl-podlators = 6.0.2",
+      "perl-safe = 2.47",
+      "perl-scalar-list-utils = 1.68_01",
+      "perl-search-dict = 1.08",
+      "perl-selfloader = 1.28",
+      "perl-socket = 2.038",
+      "perl-storable = 3.37",
+      "perl-sys-syslog = 0.36",
+      "perl-term-ansicolor = 5.01",
+      "perl-term-cap = 1.18",
+      "perl-term-complete = 1.403",
+      "perl-term-readline = 1.17",
+      "perl-term-table = 0.024",
+      "perl-test = 1.31",
+      "perl-test-harness = 3.50",
+      "perl-test-simple = 1.302210",
+      "perl-text-abbrev = 1.02",
+      "perl-text-balanced = 2.06",
+      "perl-text-parsewords = 3.31",
+      "perl-text-tabs = 2024.001",
+      "perl-thread-queue = 3.14",
+      "perl-thread-semaphore = 2.13",
+      "perl-threads = 2.43",
+      "perl-threads-shared = 1.70",
+      "perl-tie-file = 1.10",
+      "perl-tie-refhash = 1.41",
+      "perl-time-hires = 1.9778",
+      "perl-time-local = 1.35",
+      "perl-time-piece = 1.36",
+      "perl-unicode-collate = 1.31",
+      "perl-unicode-normalize = 1.32",
+      "perl-version = 0.9933",
+      "perl-xsloader = 0.32"
+    ],
+    "fileCount": 3218,
+    "error": null
+  },
+  {
+    "id": "pacman/screen-5.0.1-3-x86_64.pkg.tar.zst",
+    "file": "screen-5.0.1-3-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "screen",
+    "version": "5.0.1-3",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/screen@5.0.1-3?arch=x86_64",
+    "dependencies": [
+      "libcrypt.so",
+      "libncursesw.so = 6-64",
+      "libpam.so = 0-64",
+      "libutempter"
+    ],
+    "provides": [],
+    "fileCount": 38,
+    "error": null
+  },
+  {
+    "id": "pacman/sed-4.9-3-x86_64.pkg.tar.zst",
+    "file": "sed-4.9-3-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "sed",
+    "version": "4.9-3",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/sed@4.9-3?arch=x86_64",
+    "dependencies": [
+      "acl",
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 130,
+    "error": null
+  },
+  {
+    "id": "pacman/tar-1.35-2-x86_64.pkg.tar.zst",
+    "file": "tar-1.35-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "tar",
+    "version": "1.35-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/tar@1.35-2?arch=x86_64",
+    "dependencies": [
+      "acl",
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 139,
+    "error": null
+  },
+  {
+    "id": "pacman/tmux-3.6_a-1-x86_64.pkg.tar.zst",
+    "file": "tmux-3.6_a-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "tmux",
+    "version": "3.6_a-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/tmux@3.6_a-1?arch=x86_64",
+    "dependencies": [
+      "libevent",
+      "libevent_core-2.1.so = 7-64",
+      "libncursesw.so = 6-64",
+      "libsystemd.so = 0-64",
+      "libutempter",
+      "ncurses",
+      "systemd-libs"
+    ],
+    "provides": [],
+    "fileCount": 10,
+    "error": null
+  },
+  {
+    "id": "pacman/tree-2.2.1-1-x86_64.pkg.tar.zst",
+    "file": "tree-2.2.1-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 0,
+    "name": "tree",
+    "version": "2.2.1-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/tree@2.2.1-1?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "pacman/unzip-6.0-23-x86_64.pkg.tar.zst",
+    "file": "unzip-6.0-23-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "unzip",
+    "version": "6.0-23",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/unzip@6.0-23?arch=x86_64",
+    "dependencies": [
+      "bash",
+      "bzip2"
+    ],
+    "provides": [],
+    "fileCount": 18,
+    "error": null
+  },
+  {
+    "id": "pacman/vim-9.1.2077-1-x86_64.pkg.tar.zst",
+    "file": "vim-9.1.2077-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "vim",
+    "version": "9.1.2077-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/vim@9.1.2077-1?arch=x86_64",
+    "dependencies": [
+      "acl",
+      "glibc",
+      "gpm",
+      "libgcrypt",
+      "vim-runtime = 9.1.2077-1",
+      "zlib"
+    ],
+    "provides": [
+      "vim-minimal",
+      "vim-plugin-runtime",
+      "xxd"
+    ],
+    "fileCount": 190,
+    "error": null
+  },
+  {
+    "id": "pacman/wget-1.25.0-3-x86_64.pkg.tar.zst",
+    "file": "wget-1.25.0-3-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "wget",
+    "version": "1.25.0-3",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/wget@1.25.0-3?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "gnutls",
+      "libidn2",
+      "libidn2.so = 0-64",
+      "libnettle.so = 8-64",
+      "libpsl",
+      "libpsl.so = 5-64",
+      "libuuid.so = 1-64",
+      "nettle",
+      "pcre2",
+      "util-linux-libs",
+      "zlib"
+    ],
+    "provides": [],
+    "fileCount": 176,
+    "error": null
+  },
+  {
+    "id": "pacman/xz-5.8.2-1-x86_64.pkg.tar.zst",
+    "file": "xz-5.8.2-1-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "xz",
+    "version": "5.8.2-1",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/xz@5.8.2-1?arch=x86_64",
+    "dependencies": [
+      "glibc",
+      "sh"
+    ],
+    "provides": [
+      "liblzma.so = 5-64"
+    ],
+    "fileCount": 458,
+    "error": null
+  },
+  {
+    "id": "pacman/zlib-1:1.3.1-2-x86_64.pkg.tar.zst",
+    "file": "zlib-1:1.3.1-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "zlib",
+    "version": "1:1.3.1-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/zlib@1:1.3.1-2?arch=x86_64",
+    "dependencies": [
+      "glibc"
+    ],
+    "provides": [
+      "libz.so = 1-64"
+    ],
+    "fileCount": 18,
+    "error": null
+  },
+  {
+    "id": "pacman/zstd-1.5.7-2-x86_64.pkg.tar.zst",
+    "file": "zstd-1.5.7-2-x86_64.pkg.tar.zst",
+    "format": "PACMAN",
+    "tier": 1,
+    "name": "zstd",
+    "version": "1.5.7-2",
+    "release": null,
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:alpm/arch/zstd@1.5.7-2?arch=x86_64",
+    "dependencies": [
+      "gcc-libs",
+      "glibc",
+      "lz4",
+      "xz",
+      "zlib"
+    ],
+    "provides": [
+      "libzstd.so = 1-64"
+    ],
+    "fileCount": 39,
+    "error": null
+  }
+]

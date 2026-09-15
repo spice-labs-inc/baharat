@@ -1,0 +1,1796 @@
+[
+  {
+    "id": "apks/acl-2.3.2-r0.apk",
+    "file": "acl-2.3.2-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "acl",
+    "version": "2.3.2-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/acl@2.3.2-r0?arch=x86_64",
+    "dependencies": [
+      "so:libacl.so.1",
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:chacl = 2.3.2-r0",
+      "cmd:getfacl = 2.3.2-r0",
+      "cmd:setfacl = 2.3.2-r0"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/alpine-baselayout-3.6.5-r0.apk",
+    "file": "alpine-baselayout-3.6.5-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "alpine-baselayout",
+    "version": "3.6.5-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "noarch",
+    "purl": "pkg:apk/alpine/alpine-baselayout@3.6.5-r0",
+    "dependencies": [
+      "/bin/sh",
+      "alpine-baselayout-data = 3.6.5-r0"
+    ],
+    "provides": [],
+    "fileCount": 79,
+    "error": null
+  },
+  {
+    "id": "apks/alpine-keys-2.4-r1.apk",
+    "file": "alpine-keys-2.4-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "alpine-keys",
+    "version": "2.4-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/alpine-keys@2.4-r1?arch=x86_64",
+    "dependencies": [],
+    "provides": [],
+    "fileCount": 57,
+    "error": null
+  },
+  {
+    "id": "apks/apk-tools-2.14.4-r1.apk",
+    "file": "apk-tools-2.14.4-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "apk-tools",
+    "version": "2.14.4-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/apk-tools@2.14.4-r1?arch=x86_64",
+    "dependencies": [
+      "ca-certificates-bundle",
+      "musl >= 1.2.3_git20230424",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcrypto.so.3",
+      "so:libssl.so.3",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:apk = 2.14.4-r1",
+      "so:libapk.so.2.14.0 = 2.14.0"
+    ],
+    "fileCount": 11,
+    "error": null
+  },
+  {
+    "id": "apks/attr-2.5.2-r0.apk",
+    "file": "attr-2.5.2-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "attr",
+    "version": "2.5.2-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/attr@2.5.2-r0?arch=x86_64",
+    "dependencies": [
+      "so:libattr.so.1",
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:attr = 2.5.2-r0",
+      "cmd:getfattr = 2.5.2-r0",
+      "cmd:setfattr = 2.5.2-r0"
+    ],
+    "fileCount": 8,
+    "error": null
+  },
+  {
+    "id": "apks/attr-2.5.2-r0.apk.1",
+    "file": "attr-2.5.2-r0.apk.1",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "UnsupportedPackageException: Unknown package format: attr-2.5.2-r0.apk.1"
+  },
+  {
+    "id": "apks/bash-5.2.26-r0.apk",
+    "file": "bash-5.2.26-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "bash",
+    "version": "5.2.26-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/bash@5.2.26-r0?arch=x86_64",
+    "dependencies": [
+      "/bin/sh",
+      "so:libc.musl-x86_64.so.1",
+      "so:libreadline.so.8"
+    ],
+    "provides": [
+      "cmd:bash = 5.2.26-r0"
+    ],
+    "fileCount": 46,
+    "error": null
+  },
+  {
+    "id": "apks/bash-5.2.26-r0.apk.1",
+    "file": "bash-5.2.26-r0.apk.1",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "UnsupportedPackageException: Unknown package format: bash-5.2.26-r0.apk.1"
+  },
+  {
+    "id": "apks/busybox-1.36.1-r31.apk",
+    "file": "busybox-1.36.1-r31.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "busybox",
+    "version": "1.36.1-r31",
+    "release": "r31",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/busybox@1.36.1-r31?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:busybox = 1.36.1-r31"
+    ],
+    "fileCount": 28,
+    "error": null
+  },
+  {
+    "id": "apks/bzip2-1.0.8-r6.apk",
+    "file": "bzip2-1.0.8-r6.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "bzip2",
+    "version": "1.0.8-r6",
+    "release": "r6",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/bzip2@1.0.8-r6?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:bunzip2 = 1.0.8-r6",
+      "cmd:bzcat = 1.0.8-r6",
+      "cmd:bzcmp = 1.0.8-r6",
+      "cmd:bzdiff = 1.0.8-r6",
+      "cmd:bzegrep = 1.0.8-r6",
+      "cmd:bzfgrep = 1.0.8-r6",
+      "cmd:bzgrep = 1.0.8-r6",
+      "cmd:bzip2 = 1.0.8-r6",
+      "cmd:bzip2recover = 1.0.8-r6",
+      "cmd:bzless = 1.0.8-r6",
+      "cmd:bzmore = 1.0.8-r6"
+    ],
+    "fileCount": 13,
+    "error": null
+  },
+  {
+    "id": "apks/bzip2-1.0.8-r6.apk.1",
+    "file": "bzip2-1.0.8-r6.apk.1",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "UnsupportedPackageException: Unknown package format: bzip2-1.0.8-r6.apk.1"
+  },
+  {
+    "id": "apks/ca-certificates-20250911-r0.apk",
+    "file": "ca-certificates-20250911-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "ca-certificates",
+    "version": "20250911-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/ca-certificates@20250911-r0?arch=x86_64",
+    "dependencies": [
+      "/bin/sh",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcrypto.so.3"
+    ],
+    "provides": [
+      "cmd:c_rehash = 20250911-r0",
+      "cmd:update-ca-certificates = 20250911-r0"
+    ],
+    "fileCount": 167,
+    "error": null
+  },
+  {
+    "id": "apks/coreutils-9.5-r2.apk",
+    "file": "coreutils-9.5-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "coreutils",
+    "version": "9.5-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/coreutils@9.5-r2?arch=x86_64",
+    "dependencies": [
+      "/bin/sh",
+      "coreutils-env = 9.5-r2",
+      "coreutils-fmt = 9.5-r2",
+      "coreutils-sha512sum = 9.5-r2",
+      "so:libacl.so.1",
+      "so:libattr.so.1",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcrypto.so.3",
+      "so:libgmp.so.10",
+      "so:libutmps.so.0.1"
+    ],
+    "provides": [
+      "cmd:[ = 9.5-r2",
+      "cmd:b2sum = 9.5-r2",
+      "cmd:base32 = 9.5-r2",
+      "cmd:base64 = 9.5-r2",
+      "cmd:basename = 9.5-r2",
+      "cmd:basenc = 9.5-r2",
+      "cmd:cat = 9.5-r2",
+      "cmd:chcon = 9.5-r2",
+      "cmd:chgrp = 9.5-r2",
+      "cmd:chmod = 9.5-r2",
+      "cmd:chown = 9.5-r2",
+      "cmd:chroot = 9.5-r2",
+      "cmd:cksum = 9.5-r2",
+      "cmd:comm = 9.5-r2",
+      "cmd:coreutils = 9.5-r2",
+      "cmd:cp = 9.5-r2",
+      "cmd:csplit = 9.5-r2",
+      "cmd:cut = 9.5-r2",
+      "cmd:date = 9.5-r2",
+      "cmd:dd = 9.5-r2",
+      "cmd:df = 9.5-r2",
+      "cmd:dir = 9.5-r2",
+      "cmd:dircolors = 9.5-r2",
+      "cmd:dirname = 9.5-r2",
+      "cmd:du = 9.5-r2",
+      "cmd:echo = 9.5-r2",
+      "cmd:expand = 9.5-r2",
+      "cmd:expr = 9.5-r2",
+      "cmd:factor = 9.5-r2",
+      "cmd:false = 9.5-r2",
+      "cmd:fold = 9.5-r2",
+      "cmd:head = 9.5-r2",
+      "cmd:hostid = 9.5-r2",
+      "cmd:id = 9.5-r2",
+      "cmd:install = 9.5-r2",
+      "cmd:join = 9.5-r2",
+      "cmd:link = 9.5-r2",
+      "cmd:ln = 9.5-r2",
+      "cmd:logname = 9.5-r2",
+      "cmd:ls = 9.5-r2",
+      "cmd:md5sum = 9.5-r2",
+      "cmd:mkdir = 9.5-r2",
+      "cmd:mkfifo = 9.5-r2",
+      "cmd:mknod = 9.5-r2",
+      "cmd:mktemp = 9.5-r2",
+      "cmd:mv = 9.5-r2",
+      "cmd:nice = 9.5-r2",
+      "cmd:nl = 9.5-r2",
+      "cmd:nohup = 9.5-r2",
+      "cmd:nproc = 9.5-r2",
+      "cmd:numfmt = 9.5-r2",
+      "cmd:od = 9.5-r2",
+      "cmd:paste = 9.5-r2",
+      "cmd:pathchk = 9.5-r2",
+      "cmd:pinky = 9.5-r2",
+      "cmd:pr = 9.5-r2",
+      "cmd:printenv = 9.5-r2",
+      "cmd:printf = 9.5-r2",
+      "cmd:ptx = 9.5-r2",
+      "cmd:pwd = 9.5-r2",
+      "cmd:readlink = 9.5-r2",
+      "cmd:realpath = 9.5-r2",
+      "cmd:rm = 9.5-r2",
+      "cmd:rmdir = 9.5-r2",
+      "cmd:runcon = 9.5-r2",
+      "cmd:seq = 9.5-r2",
+      "cmd:sha1sum = 9.5-r2",
+      "cmd:sha224sum = 9.5-r2",
+      "cmd:sha256sum = 9.5-r2",
+      "cmd:sha384sum = 9.5-r2",
+      "cmd:shred = 9.5-r2",
+      "cmd:shuf = 9.5-r2",
+      "cmd:sleep = 9.5-r2",
+      "cmd:sort = 9.5-r2",
+      "cmd:split = 9.5-r2",
+      "cmd:stat = 9.5-r2",
+      "cmd:stdbuf = 9.5-r2",
+      "cmd:stty = 9.5-r2",
+      "cmd:sum = 9.5-r2",
+      "cmd:sync = 9.5-r2",
+      "cmd:tac = 9.5-r2",
+      "cmd:tail = 9.5-r2",
+      "cmd:tee = 9.5-r2",
+      "cmd:test = 9.5-r2",
+      "cmd:timeout = 9.5-r2",
+      "cmd:touch = 9.5-r2",
+      "cmd:tr = 9.5-r2",
+      "cmd:true = 9.5-r2",
+      "cmd:truncate = 9.5-r2",
+      "cmd:tsort = 9.5-r2",
+      "cmd:tty = 9.5-r2",
+      "cmd:uname = 9.5-r2",
+      "cmd:unexpand = 9.5-r2",
+      "cmd:uniq = 9.5-r2",
+      "cmd:unlink = 9.5-r2",
+      "cmd:users = 9.5-r2",
+      "cmd:vdir = 9.5-r2",
+      "cmd:wc = 9.5-r2",
+      "cmd:who = 9.5-r2",
+      "cmd:whoami = 9.5-r2",
+      "cmd:yes = 9.5-r2"
+    ],
+    "fileCount": 108,
+    "error": null
+  },
+  {
+    "id": "apks/curl-8.14.1-r2.apk",
+    "file": "curl-8.14.1-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "curl",
+    "version": "8.14.1-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/curl@8.14.1-r2?arch=x86_64",
+    "dependencies": [
+      "libcurl = 8.14.1-r2",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcurl.so.4",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:curl = 8.14.1-r2",
+      "cmd:wcurl = 8.14.1-r2",
+      "wcurl = 8.14.1-r2"
+    ],
+    "fileCount": 4,
+    "error": null
+  },
+  {
+    "id": "apks/diffutils-3.10-r0.apk",
+    "file": "diffutils-3.10-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "diffutils",
+    "version": "3.10-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/diffutils@3.10-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:cmp = 3.10-r0",
+      "cmd:diff = 3.10-r0",
+      "cmd:diff3 = 3.10-r0",
+      "cmd:sdiff = 3.10-r0"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/file-5.45-r1.apk",
+    "file": "file-5.45-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "file",
+    "version": "5.45-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/file@5.45-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libmagic.so.1"
+    ],
+    "provides": [
+      "cmd:file = 5.45-r1"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/file-5.45-r1.apk.1",
+    "file": "file-5.45-r1.apk.1",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "UnsupportedPackageException: Unknown package format: file-5.45-r1.apk.1"
+  },
+  {
+    "id": "apks/findutils-4.9.0-r3.apk",
+    "file": "findutils-4.9.0-r3.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/findutils-4.9.0-r5.apk",
+    "file": "findutils-4.9.0-r5.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "findutils",
+    "version": "4.9.0-r5",
+    "release": "r5",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/findutils@4.9.0-r5?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:find = 4.9.0-r5",
+      "cmd:xargs = 4.9.0-r5"
+    ],
+    "fileCount": 5,
+    "error": null
+  },
+  {
+    "id": "apks/gawk-5.3.0-r1.apk",
+    "file": "gawk-5.3.0-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "gawk",
+    "version": "5.3.0-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/gawk@5.3.0-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:awk = 5.3.0-r1",
+      "cmd:gawk = 5.3.0-r1",
+      "cmd:gawk-5.3.0 = 5.3.0-r1",
+      "cmd:gawkbug = 5.3.0-r1"
+    ],
+    "fileCount": 61,
+    "error": null
+  },
+  {
+    "id": "apks/gettext-0.22.5-r0.apk",
+    "file": "gettext-0.22.5-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "gettext",
+    "version": "0.22.5-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/gettext@0.22.5-r0?arch=x86_64",
+    "dependencies": [
+      "gettext-envsubst = 0.22.5-r0",
+      "so:libc.musl-x86_64.so.1",
+      "so:libgomp.so.1",
+      "so:libintl.so.8",
+      "so:libtextstyle.so.0",
+      "so:libunistring.so.5",
+      "so:libxml2.so.2"
+    ],
+    "provides": [
+      "cmd:autopoint = 0.22.5-r0",
+      "cmd:gettext = 0.22.5-r0",
+      "cmd:gettext.sh = 0.22.5-r0",
+      "cmd:gettextize = 0.22.5-r0",
+      "cmd:msgattrib = 0.22.5-r0",
+      "cmd:msgcat = 0.22.5-r0",
+      "cmd:msgcmp = 0.22.5-r0",
+      "cmd:msgcomm = 0.22.5-r0",
+      "cmd:msgconv = 0.22.5-r0",
+      "cmd:msgen = 0.22.5-r0",
+      "cmd:msgexec = 0.22.5-r0",
+      "cmd:msgfilter = 0.22.5-r0",
+      "cmd:msgfmt = 0.22.5-r0",
+      "cmd:msggrep = 0.22.5-r0",
+      "cmd:msginit = 0.22.5-r0",
+      "cmd:msgmerge = 0.22.5-r0",
+      "cmd:msgunfmt = 0.22.5-r0",
+      "cmd:msguniq = 0.22.5-r0",
+      "cmd:ngettext = 0.22.5-r0",
+      "cmd:recode-sr-latin = 0.22.5-r0",
+      "cmd:xgettext = 0.22.5-r0",
+      "so:libgettextlib-0.22.5.so = 0",
+      "so:libgettextsrc-0.22.5.so = 0"
+    ],
+    "fileCount": 43,
+    "error": null
+  },
+  {
+    "id": "apks/git-2.45.2-r0.apk",
+    "file": "git-2.45.2-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/git-2.45.4-r0.apk",
+    "file": "git-2.45.4-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "git",
+    "version": "2.45.4-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/git@2.45.4-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libcurl.so.4",
+      "so:libexpat.so.1",
+      "so:libpcre2-8.so.0",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:git = 2.45.4-r0",
+      "cmd:git-receive-pack = 2.45.4-r0",
+      "cmd:git-shell = 2.45.4-r0",
+      "cmd:git-upload-archive = 2.45.4-r0",
+      "cmd:git-upload-pack = 2.45.4-r0"
+    ],
+    "fileCount": 192,
+    "error": null
+  },
+  {
+    "id": "apks/gnupg-2.4.5-r0.apk",
+    "file": "gnupg-2.4.5-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/gnupg-2.4.9-r0.apk",
+    "file": "gnupg-2.4.9-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "gnupg",
+    "version": "2.4.9-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/gnupg@2.4.9-r0?arch=x86_64",
+    "dependencies": [
+      "gnupg-dirmngr = 2.4.9-r0",
+      "gnupg-utils = 2.4.9-r0",
+      "gnupg-wks-client = 2.4.9-r0",
+      "gpg = 2.4.9-r0",
+      "gpg-agent = 2.4.9-r0",
+      "gpg-wks-server = 2.4.9-r0",
+      "gpgsm = 2.4.9-r0",
+      "gpgv = 2.4.9-r0"
+    ],
+    "provides": [],
+    "fileCount": 0,
+    "error": null
+  },
+  {
+    "id": "apks/grep-3.11-r0.apk",
+    "file": "grep-3.11-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "grep",
+    "version": "3.11-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/grep@3.11-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libpcre2-8.so.0"
+    ],
+    "provides": [
+      "cmd:egrep = 3.11-r0",
+      "cmd:fgrep = 3.11-r0",
+      "cmd:grep = 3.11-r0"
+    ],
+    "fileCount": 4,
+    "error": null
+  },
+  {
+    "id": "apks/gzip-1.13-r0.apk",
+    "file": "gzip-1.13-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "gzip",
+    "version": "1.13-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/gzip@1.13-r0?arch=x86_64",
+    "dependencies": [
+      "less",
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:gunzip = 1.13-r0",
+      "cmd:gzexe = 1.13-r0",
+      "cmd:gzip = 1.13-r0",
+      "cmd:uncompress = 1.13-r0",
+      "cmd:zcat = 1.13-r0",
+      "cmd:zcmp = 1.13-r0",
+      "cmd:zdiff = 1.13-r0",
+      "cmd:zegrep = 1.13-r0",
+      "cmd:zfgrep = 1.13-r0",
+      "cmd:zforce = 1.13-r0",
+      "cmd:zgrep = 1.13-r0",
+      "cmd:zless = 1.13-r0",
+      "cmd:zmore = 1.13-r0",
+      "cmd:znew = 1.13-r0"
+    ],
+    "fileCount": 19,
+    "error": null
+  },
+  {
+    "id": "apks/htop-3.3.0-r0.apk",
+    "file": "htop-3.3.0-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "htop",
+    "version": "3.3.0-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/htop@3.3.0-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:htop = 3.3.0-r0"
+    ],
+    "fileCount": 14,
+    "error": null
+  },
+  {
+    "id": "apks/iftop-1.0-r5.apk",
+    "file": "iftop-1.0-r5.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/iproute2-6.9.0-r0.apk",
+    "file": "iproute2-6.9.0-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "iproute2",
+    "version": "6.9.0-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/iproute2@6.9.0-r0?arch=x86_64",
+    "dependencies": [
+      "/bin/sh",
+      "iproute2-minimal",
+      "iproute2-ss",
+      "iproute2-tc",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcap.so.2",
+      "so:libmnl.so.0"
+    ],
+    "provides": [
+      "cmd:bridge = 6.9.0-r0",
+      "cmd:ctstat = 6.9.0-r0",
+      "cmd:genl = 6.9.0-r0",
+      "cmd:ifstat = 6.9.0-r0",
+      "cmd:lnstat = 6.9.0-r0",
+      "cmd:nstat = 6.9.0-r0",
+      "cmd:routel = 6.9.0-r0",
+      "cmd:rtacct = 6.9.0-r0",
+      "cmd:rtmon = 6.9.0-r0",
+      "cmd:rtstat = 6.9.0-r0"
+    ],
+    "fileCount": 11,
+    "error": null
+  },
+  {
+    "id": "apks/jq-1.7.1-r0.apk",
+    "file": "jq-1.7.1-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "jq",
+    "version": "1.7.1-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/jq@1.7.1-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libonig.so.5"
+    ],
+    "provides": [
+      "cmd:jq = 1.7.1-r0",
+      "so:libjq.so.1 = 1.0.4"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/less-643-r2.apk",
+    "file": "less-643-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "less",
+    "version": "643-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/less@643-r2?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:less = 643-r2",
+      "cmd:lessecho = 643-r2",
+      "cmd:lesskey = 643-r2"
+    ],
+    "fileCount": 5,
+    "error": null
+  },
+  {
+    "id": "apks/libcap-2.70-r0.apk",
+    "file": "libcap-2.70-r0.apk",
+    "format": "APK",
+    "tier": 0,
+    "name": "libcap",
+    "version": "2.70-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/libcap@2.70-r0?arch=x86_64",
+    "dependencies": [
+      "libcap-utils = 2.70-r0",
+      "libcap2 = 2.70-r0"
+    ],
+    "provides": [],
+    "fileCount": 0,
+    "error": null
+  },
+  {
+    "id": "apks/libedit-20240517.3.1-r0.apk",
+    "file": "libedit-20240517.3.1-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "libedit",
+    "version": "20240517.3.1-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/libedit@20240517.3.1-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "so:libedit.so.0 = 0.0.73"
+    ],
+    "fileCount": 4,
+    "error": null
+  },
+  {
+    "id": "apks/libffi-3.4.6-r0.apk",
+    "file": "libffi-3.4.6-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "libffi",
+    "version": "3.4.6-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/libffi@3.4.6-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "so:libffi.so.8 = 8.1.4"
+    ],
+    "fileCount": 4,
+    "error": null
+  },
+  {
+    "id": "apks/libgcc-13.2.1_git20240309-r1.apk",
+    "file": "libgcc-13.2.1_git20240309-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "libgcc",
+    "version": "13.2.1_git20240309-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/libgcc@13.2.1_git20240309-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "so:libgcc_s.so.1 = 1"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/lz4-1.9.4-r5.apk",
+    "file": "lz4-1.9.4-r5.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "lz4",
+    "version": "1.9.4-r5",
+    "release": "r5",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/lz4@1.9.4-r5?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:lz4 = 1.9.4-r5",
+      "cmd:lz4c = 1.9.4-r5",
+      "cmd:lz4cat = 1.9.4-r5",
+      "cmd:unlz4 = 1.9.4-r5"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/m4-1.4.19-r3.apk",
+    "file": "m4-1.4.19-r3.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "m4",
+    "version": "1.4.19-r3",
+    "release": "r3",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/m4@1.4.19-r3?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:m4 = 1.4.19-r3"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/make-4.4.1-r2.apk",
+    "file": "make-4.4.1-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "make",
+    "version": "4.4.1-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/make@4.4.1-r2?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:gmake = 4.4.1-r2",
+      "cmd:make = 4.4.1-r2"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/mandoc-1.14.6-r13.apk",
+    "file": "mandoc-1.14.6-r13.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "mandoc",
+    "version": "1.14.6-r13",
+    "release": "r13",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/mandoc@1.14.6-r13?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:demandoc = 1.14.6-r13",
+      "cmd:man = 1.14.6-r13",
+      "cmd:mandoc = 1.14.6-r13",
+      "doc-provider",
+      "mdocml = 1.14.6-r13",
+      "so:libmandoc.so = 0"
+    ],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "apks/mawk-1.3.4-r9.apk",
+    "file": "mawk-1.3.4-r9.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "mawk",
+    "version": "1.3.4-r9",
+    "release": "r9",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/mawk@1.3.4-r9?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:mawk = 1.3.4-r9"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/musl-1.2.5-r1.apk",
+    "file": "musl-1.2.5-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "musl",
+    "version": "1.2.5-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/musl@1.2.5-r1?arch=x86_64",
+    "dependencies": [],
+    "provides": [
+      "so:libc.musl-x86_64.so.1 = 1"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/nano-8.0-r0.apk",
+    "file": "nano-8.0-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "nano",
+    "version": "8.0-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/nano@8.0-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:nano = 8.0-r0",
+      "cmd:rnano = 8.0-r0"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/ncurses-6.4_p20240420-r0.apk",
+    "file": "ncurses-6.4_p20240420-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/ncurses-6.4_p20240420-r2.apk",
+    "file": "ncurses-6.4_p20240420-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "ncurses",
+    "version": "6.4_p20240420-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/ncurses@6.4_p20240420-r2?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:captoinfo = 6.4_p20240420-r2",
+      "cmd:clear = 6.4_p20240420-r2",
+      "cmd:infocmp = 6.4_p20240420-r2",
+      "cmd:infotocap = 6.4_p20240420-r2",
+      "cmd:reset = 6.4_p20240420-r2",
+      "cmd:tabs = 6.4_p20240420-r2",
+      "cmd:tic = 6.4_p20240420-r2",
+      "cmd:toe = 6.4_p20240420-r2",
+      "cmd:tput = 6.4_p20240420-r2",
+      "cmd:tset = 6.4_p20240420-r2"
+    ],
+    "fileCount": 18,
+    "error": null
+  },
+  {
+    "id": "apks/openssl-3.3.1-r3.apk",
+    "file": "openssl-3.3.1-r3.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/openssl-3.3.5-r0.apk",
+    "file": "openssl-3.3.5-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "openssl",
+    "version": "3.3.5-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/openssl@3.3.5-r0?arch=x86_64",
+    "dependencies": [
+      "libcrypto3 = 3.3.5-r0",
+      "libssl3 = 3.3.5-r0",
+      "so:libc.musl-x86_64.so.1",
+      "so:libcrypto.so.3",
+      "so:libssl.so.3"
+    ],
+    "provides": [
+      "cmd:openssl = 3.3.5-r0",
+      "openssl3 = 3.3.5-r0"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/patch-2.7.6-r10.apk",
+    "file": "patch-2.7.6-r10.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "patch",
+    "version": "2.7.6-r10",
+    "release": "r10",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/patch@2.7.6-r10?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:patch = 2.7.6-r10"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/pcre2-10.43-r0.apk",
+    "file": "pcre2-10.43-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "pcre2",
+    "version": "10.43-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/pcre2@10.43-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "so:libpcre2-8.so.0 = 0.12.0",
+      "so:libpcre2-posix.so.3 = 3.0.5"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/perl-5.38.2-r0.apk",
+    "file": "perl-5.38.2-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/perl-5.38.5-r0.apk",
+    "file": "perl-5.38.5-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "perl",
+    "version": "5.38.5-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/perl@5.38.5-r0?arch=x86_64",
+    "dependencies": [
+      "so:libbz2.so.1",
+      "so:libc.musl-x86_64.so.1",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:perl = 5.38.5-r0",
+      "cmd:perl5.38.5 = 5.38.5-r0",
+      "cmd:perldoc = 5.38.5-r0",
+      "cmd:pod2html = 5.38.5-r0",
+      "cmd:pod2man = 5.38.5-r0",
+      "cmd:pod2text = 5.38.5-r0",
+      "cmd:pod2usage = 5.38.5-r0",
+      "cmd:podchecker = 5.38.5-r0",
+      "cmd:streamzip = 5.38.5-r0",
+      "perl-scalar-list-utils = 5.38.5-r0",
+      "so:libperl.so = 0"
+    ],
+    "fileCount": 1652,
+    "error": null
+  },
+  {
+    "id": "apks/procps-ng-4.0.4-r0.apk",
+    "file": "procps-ng-4.0.4-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "procps-ng",
+    "version": "4.0.4-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/procps-ng@4.0.4-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libintl.so.8",
+      "so:libncursesw.so.6",
+      "so:libproc2.so.0"
+    ],
+    "provides": [
+      "cmd:free = 4.0.4-r0",
+      "cmd:pgrep = 4.0.4-r0",
+      "cmd:pidof = 4.0.4-r0",
+      "cmd:pidwait = 4.0.4-r0",
+      "cmd:pkill = 4.0.4-r0",
+      "cmd:pmap = 4.0.4-r0",
+      "cmd:ps = 4.0.4-r0",
+      "cmd:pwdx = 4.0.4-r0",
+      "cmd:slabtop = 4.0.4-r0",
+      "cmd:sysctl = 4.0.4-r0",
+      "cmd:tload = 4.0.4-r0",
+      "cmd:top = 4.0.4-r0",
+      "cmd:uptime = 4.0.4-r0",
+      "cmd:vmstat = 4.0.4-r0",
+      "cmd:w = 4.0.4-r0",
+      "cmd:watch = 4.0.4-r0",
+      "procps = 4.0.4-r0"
+    ],
+    "fileCount": 20,
+    "error": null
+  },
+  {
+    "id": "apks/psmisc-23.7-r0.apk",
+    "file": "psmisc-23.7-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "psmisc",
+    "version": "23.7-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/psmisc@23.7-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libintl.so.8",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:fuser = 23.7-r0",
+      "cmd:killall = 23.7-r0",
+      "cmd:prtstat = 23.7-r0",
+      "cmd:pslog = 23.7-r0",
+      "cmd:pstree = 23.7-r0",
+      "cmd:pstree.x11 = 23.7-r0"
+    ],
+    "fileCount": 8,
+    "error": null
+  },
+  {
+    "id": "apks/readline-8.2.10-r0.apk",
+    "file": "readline-8.2.10-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "readline",
+    "version": "8.2.10-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/readline@8.2.10-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "so:libreadline.so.8 = 8.2"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/rsync-3.4.1-r1.apk",
+    "file": "rsync-3.4.1-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "rsync",
+    "version": "3.4.1-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/rsync@3.4.1-r1?arch=x86_64",
+    "dependencies": [
+      "so:libacl.so.1",
+      "so:libc.musl-x86_64.so.1",
+      "so:liblz4.so.1",
+      "so:libpopt.so.0",
+      "so:libxxhash.so.0",
+      "so:libz.so.1",
+      "so:libzstd.so.1"
+    ],
+    "provides": [
+      "cmd:rsync = 3.4.1-r1",
+      "cmd:rsync-ssl = 3.4.1-r1"
+    ],
+    "fileCount": 8,
+    "error": null
+  },
+  {
+    "id": "apks/screen-4.9.1-r1.apk",
+    "file": "screen-4.9.1-r1.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/screen-4.9.1_git20250512-r0.apk",
+    "file": "screen-4.9.1_git20250512-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "screen",
+    "version": "4.9.1_git20250512-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/screen@4.9.1_git20250512-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6",
+      "so:libutempter.so.0",
+      "so:libutmps.so.0.1"
+    ],
+    "provides": [
+      "cmd:screen = 4.9.1_git20250512-r0",
+      "cmd:screen-4.9.1 = 4.9.1_git20250512-r0"
+    ],
+    "fileCount": 28,
+    "error": null
+  },
+  {
+    "id": "apks/sed-4.9-r2.apk",
+    "file": "sed-4.9-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "sed",
+    "version": "4.9-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/sed@4.9-r2?arch=x86_64",
+    "dependencies": [
+      "/bin/sh",
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:sed = 4.9-r2"
+    ],
+    "fileCount": 2,
+    "error": null
+  },
+  {
+    "id": "apks/sqlite-3.45.3-r1.apk",
+    "file": "sqlite-3.45.3-r1.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/sqlite-3.45.3-r2.apk",
+    "file": "sqlite-3.45.3-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "sqlite",
+    "version": "3.45.3-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/sqlite@3.45.3-r2?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libreadline.so.8"
+    ],
+    "provides": [
+      "cmd:sqlite3 = 3.45.3-r2"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/sudo-1.9.15_p5-r0.apk",
+    "file": "sudo-1.9.15_p5-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/tar-1.35-r2.apk",
+    "file": "tar-1.35-r2.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "tar",
+    "version": "1.35-r2",
+    "release": "r2",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/tar@1.35-r2?arch=x86_64",
+    "dependencies": [
+      "so:libacl.so.1",
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:tar = 1.35-r2"
+    ],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "apks/tmux-3.4-r0.apk",
+    "file": "tmux-3.4-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/tmux-3.4-r1.apk",
+    "file": "tmux-3.4-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "tmux",
+    "version": "3.4-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/tmux@3.4-r1?arch=x86_64",
+    "dependencies": [
+      "ncurses-terminfo-base",
+      "so:libc.musl-x86_64.so.1",
+      "so:libevent_core-2.1.so.7",
+      "so:libncursesw.so.6"
+    ],
+    "provides": [
+      "cmd:tmux = 3.4-r1"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/tree-2.1.1-r0.apk",
+    "file": "tree-2.1.1-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "tree",
+    "version": "2.1.1-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/tree@2.1.1-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:tree = 2.1.1-r0"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/unzip-6.0-r14.apk",
+    "file": "unzip-6.0-r14.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "unzip",
+    "version": "6.0-r14",
+    "release": "r14",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/unzip@6.0-r14?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:funzip = 6.0-r14",
+      "cmd:unzip = 6.0-r14",
+      "cmd:unzipsfx = 6.0-r14",
+      "cmd:zipgrep = 6.0-r14",
+      "cmd:zipinfo = 6.0-r14"
+    ],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "apks/util-linux-2.40.1-r1.apk",
+    "file": "util-linux-2.40.1-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "util-linux",
+    "version": "2.40.1-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/util-linux@2.40.1-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libsqlite3.so.0"
+    ],
+    "provides": [
+      "so:liblastlog2.so.2 = 2.0.0"
+    ],
+    "fileCount": 5,
+    "error": null
+  },
+  {
+    "id": "apks/vim-9.1.0707-r0.apk",
+    "file": "vim-9.1.0707-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "vim",
+    "version": "9.1.0707-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/vim@9.1.0707-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libncursesw.so.6",
+      "vim-common = 9.1.0707-r0",
+      "xxd = 9.1.0707-r0"
+    ],
+    "provides": [
+      "cmd:ex = 9.1.0707-r0",
+      "cmd:rview = 9.1.0707-r0",
+      "cmd:rvim = 9.1.0707-r0",
+      "cmd:view = 9.1.0707-r0",
+      "cmd:vim = 9.1.0707-r0"
+    ],
+    "fileCount": 7,
+    "error": null
+  },
+  {
+    "id": "apks/wget-1.24.5-r0.apk",
+    "file": "wget-1.24.5-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "wget",
+    "version": "1.24.5-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/wget@1.24.5-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libcrypto.so.3",
+      "so:libidn2.so.0",
+      "so:libpcre2-8.so.0",
+      "so:libssl.so.3",
+      "so:libz.so.1"
+    ],
+    "provides": [
+      "cmd:wget = 1.24.5-r0"
+    ],
+    "fileCount": 5,
+    "error": null
+  },
+  {
+    "id": "apks/which-2.21-r5.apk",
+    "file": "which-2.21-r5.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "which",
+    "version": "2.21-r5",
+    "release": "r5",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/which@2.21-r5?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "cmd:which = 2.21-r5"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/whois-5.5.23-r0.apk",
+    "file": "whois-5.5.23-r0.apk",
+    "format": null,
+    "tier": 1,
+    "name": null,
+    "version": null,
+    "release": null,
+    "epoch": null,
+    "arch": null,
+    "purl": null,
+    "dependencies": null,
+    "provides": null,
+    "fileCount": null,
+    "error": "ZipException: Not in GZIP format"
+  },
+  {
+    "id": "apks/xz-5.6.2-r1.apk",
+    "file": "xz-5.6.2-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "xz",
+    "version": "5.6.2-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/xz@5.6.2-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:liblzma.so.5"
+    ],
+    "provides": [
+      "cmd:lzcat = 5.6.2-r1",
+      "cmd:lzcmp = 5.6.2-r1",
+      "cmd:lzdiff = 5.6.2-r1",
+      "cmd:lzegrep = 5.6.2-r1",
+      "cmd:lzfgrep = 5.6.2-r1",
+      "cmd:lzgrep = 5.6.2-r1",
+      "cmd:lzless = 5.6.2-r1",
+      "cmd:lzma = 5.6.2-r1",
+      "cmd:lzmadec = 5.6.2-r1",
+      "cmd:lzmainfo = 5.6.2-r1",
+      "cmd:lzmore = 5.6.2-r1",
+      "cmd:unlzma = 5.6.2-r1",
+      "cmd:unxz = 5.6.2-r1",
+      "cmd:xz = 5.6.2-r1",
+      "cmd:xzcat = 5.6.2-r1",
+      "cmd:xzcmp = 5.6.2-r1",
+      "cmd:xzdec = 5.6.2-r1",
+      "cmd:xzdiff = 5.6.2-r1",
+      "cmd:xzegrep = 5.6.2-r1",
+      "cmd:xzfgrep = 5.6.2-r1",
+      "cmd:xzgrep = 5.6.2-r1",
+      "cmd:xzless = 5.6.2-r1",
+      "cmd:xzmore = 5.6.2-r1"
+    ],
+    "fileCount": 25,
+    "error": null
+  },
+  {
+    "id": "apks/zip-3.0-r12.apk",
+    "file": "zip-3.0-r12.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "zip",
+    "version": "3.0-r12",
+    "release": "r12",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/zip@3.0-r12?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "unzip"
+    ],
+    "provides": [
+      "cmd:zip = 3.0-r12",
+      "cmd:zipcloak = 3.0-r12",
+      "cmd:zipnote = 3.0-r12",
+      "cmd:zipsplit = 3.0-r12"
+    ],
+    "fileCount": 6,
+    "error": null
+  },
+  {
+    "id": "apks/zlib-1.3.1-r1.apk",
+    "file": "zlib-1.3.1-r1.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "zlib",
+    "version": "1.3.1-r1",
+    "release": "r1",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/zlib@1.3.1-r1?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1"
+    ],
+    "provides": [
+      "so:libz.so.1 = 1.3.1"
+    ],
+    "fileCount": 3,
+    "error": null
+  },
+  {
+    "id": "apks/zstd-1.5.6-r0.apk",
+    "file": "zstd-1.5.6-r0.apk",
+    "format": "APK",
+    "tier": 1,
+    "name": "zstd",
+    "version": "1.5.6-r0",
+    "release": "r0",
+    "epoch": null,
+    "arch": "x86_64",
+    "purl": "pkg:apk/alpine/zstd@1.5.6-r0?arch=x86_64",
+    "dependencies": [
+      "so:libc.musl-x86_64.so.1",
+      "so:libgcc_s.so.1",
+      "so:libstdc++.so.6",
+      "so:libzstd.so.1"
+    ],
+    "provides": [
+      "cmd:pzstd = 1.5.6-r0",
+      "cmd:unzstd = 1.5.6-r0",
+      "cmd:zstd = 1.5.6-r0",
+      "cmd:zstdcat = 1.5.6-r0",
+      "cmd:zstdgrep = 1.5.6-r0",
+      "cmd:zstdless = 1.5.6-r0",
+      "cmd:zstdmt = 1.5.6-r0"
+    ],
+    "fileCount": 9,
+    "error": null
+  }
+]
