@@ -476,7 +476,7 @@ class ReaderIntegrationTest {
                 // The namespace must match what inferNamespace produces
                 assertThat(purl.namespace)
                         .as("Namespace for %s must match inferNamespace", rpm.name())
-                        .isEqualTo(rpm.inferNamespace().orElse("unknown"));
+                        .isEqualTo(rpm.inferNamespace().orElse(Purl.UNKNOWN_NAMESPACE));
                 checked++;
             } catch (Exception e) {
                 // Some packages might have issues, continue with others
