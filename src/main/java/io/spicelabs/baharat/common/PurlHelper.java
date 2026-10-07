@@ -32,6 +32,13 @@ public final class PurlHelper {
         return new LinkedHashMap<>();
     }
 
+    /**
+     * The single construction path: normalize and validate through the coordinates library.
+     * A type that requires a namespace but has none (e.g. an RPM whose distribution cannot
+     * be inferred) receives {@link Purl#UNKNOWN_NAMESPACE}, which readers can recognize with
+     * {@link Purl#isNamespaceUnknown()}. Any other violation surfaces as a
+     * {@link Purl.PurlException}.
+     */
     @NotNull
     public static Purl build(
             @NotNull String type,
@@ -39,13 +46,8 @@ public final class PurlHelper {
             @NotNull String name,
             @Nullable String version,
             @NotNull Map<String, String> qualifiers) {
-        Purl candidate = new Purl(type, namespace, name, version, qualifiers, null);
-        try {
-            return Purl.normalize(candidate);
-        } catch (Purl.PurlException e) {
-            String fallbackNs = namespace == null || namespace.isEmpty() ? "unknown" : namespace;
-            return new Purl(type, fallbackNs, name, version, qualifiers, null);
-        }
+        return Purl.normalize(new Purl(type, namespace, name, version, qualifiers, null),
+                Purl.MissingNamespace.UNKNOWN);
     }
 
     @NotNull

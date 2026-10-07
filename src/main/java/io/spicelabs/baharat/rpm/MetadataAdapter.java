@@ -148,7 +148,7 @@ final class MetadataAdapter implements io.spicelabs.baharat.PackageMetadata {
                 rpm.release(),
                 rpm.distribution().orElse(""),
                 sourcePath == null ? "" : sourcePath.toString())
-                .orElse("unknown");
+                .orElse(null);
 
         String ver = version();
         String rel = rpm.release();

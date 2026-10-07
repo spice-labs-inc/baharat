@@ -39,7 +39,8 @@ class PackageUrlTest {
         Purl purl = pkg.purl();
 
         assertThat(purl.type).isEqualTo("rpm");
-        assertThat(purl.namespace).isEqualTo("unknown");
+        assertThat(purl.namespace).isEqualTo(Purl.UNKNOWN_NAMESPACE);
+        assertThat(purl.isNamespaceUnknown()).isTrue();
         assertThat(purl.name).isEqualTo("curl");
         assertThat(purl.version).isEqualTo("7.50.3");
         assertThat(purl.qualifiers).containsEntry("arch", "x86_64");
@@ -326,7 +327,7 @@ class PackageUrlTest {
                 case OPENBSD_PKG -> "openbsd";
             };
             String namespace = switch (format) {
-                case RPM -> "unknown";
+                case RPM -> null;
                 case DEB -> "debian";
                 case PACMAN -> "arch";
                 case APK -> "alpine";
