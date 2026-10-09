@@ -201,25 +201,25 @@ cd baharat
 Build with Maven:
 
 ```bash
-mvn clean install
+./mvnw clean install
 ```
 
 Run tests only:
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 Generate Javadoc:
 
 ```bash
-mvn javadoc:javadoc
+./mvnw javadoc:javadoc
 ```
 
 Check test coverage (report in `target/site/jacoco/`):
 
 ```bash
-mvn test jacoco:report
+./mvnw test jacoco:report
 ```
 
 ---
